@@ -56,6 +56,16 @@ struct PlanningHubView: View {
                 }
                 .buttonStyle(.plain)
 
+                NavigationLink(value: PlanningRoute.firstThirtyDays) {
+                    PlanningCard(
+                        title: "First 30 Days Civilian",
+                        subtitle: "Week-by-week survival guide",
+                        icon: "flag.fill",
+                        color: .purple
+                    )
+                }
+                .buttonStyle(.plain)
+
                 NavigationLink(value: PlanningRoute.crisis) {
                     PlanningCard(
                         title: "Crisis & Support Resources",
@@ -80,6 +90,7 @@ enum PlanningRoute: Hashable {
     case financial
     case readiness
     case crisis
+    case firstThirtyDays
 }
 
 struct PlanningCard: View {
@@ -682,5 +693,98 @@ struct FinancialPlanningView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Financial Reset")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct FirstThirtyDaysView: View {
+    private let week1 = [
+        "Secure your DD214 copies and store safely",
+        "Set up a civilian bank account if needed",
+        "File for unemployment (if eligible in your state)",
+        "Update your address with all important contacts",
+        "Enroll in veteran health care if eligible",
+        "Take a breath — the first week is about stabilizing",
+    ]
+
+    private let week2 = [
+        "Begin applying for jobs or start your education enrollment",
+        "Set up your civilian health insurance if not yet covered",
+        "Create a 30/60/90-day personal plan",
+        "Connect with a local veteran organization",
+        "Review your budget based on actual civilian costs",
+    ]
+
+    private let week3 = [
+        "Follow up on any pending claims or applications",
+        "Schedule medical appointments if needed",
+        "Continue networking — aim for 3 new contacts this week",
+        "Review and update your resume based on feedback",
+        "Start building a daily routine that supports your goals",
+    ]
+
+    private let week4 = [
+        "Assess your first month — what's working, what's not",
+        "Adjust your budget based on real spending",
+        "Follow up on all outstanding paperwork",
+        "Plan your goals for month 2",
+        "Celebrate your first month — you've made it through the hardest part",
+    ]
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Your first 30 days as a civilian are about stabilizing, not perfecting. Focus on the essentials and build from there.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(14)
+                .background(.purple.opacity(0.06))
+                .clipShape(.rect(cornerRadius: 12))
+
+                weekSection(title: "Week 1: Stabilize", icon: "1.circle.fill", color: .purple, items: week1)
+                weekSection(title: "Week 2: Activate", icon: "2.circle.fill", color: .blue, items: week2)
+                weekSection(title: "Week 3: Build Momentum", icon: "3.circle.fill", color: .teal, items: week3)
+                weekSection(title: "Week 4: Assess & Adjust", icon: "4.circle.fill", color: AppTheme.forestGreen, items: week4)
+
+                Text("Everyone's transition is different. Adjust this guide to fit your situation.")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("First 30 Days")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func weekSection(title: String, icon: String, color: Color, items: [String]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(color)
+                Text(title)
+                    .font(.headline)
+            }
+
+            CardView {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(items, id: \.self) { item in
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "circle")
+                                .font(.caption)
+                                .foregroundStyle(color.opacity(0.6))
+                                .padding(.top, 2)
+                            Text(item)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
 }

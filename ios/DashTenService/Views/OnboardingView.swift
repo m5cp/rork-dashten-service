@@ -132,20 +132,34 @@ struct OnboardingView: View {
         }
     }
 
+    @State private var branchAnimated: Bool = false
+
     private var branchPage: some View {
         ScrollView {
             VStack(spacing: 24) {
-                VStack(spacing: 8) {
+                VStack(spacing: 12) {
+                    Image(systemName: "shield.lefthalf.filled")
+                        .font(.system(size: 40))
+                        .foregroundStyle(AppTheme.forestGreen)
+                        .opacity(branchAnimated ? 1 : 0)
+                        .scaleEffect(branchAnimated ? 1 : 0.6)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: branchAnimated)
+
                     Text("Your Background")
                         .font(.title2.bold())
+                        .opacity(branchAnimated ? 1 : 0)
+                        .animation(.spring(response: 0.5).delay(0.2), value: branchAnimated)
+
                     Text("Select your branch or affiliation")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .opacity(branchAnimated ? 1 : 0)
+                        .animation(.spring(response: 0.5).delay(0.3), value: branchAnimated)
                 }
                 .padding(.top, 24)
 
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                    ForEach(MilitaryBranch.allCases) { branch in
+                    ForEach(Array(MilitaryBranch.allCases.enumerated()), id: \.element.id) { index, branch in
                         Button {
                             selectedBranch = branch
                         } label: {
@@ -167,29 +181,47 @@ struct OnboardingView: View {
                             )
                         }
                         .sensoryFeedback(.selection, trigger: selectedBranch)
+                        .opacity(branchAnimated ? 1 : 0)
+                        .offset(y: branchAnimated ? 0 : 16)
+                        .animation(.spring(response: 0.5).delay(0.3 + Double(index) * 0.04), value: branchAnimated)
                     }
                 }
             }
             .padding(.horizontal, 24)
         }
         .scrollIndicators(.hidden)
+        .onAppear { branchAnimated = true }
     }
+
+    @State private var timelineAnimated: Bool = false
 
     private var timelinePage: some View {
         ScrollView {
             VStack(spacing: 24) {
-                VStack(spacing: 8) {
+                VStack(spacing: 12) {
+                    Image(systemName: "calendar.circle.fill")
+                        .font(.system(size: 40))
+                        .foregroundStyle(AppTheme.forestGreen)
+                        .opacity(timelineAnimated ? 1 : 0)
+                        .scaleEffect(timelineAnimated ? 1 : 0.6)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: timelineAnimated)
+
                     Text("Where Are You?")
                         .font(.title2.bold())
+                        .opacity(timelineAnimated ? 1 : 0)
+                        .animation(.spring(response: 0.5).delay(0.2), value: timelineAnimated)
+
                     Text("How far are you from separation or retirement?")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
+                        .opacity(timelineAnimated ? 1 : 0)
+                        .animation(.spring(response: 0.5).delay(0.3), value: timelineAnimated)
                 }
                 .padding(.top, 24)
 
                 VStack(spacing: 10) {
-                    ForEach(TransitionTimeline.allCases) { timeline in
+                    ForEach(Array(TransitionTimeline.allCases.enumerated()), id: \.element.id) { index, timeline in
                         Button {
                             selectedTimeline = timeline
                         } label: {
@@ -215,6 +247,9 @@ struct OnboardingView: View {
                             )
                         }
                         .sensoryFeedback(.selection, trigger: selectedTimeline)
+                        .opacity(timelineAnimated ? 1 : 0)
+                        .offset(y: timelineAnimated ? 0 : 16)
+                        .animation(.spring(response: 0.5).delay(0.3 + Double(index) * 0.06), value: timelineAnimated)
                     }
                 }
 
@@ -229,28 +264,44 @@ struct OnboardingView: View {
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
                     .clipShape(.rect(cornerRadius: 12))
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
             }
             .padding(.horizontal, 24)
         }
         .scrollIndicators(.hidden)
+        .onAppear { timelineAnimated = true }
     }
+
+    @State private var goalsAnimated: Bool = false
 
     private var goalsPage: some View {
         ScrollView {
             VStack(spacing: 24) {
-                VStack(spacing: 8) {
+                VStack(spacing: 12) {
+                    Image(systemName: "target")
+                        .font(.system(size: 40))
+                        .foregroundStyle(AppTheme.forestGreen)
+                        .opacity(goalsAnimated ? 1 : 0)
+                        .scaleEffect(goalsAnimated ? 1 : 0.6)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: goalsAnimated)
+
                     Text("Your Goals")
                         .font(.title2.bold())
+                        .opacity(goalsAnimated ? 1 : 0)
+                        .animation(.spring(response: 0.5).delay(0.2), value: goalsAnimated)
+
                     Text("What matters most to you right now?\nSelect all that apply.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
+                        .opacity(goalsAnimated ? 1 : 0)
+                        .animation(.spring(response: 0.5).delay(0.3), value: goalsAnimated)
                 }
                 .padding(.top, 24)
 
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-                    ForEach(TransitionGoal.allCases) { goal in
+                    ForEach(Array(TransitionGoal.allCases.enumerated()), id: \.element.id) { index, goal in
                         Button {
                             if selectedGoals.contains(goal) {
                                 selectedGoals.remove(goal)
@@ -277,12 +328,27 @@ struct OnboardingView: View {
                                     .stroke(selectedGoals.contains(goal) ? AppTheme.forestGreen : .clear, lineWidth: 2)
                             )
                         }
+                        .opacity(goalsAnimated ? 1 : 0)
+                        .offset(y: goalsAnimated ? 0 : 16)
+                        .animation(.spring(response: 0.5).delay(0.3 + Double(index) * 0.04), value: goalsAnimated)
                     }
+                }
+
+                if !selectedGoals.isEmpty {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(AppTheme.forestGreen)
+                        Text("\(selectedGoals.count) goal\(selectedGoals.count == 1 ? "" : "s") selected")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(AppTheme.forestGreen)
+                    }
+                    .transition(.opacity.combined(with: .scale))
                 }
             }
             .padding(.horizontal, 24)
         }
         .scrollIndicators(.hidden)
+        .onAppear { goalsAnimated = true }
     }
 
     private var disclaimerPage: some View {

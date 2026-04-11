@@ -11,24 +11,31 @@ struct ProfileView: View {
     @State private var showDisclaimer: Bool = false
     @State private var showResetAlert: Bool = false
 
+    private var readiness: ReadinessCalculator.ReadinessScore {
+        ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                Section("Personal Info") {
-                    HStack {
-                        Image(systemName: "person.circle.fill")
-                            .font(.system(size: 44))
-                            .foregroundStyle(AppTheme.forestGreen)
-                        VStack(alignment: .leading, spacing: 4) {
-                            TextField("Display Name", text: $storage.profile.displayName)
-                                .font(.headline)
-                            if let branch = storage.profile.branch {
-                                Text(branch.rawValue)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+                profileHeader
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+
+                Section("Goals") {
+                    if storage.profile.goals.isEmpty {
+                        Text("No goals selected")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(storage.profile.goals) { goal in
+                            Label(goal.rawValue, systemImage: goal.icon)
+                                .font(.subheadline)
                         }
                     }
+                }
+
+                Section("Personal Info") {
+                    TextField("Display Name", text: $storage.profile.displayName)
 
                     if storage.profile.separationDate != nil {
                         DatePicker("Separation Date", selection: Binding(
@@ -42,15 +49,33 @@ struct ProfileView: View {
                     TextField("Spouse Name", text: $storage.profile.spouseName)
                 }
 
-                Section("Goals") {
-                    if storage.profile.goals.isEmpty {
-                        Text("No goals selected")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(storage.profile.goals) { goal in
-                            Label(goal.rawValue, systemImage: goal.icon)
-                                .font(.subheadline)
+                Section("Notifications") {
+                    Toggle("Weekly Check-In Reminder", isOn: Binding(
+                        get: { storage.profile.notificationsEnabled },
+                        set: { newValue in
+                            Task {
+                                if newValue {
+                                    let granted = await NotificationService.shared.requestPermission()
+                                    storage.profile.notificationsEnabled = granted
+                                    if granted {
+                                        NotificationService.shared.scheduleWeeklyReminder()
+                                        if let sepDate = storage.profile.separationDate {
+                                            NotificationService.shared.scheduleSeparationCountdown(separationDate: sepDate)
+                                        }
+                                    }
+                                } else {
+                                    storage.profile.notificationsEnabled = false
+                                    NotificationService.shared.cancelAllNotifications()
+                                }
+                            }
                         }
+                    ))
+                    .tint(AppTheme.forestGreen)
+
+                    if storage.profile.notificationsEnabled {
+                        Label("You'll get weekly check-ins and separation countdown alerts", systemImage: "bell.badge.fill")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
 
@@ -159,6 +184,79 @@ struct ProfileView: View {
                 Text("This will erase all your progress, documents, and settings. This cannot be undone.")
             }
         }
+    }
+
+    private var profileHeader: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(AppTheme.forestGreen.opacity(0.12))
+                        .frame(width: 64, height: 64)
+                    Image(systemName: "person.circle.fill")
+                        .font(.system(size: 36))
+                        .foregroundStyle(AppTheme.forestGreen)
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(storage.profile.displayName.isEmpty ? "Service Member" : storage.profile.displayName)
+                        .font(.title3.bold())
+                    if let branch = storage.profile.branch {
+                        Text(branch.rawValue)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    if let date = storage.profile.separationDate {
+                        let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
+                        Text(days > 0 ? "\(days) days until separation" : "\(abs(days)) days since separation")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+
+                Spacer()
+            }
+
+            HStack(spacing: 12) {
+                MiniReadinessCard(
+                    title: "Readiness",
+                    value: "\(readiness.overallPercent)%",
+                    color: AppTheme.forestGreen
+                )
+                MiniReadinessCard(
+                    title: "Tasks Done",
+                    value: "\(storage.checklistItems.filter(\.isCompleted).count)/\(storage.checklistItems.count)",
+                    color: .blue
+                )
+                MiniReadinessCard(
+                    title: "Docs Verified",
+                    value: "\(storage.documents.filter { $0.status == .verified }.count)/\(storage.documents.count)",
+                    color: .orange
+                )
+            }
+        }
+        .padding(16)
+    }
+}
+
+struct MiniReadinessCard: View {
+    let title: String
+    let value: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(color)
+            Text(title)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(color.opacity(0.08))
+        .clipShape(.rect(cornerRadius: 10))
     }
 }
 

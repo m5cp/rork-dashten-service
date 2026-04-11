@@ -53,6 +53,15 @@ class StorageService {
         benefitCategories[index].isStarted = true
     }
 
+    func addCustomChecklistItem(title: String, phase: TimelinePhase, category: ReadinessCategory) {
+        let item = ChecklistItem(title: title, subtitle: "", phase: phase, readinessCategory: category, isCustom: true)
+        checklistItems.append(item)
+    }
+
+    func removeChecklistItem(_ id: String) {
+        checklistItems.removeAll { $0.id == id && $0.isCustom }
+    }
+
     func resetOnboarding() {
         profile = UserProfile()
         checklistItems = TransitionDataService.defaultChecklist()

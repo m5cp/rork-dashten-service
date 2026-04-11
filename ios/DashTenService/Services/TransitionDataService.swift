@@ -293,7 +293,9 @@ enum TransitionDataService {
                     "Using military jargon on civilian resumes",
                     "Not networking before separation",
                     "Undervaluing leadership and management experience",
-                    "Waiting until after separation to begin job searching"
+                    "Waiting until after separation to begin job searching",
+                    "Assuming military rank translates to equivalent civilian seniority",
+                    "Not obtaining civilian certifications or licenses for your field"
                 ],
                 questionsToAsk: [
                     "How do I translate my MOS/AFSC/NEC to civilian job titles?",

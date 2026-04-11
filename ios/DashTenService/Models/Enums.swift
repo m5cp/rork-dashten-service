@@ -262,3 +262,37 @@ nonisolated enum BenefitCategoryType: String, Codable, CaseIterable, Identifiabl
         }
     }
 }
+
+import SwiftUI
+
+extension BenefitCategoryType {
+    var accentColor: Color {
+        switch self {
+        case .healthCare: .red
+        case .disabilityClaims: .orange
+        case .educationTraining: .blue
+        case .careerReset: .purple
+        case .employmentResume: .teal
+        case .housingHomeLoan: Color(red: 0.176, green: 0.373, blue: 0.176)
+        case .insurance: .indigo
+        case .familyDependents: .pink
+        case .financesBudget: Color(red: 0.788, green: 0.659, blue: 0.298)
+        case .recordsAdmin: .gray
+        case .communityCrisis: .red
+        }
+    }
+}
+
+extension TimelinePhase {
+    var shortLabel: String {
+        switch self {
+        case .eighteenToTwentyFour: "18-24 mo"
+        case .twelveMonths: "12 mo"
+        case .sixMonths: "6 mo"
+        case .ninetyDays: "90 days"
+        case .thirtyDays: "30 days"
+        case .firstNinety: "Post 90"
+        case .firstYear: "Year 1"
+        }
+    }
+}

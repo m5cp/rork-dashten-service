@@ -23,17 +23,63 @@ struct TodayView: View {
 
     private var insightCard: InsightCard? {
         let cards = TransitionDataService.insightCards()
+        guard !cards.isEmpty else { return nil }
+        if let phase = currentPhase {
+            let phaseCards = cards.filter { card in
+                switch phase {
+                case .eighteenToTwentyFour, .twelveMonths:
+                    return card.category == .wishIKnew || card.category == .forgottenDoc
+                case .sixMonths, .ninetyDays, .thirtyDays:
+                    return card.category == .commonMistake || card.category == .forgottenDoc
+                case .firstNinety, .firstYear:
+                    return card.category == .benefitSpotlight || card.category == .wishIKnew
+                }
+            }
+            if !phaseCards.isEmpty {
+                let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
+                return phaseCards[dayOfYear % phaseCards.count]
+            }
+        }
         let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
         return cards[dayOfYear % cards.count]
+    }
+
+    private var currentPhase: TimelinePhase? {
+        guard let sepDate = storage.profile.separationDate else { return nil }
+        let months = Calendar.current.dateComponents([.month], from: Date(), to: sepDate).month ?? 0
+        if months > 18 { return .eighteenToTwentyFour }
+        if months > 12 { return .twelveMonths }
+        if months > 6 { return .sixMonths }
+        if months > 3 { return .ninetyDays }
+        if months > 0 { return .thirtyDays }
+        let monthsSince = Calendar.current.dateComponents([.month], from: sepDate, to: Date()).month ?? 0
+        if monthsSince <= 3 { return .firstNinety }
+        return .firstYear
+    }
+
+    private var weeklyFocusItems: [String] {
+        var items: [String] = []
+        if let phase = currentPhase {
+            items.append("Focus: \(phase.rawValue) — \(phase.subtitle)")
+        }
+        let missingDocs = storage.documents.filter { $0.status == .missing }.count
+        if missingDocs > 0 {
+            items.append("\(missingDocs) documents still need attention")
+        }
+        let incompleteBenefits = storage.benefitCategories.filter { $0.isStarted && $0.actionItems.contains(where: { !$0.isCompleted }) }.count
+        if incompleteBenefits > 0 {
+            items.append("\(incompleteBenefits) benefit categories in progress")
+        }
+        return items
     }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    headerSection
-                    countdownAndProgress
+                    heroCard
                     nextActionsSection
+                    weeklyFocusSection
                     planningToolsSection
                     insightSpotlight
                     documentsAlert
@@ -58,53 +104,124 @@ struct TodayView: View {
                     ReadinessDashboardView(storage: storage)
                 case .crisis:
                     CrisisResourcesView()
+                case .firstThirtyDays:
+                    FirstThirtyDaysView()
                 }
             }
         }
     }
 
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if !storage.profile.displayName.isEmpty {
-                Text("Welcome back, \(storage.profile.displayName)")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-            }
-            if let branch = storage.profile.branch {
-                Text(branch.rawValue)
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var countdownAndProgress: some View {
-        HStack(spacing: 12) {
-            if let date = storage.profile.separationDate {
-                CardView {
-                    CountdownView(targetDate: date)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-
-            NavigationLink(value: PlanningRoute.readiness) {
-                CardView {
-                    VStack(spacing: 8) {
-                        ProgressRing(progress: readiness.overall, size: 64, lineWidth: 7)
-                            .overlay {
-                                Text("\(readiness.overallPercent)%")
-                                    .font(.subheadline.bold())
-                                    .foregroundStyle(AppTheme.forestGreen)
-                            }
-                        Text("Readiness")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+    private var heroCard: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .top, spacing: 16) {
+                VStack(alignment: .leading, spacing: 6) {
+                    if !storage.profile.displayName.isEmpty {
+                        Text("Welcome back,")
+                            .font(.subheadline)
+                            .foregroundStyle(.white.opacity(0.7))
+                        Text(storage.profile.displayName)
+                            .font(.title2.bold())
+                            .foregroundStyle(.white)
+                    } else {
+                        Text("Your Transition")
+                            .font(.title2.bold())
+                            .foregroundStyle(.white)
                     }
-                    .frame(maxWidth: .infinity)
+                    if let branch = storage.profile.branch {
+                        Text(branch.rawValue)
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
                 }
+
+                Spacer()
+
+                NavigationLink(value: PlanningRoute.readiness) {
+                    ProgressRing(progress: readiness.overall, size: 56, lineWidth: 5, color: AppTheme.gold)
+                        .overlay {
+                            Text("\(readiness.overallPercent)%")
+                                .font(.caption.bold())
+                                .foregroundStyle(.white)
+                        }
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 16)
+
+            if let date = storage.profile.separationDate {
+                let info = countdownInfo(for: date)
+                HStack(spacing: 16) {
+                    HStack(spacing: 8) {
+                        Text("\(info.days)")
+                            .font(.system(size: 36, weight: .bold, design: .default))
+                            .foregroundStyle(.white)
+                            .contentTransition(.numericText())
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(info.days == 1 ? "day" : "days")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.white.opacity(0.8))
+                            Text(info.label)
+                                .font(.caption2)
+                                .foregroundStyle(.white.opacity(0.5))
+                        }
+                    }
+
+                    Spacer()
+
+                    if let phase = currentPhase {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(phase.rawValue)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.white.opacity(0.8))
+                            Text(phase.subtitle)
+                                .font(.caption2)
+                                .foregroundStyle(.white.opacity(0.5))
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
+            } else {
+                HStack {
+                    Image(systemName: "calendar.badge.plus")
+                        .foregroundStyle(.white.opacity(0.6))
+                    Text("Set your separation date in Profile to see countdown")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.6))
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 16)
+            }
+        }
+        .background(
+            MeshGradient(
+                width: 3, height: 3,
+                points: [
+                    [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+                    [0.0, 0.5], [0.6, 0.4], [1.0, 0.5],
+                    [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+                ],
+                colors: [
+                    AppTheme.darkGreen, AppTheme.forestGreen, AppTheme.darkGreen,
+                    AppTheme.forestGreen, AppTheme.forestGreen.opacity(0.8), AppTheme.darkGreen,
+                    AppTheme.darkGreen, AppTheme.forestGreen, AppTheme.darkGreen
+                ]
+            )
+        )
+        .clipShape(.rect(cornerRadius: 20))
+    }
+
+    private func countdownInfo(for date: Date) -> (days: Int, label: String) {
+        let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
+        if days > 0 {
+            return (days, "until separation")
+        } else if days == 0 {
+            return (0, "separation day")
+        } else {
+            return (abs(days), "since separation")
         }
     }
 
@@ -154,11 +271,38 @@ struct TodayView: View {
                                     }
                                 }
                                 Spacer()
-                                StatusBadge(text: item.phase.rawValue, color: AppTheme.forestGreen)
+                                StatusBadge(text: item.phase.shortLabel, color: AppTheme.forestGreen)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .sensoryFeedback(.success, trigger: item.isCompleted)
+                    }
+                }
+            }
+        }
+    }
+
+    private var weeklyFocusSection: some View {
+        Group {
+            if !weeklyFocusItems.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader("This Week's Focus", icon: "target")
+
+                    CardView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(weeklyFocusItems, id: \.self) { item in
+                                HStack(alignment: .top, spacing: 8) {
+                                    Image(systemName: "arrow.right.circle.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(AppTheme.forestGreen)
+                                        .padding(.top, 2)
+                                    Text(item)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             }
@@ -176,6 +320,7 @@ struct TodayView: View {
                     PlanningToolChip(title: "Family", icon: "figure.2.and.child.holdinghands", color: .pink, route: .family)
                     PlanningToolChip(title: "Financial", icon: "dollarsign.circle.fill", color: AppTheme.gold, route: .financial)
                     PlanningToolChip(title: "Readiness", icon: "chart.bar.fill", color: AppTheme.forestGreen, route: .readiness)
+                    PlanningToolChip(title: "First 30\nDays", icon: "flag.fill", color: .purple, route: .firstThirtyDays)
                     PlanningToolChip(title: "Crisis Help", icon: "heart.fill", color: .red, route: .crisis)
                 }
             }
@@ -284,6 +429,8 @@ struct PlanningToolChip: View {
                 Text(title)
                     .font(.caption2.weight(.medium))
                     .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
             }
             .frame(width: 76)
         }

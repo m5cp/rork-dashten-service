@@ -3,7 +3,6 @@ import SwiftUI
 struct DocumentsView: View {
     let storage: StorageService
     @State private var selectedCategory: DocumentCategory?
-    @State private var selectedDocument: DocumentItem?
 
     private var groupedDocuments: [(DocumentCategory, [DocumentItem])] {
         let grouped = Dictionary(grouping: storage.documents, by: \.category)
@@ -21,11 +20,21 @@ struct DocumentsView: View {
         storage.documents.filter { $0.status == .verified }.count
     }
 
+    private var totalCount: Int {
+        storage.documents.count
+    }
+
+    private var overallProgress: Double {
+        guard totalCount > 0 else { return 0 }
+        return Double(storage.documents.filter { $0.status == .received || $0.status == .verified }.count) / Double(totalCount)
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
                     documentWarningBanner
+                    progressHeader
                     summaryBar
                     categoryFilter
 
@@ -72,6 +81,43 @@ struct DocumentsView: View {
         .clipShape(.rect(cornerRadius: 12))
     }
 
+    private var progressHeader: some View {
+        VStack(spacing: 10) {
+            HStack {
+                Text("Document Readiness")
+                    .font(.headline)
+                Spacer()
+                Text("\(Int(overallProgress * 100))%")
+                    .font(.headline)
+                    .foregroundStyle(AppTheme.forestGreen)
+            }
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(AppTheme.forestGreen.opacity(0.12))
+                        .frame(height: 10)
+
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(AppTheme.forestGreen)
+                        .frame(width: proxy.size.width * overallProgress, height: 10)
+                        .animation(.spring(response: 0.5), value: overallProgress)
+                }
+            }
+            .frame(height: 10)
+
+            HStack {
+                Text("\(storage.documents.filter { $0.status == .received || $0.status == .verified }.count) of \(totalCount) secured")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
+        }
+        .padding(16)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 14))
+    }
+
     private var filteredGroups: [(DocumentCategory, [DocumentItem])] {
         guard let selected = selectedCategory else { return groupedDocuments }
         return groupedDocuments.filter { $0.0 == selected }
@@ -79,7 +125,7 @@ struct DocumentsView: View {
 
     private var summaryBar: some View {
         HStack(spacing: 12) {
-            StatCard(value: "\(storage.documents.count)", label: "Total", color: .primary)
+            StatCard(value: "\(totalCount)", label: "Total", color: .primary)
             StatCard(value: "\(missingCount)", label: "Missing", color: .red)
             StatCard(value: "\(verifiedCount)", label: "Verified", color: AppTheme.forestGreen)
         }
@@ -219,5 +265,3 @@ struct DocumentRow: View {
         }
     }
 }
-
-

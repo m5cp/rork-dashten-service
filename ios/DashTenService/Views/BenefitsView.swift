@@ -51,19 +51,12 @@ struct BenefitCategoryCard: View {
     }
 
     private var color: Color {
-        switch category.type.color {
-        case "red": .red
-        case "orange": .orange
-        case "blue": .blue
-        case "purple": .purple
-        case "teal": .teal
-        case "green": AppTheme.forestGreen
-        case "indigo": .indigo
-        case "pink": .pink
-        case "yellow": AppTheme.gold
-        case "gray": .gray
-        default: AppTheme.forestGreen
-        }
+        category.type.accentColor
+    }
+
+    private var progress: Double {
+        guard !category.actionItems.isEmpty else { return 0 }
+        return Double(completedActions) / Double(category.actionItems.count)
     }
 
     var body: some View {
@@ -83,14 +76,18 @@ struct BenefitCategoryCard: View {
                 .lineLimit(2)
 
             if !category.actionItems.isEmpty {
-                HStack(spacing: 4) {
-                    Text("\(completedActions)/\(category.actionItems.count)")
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(.secondary)
-                    if category.isStarted {
-                        Image(systemName: "arrow.right.circle.fill")
-                            .font(.caption2)
-                            .foregroundStyle(color)
+                VStack(alignment: .leading, spacing: 4) {
+                    ProgressView(value: progress)
+                        .tint(color)
+                    HStack(spacing: 4) {
+                        Text("\(completedActions)/\(category.actionItems.count)")
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(.secondary)
+                        if category.isStarted {
+                            Image(systemName: "arrow.right.circle.fill")
+                                .font(.caption2)
+                                .foregroundStyle(color)
+                        }
                     }
                 }
             }
@@ -110,6 +107,10 @@ struct BenefitDetailView: View {
 
     private var currentCategory: BenefitCategory {
         storage.benefitCategories.first(where: { $0.id == category.id }) ?? category
+    }
+
+    private var color: Color {
+        category.type.accentColor
     }
 
     var body: some View {
@@ -136,7 +137,7 @@ struct BenefitDetailView: View {
                     storage.toggleBenefitSaved(category.id)
                 } label: {
                     Image(systemName: currentCategory.isSaved ? "bookmark.fill" : "bookmark")
-                        .foregroundStyle(AppTheme.forestGreen)
+                        .foregroundStyle(color)
                 }
             }
         }
@@ -147,7 +148,7 @@ struct BenefitDetailView: View {
             HStack {
                 Image(systemName: category.type.icon)
                     .font(.title2)
-                    .foregroundStyle(AppTheme.forestGreen)
+                    .foregroundStyle(color)
                 Text(category.type.rawValue)
                     .font(.title2.bold())
             }
@@ -160,12 +161,12 @@ struct BenefitDetailView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
-                        .background(AppTheme.forestGreen)
+                        .background(color)
                         .clipShape(Capsule())
                 }
                 .sensoryFeedback(.impact(weight: .medium), trigger: currentCategory.isStarted)
             } else {
-                StatusBadge(text: "In Progress", color: AppTheme.forestGreen)
+                StatusBadge(text: "In Progress", color: color)
             }
         }
     }
@@ -195,90 +196,78 @@ struct BenefitDetailView: View {
     }
 
     private var eligibilitySection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SectionHeader("Common Eligibility Factors", icon: "person.crop.circle.badge.checkmark")
-            CardView {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(category.eligibilityFactors, id: \.self) { factor in
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.caption)
-                                .foregroundStyle(AppTheme.forestGreen)
-                                .padding(.top, 2)
-                            Text(factor)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+        CollapsibleSection(title: "Common Eligibility Factors", icon: "person.crop.circle.badge.checkmark", color: color) {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(category.eligibilityFactors, id: \.self) { factor in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(color)
+                            .padding(.top, 2)
+                        Text(factor)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
     private var documentsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SectionHeader("Required Documents", icon: "doc.fill")
-            CardView {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(category.requiredDocuments, id: \.self) { doc in
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "doc.text")
-                                .font(.caption)
-                                .foregroundStyle(.orange)
-                                .padding(.top, 2)
-                            Text(doc)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+        CollapsibleSection(title: "Required Documents", icon: "doc.fill", color: .orange) {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(category.requiredDocuments, id: \.self) { doc in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "doc.text")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                            .padding(.top, 2)
+                        Text(doc)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
     private var mistakesSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SectionHeader("Common Mistakes", icon: "exclamationmark.triangle.fill")
-            CardView {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(category.commonMistakes, id: \.self) { mistake in
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.caption)
-                                .foregroundStyle(.red)
-                                .padding(.top, 2)
-                            Text(mistake)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+        CollapsibleSection(title: "Common Mistakes", icon: "exclamationmark.triangle.fill", color: .red) {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(category.commonMistakes, id: \.self) { mistake in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .padding(.top, 2)
+                        Text(mistake)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
     private var questionsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SectionHeader("Questions to Ask", icon: "questionmark.circle.fill")
-            CardView {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(category.questionsToAsk, id: \.self) { question in
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "questionmark.circle")
-                                .font(.caption)
-                                .foregroundStyle(.blue)
-                                .padding(.top, 2)
-                            Text(question)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+        CollapsibleSection(title: "Questions to Ask", icon: "questionmark.circle.fill", color: .blue) {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(category.questionsToAsk, id: \.self) { question in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "questionmark.circle")
+                            .font(.caption)
+                            .foregroundStyle(.blue)
+                            .padding(.top, 2)
+                        Text(question)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -295,7 +284,7 @@ struct BenefitDetailView: View {
                         } label: {
                             Image(systemName: action.isCompleted ? "checkmark.circle.fill" : "circle")
                                 .font(.title3)
-                                .foregroundStyle(action.isCompleted ? AppTheme.forestGreen : .secondary)
+                                .foregroundStyle(action.isCompleted ? color : .secondary)
                         }
                         Text(action.title)
                             .font(.subheadline)
@@ -323,5 +312,47 @@ struct BenefitDetailView: View {
                 .foregroundStyle(.tertiary)
         }
         .padding(.top, 8)
+    }
+}
+
+struct CollapsibleSection<Content: View>: View {
+    let title: String
+    let icon: String
+    let color: Color
+    @ViewBuilder let content: Content
+    @State private var isExpanded: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                withAnimation(.spring(response: 0.3)) {
+                    isExpanded.toggle()
+                }
+            } label: {
+                HStack {
+                    Image(systemName: icon)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(color)
+                    Text(title)
+                        .font(.headline)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .sensoryFeedback(.selection, trigger: isExpanded)
+
+            if isExpanded {
+                CardView {
+                    content
+                }
+                .padding(.top, 10)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
     }
 }

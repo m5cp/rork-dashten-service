@@ -2,9 +2,22 @@ import SwiftUI
 
 struct ReadinessDashboardView: View {
     let storage: StorageService
+    @State private var showShareSheet: Bool = false
+    @State private var shareImage: UIImage?
 
     private var readiness: ReadinessCalculator.ReadinessScore {
         ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
+    }
+
+    private var milestones: [(String, String, Bool)] {
+        [
+            ("Roadmap Started", "flag.fill", !storage.checklistItems.filter(\.isCompleted).isEmpty),
+            ("25% Ready", "chart.line.uptrend.xyaxis", readiness.overallPercent >= 25),
+            ("50% Ready", "star.fill", readiness.overallPercent >= 50),
+            ("75% Ready", "flame.fill", readiness.overallPercent >= 75),
+            ("Fully Prepared", "checkmark.seal.fill", readiness.overallPercent >= 100),
+            ("Documents Organized", "doc.text.fill", storage.documents.filter({ $0.status == .verified }).count >= 10),
+        ]
     }
 
     var body: some View {
@@ -13,6 +26,7 @@ struct ReadinessDashboardView: View {
                 overallScore
                 categoryBreakdown
                 milestoneSection
+                shareSection
                 disclaimerNote
             }
             .padding(.horizontal, 16)
@@ -21,6 +35,11 @@ struct ReadinessDashboardView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Readiness Score")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showShareSheet) {
+            if let image = shareImage {
+                ShareSheetView(items: [image])
+            }
+        }
     }
 
     private var overallScore: some View {
@@ -65,7 +84,7 @@ struct ReadinessDashboardView: View {
                     HStack(spacing: 12) {
                         Image(systemName: category.icon)
                             .font(.body)
-                            .foregroundStyle(AppTheme.forestGreen)
+                            .foregroundStyle(colorForCategory(category))
                             .frame(width: 28)
 
                         VStack(alignment: .leading, spacing: 4) {
@@ -78,7 +97,7 @@ struct ReadinessDashboardView: View {
                                     .foregroundStyle(colorForPercent(pct))
                             }
                             ProgressView(value: Double(pct) / 100.0)
-                                .tint(colorForPercent(pct))
+                                .tint(colorForCategory(category))
                         }
                     }
                     .padding(14)
@@ -92,15 +111,6 @@ struct ReadinessDashboardView: View {
     private var milestoneSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader("Milestones", icon: "trophy.fill")
-
-            let milestones: [(String, String, Bool)] = [
-                ("Roadmap Started", "flag.fill", !storage.checklistItems.filter(\.isCompleted).isEmpty),
-                ("25% Ready", "chart.line.uptrend.xyaxis", readiness.overallPercent >= 25),
-                ("50% Ready", "star.fill", readiness.overallPercent >= 50),
-                ("75% Ready", "flame.fill", readiness.overallPercent >= 75),
-                ("Fully Prepared", "checkmark.seal.fill", readiness.overallPercent >= 100),
-                ("Documents Organized", "doc.text.fill", storage.documents.filter({ $0.status == .verified }).count >= 10),
-            ]
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
                 ForEach(milestones, id: \.0) { title, icon, achieved in
@@ -123,6 +133,35 @@ struct ReadinessDashboardView: View {
         }
     }
 
+    private var shareSection: some View {
+        Group {
+            let achieved = milestones.filter(\.2)
+            if !achieved.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader("Share Your Progress", icon: "square.and.arrow.up")
+
+                    Button {
+                        generateShareImage()
+                    } label: {
+                        HStack {
+                            Image(systemName: "square.and.arrow.up")
+                            Text("Share Milestone Card")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.white)
+                        .padding(14)
+                        .background(AppTheme.forestGreen)
+                        .clipShape(.rect(cornerRadius: 12))
+                    }
+                }
+            }
+        }
+    }
+
     private var disclaimerNote: some View {
         Text("Your readiness score is based on completed tasks within this app. It does not represent an official assessment or guarantee any specific outcome.")
             .font(.caption2)
@@ -137,4 +176,109 @@ struct ReadinessDashboardView: View {
         if pct >= 25 { return .orange }
         return .red
     }
+
+    private func colorForCategory(_ category: ReadinessCategory) -> Color {
+        switch category {
+        case .admin: .gray
+        case .health: .red
+        case .education: .blue
+        case .employment: .teal
+        case .family: .pink
+        case .finance: AppTheme.gold
+        case .housing: AppTheme.forestGreen
+        }
+    }
+
+    @MainActor
+    private func generateShareImage() {
+        let latestMilestone = milestones.last(where: \.2)
+        let title = latestMilestone?.0 ?? "Getting Started"
+
+        let renderer = ImageRenderer(content:
+            MilestoneShareCard(
+                milestoneName: title,
+                readinessPercent: readiness.overallPercent,
+                tasksCompleted: storage.checklistItems.filter(\.isCompleted).count,
+                totalTasks: storage.checklistItems.count
+            )
+        )
+        renderer.scale = 3
+
+        if let image = renderer.uiImage {
+            shareImage = image
+            showShareSheet = true
+        }
+    }
+}
+
+struct MilestoneShareCard: View {
+    let milestoneName: String
+    let readinessPercent: Int
+    let tasksCompleted: Int
+    let totalTasks: Int
+
+    var body: some View {
+        VStack(spacing: 20) {
+            VStack(spacing: 8) {
+                Image(systemName: "arrow.up.forward.circle.fill")
+                    .font(.system(size: 36))
+                    .foregroundStyle(.white)
+                Text("DashTen")
+                    .font(.title2.bold())
+                    .foregroundStyle(.white)
+            }
+
+            VStack(spacing: 6) {
+                Text(milestoneName)
+                    .font(.title.bold())
+                    .foregroundStyle(.white)
+                Text("\(readinessPercent)% Transition Ready")
+                    .font(.headline)
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+
+            HStack(spacing: 24) {
+                VStack(spacing: 2) {
+                    Text("\(tasksCompleted)")
+                        .font(.title2.bold())
+                        .foregroundStyle(.white)
+                    Text("Tasks Done")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.7))
+                }
+                VStack(spacing: 2) {
+                    Text("\(totalTasks)")
+                        .font(.title2.bold())
+                        .foregroundStyle(.white)
+                    Text("Total Tasks")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.7))
+                }
+            }
+
+            Text("Planning my transition with DashTen")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.5))
+        }
+        .padding(32)
+        .frame(width: 350)
+        .background(
+            LinearGradient(
+                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(.rect(cornerRadius: 20))
+    }
+}
+
+struct ShareSheetView: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

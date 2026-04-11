@@ -2,6 +2,11 @@ import SwiftUI
 
 struct RoadmapView: View {
     let storage: StorageService
+    @State private var searchText: String = ""
+    @State private var showAddItem: Bool = false
+    @State private var newItemTitle: String = ""
+    @State private var newItemPhase: TimelinePhase = .eighteenToTwentyFour
+    @State private var newItemCategory: ReadinessCategory = .admin
 
     private func itemsForPhase(_ phase: TimelinePhase) -> [ChecklistItem] {
         storage.checklistItems.filter { $0.phase == phase }
@@ -26,11 +31,21 @@ struct RoadmapView: View {
         return .firstYear
     }
 
+    private var filteredPhases: [TimelinePhase] {
+        guard !searchText.isEmpty else { return TimelinePhase.allCases.map { $0 } }
+        return TimelinePhase.allCases.filter { phase in
+            itemsForPhase(phase).contains { item in
+                item.title.localizedCaseInsensitiveContains(searchText) ||
+                item.subtitle.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    ForEach(TimelinePhase.allCases) { phase in
+                    ForEach(filteredPhases) { phase in
                         NavigationLink(value: phase) {
                             PhaseCard(
                                 phase: phase,
@@ -48,10 +63,72 @@ struct RoadmapView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Roadmap")
+            .searchable(text: $searchText, prompt: "Search tasks")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAddItem = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(AppTheme.forestGreen)
+                    }
+                }
+            }
+            .sheet(isPresented: $showAddItem) {
+                addItemSheet
+            }
             .navigationDestination(for: TimelinePhase.self) { phase in
                 PhaseDetailView(storage: storage, phase: phase)
             }
         }
+    }
+
+    private var addItemSheet: some View {
+        NavigationStack {
+            Form {
+                Section("New Task") {
+                    TextField("Task title", text: $newItemTitle)
+                }
+                Section("Phase") {
+                    Picker("Timeline Phase", selection: $newItemPhase) {
+                        ForEach(TimelinePhase.allCases) { phase in
+                            Text(phase.rawValue).tag(phase)
+                        }
+                    }
+                }
+                Section("Category") {
+                    Picker("Category", selection: $newItemCategory) {
+                        ForEach(ReadinessCategory.allCases) { cat in
+                            Label(cat.rawValue, systemImage: cat.icon).tag(cat)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Add Custom Task")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        showAddItem = false
+                        newItemTitle = ""
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add") {
+                        guard !newItemTitle.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+                        storage.addCustomChecklistItem(
+                            title: newItemTitle.trimmingCharacters(in: .whitespaces),
+                            phase: newItemPhase,
+                            category: newItemCategory
+                        )
+                        newItemTitle = ""
+                        showAddItem = false
+                    }
+                    .disabled(newItemTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 }
 
@@ -176,10 +253,17 @@ struct PhaseDetailView: View {
                                             .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : .secondary)
                                     }
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(item.title)
-                                            .font(.subheadline)
-                                            .strikethrough(item.isCompleted)
-                                            .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                                        HStack(spacing: 6) {
+                                            Text(item.title)
+                                                .font(.subheadline)
+                                                .strikethrough(item.isCompleted)
+                                                .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                                            if item.isCustom {
+                                                Image(systemName: "person.fill")
+                                                    .font(.caption2)
+                                                    .foregroundStyle(.tertiary)
+                                            }
+                                        }
                                         if !item.subtitle.isEmpty {
                                             Text(item.subtitle)
                                                 .font(.caption)
@@ -187,6 +271,15 @@ struct PhaseDetailView: View {
                                         }
                                     }
                                     Spacer()
+                                    if item.isCustom {
+                                        Button {
+                                            storage.removeChecklistItem(item.id)
+                                        } label: {
+                                            Image(systemName: "trash")
+                                                .font(.caption)
+                                                .foregroundStyle(.red.opacity(0.6))
+                                        }
+                                    }
                                 }
                                 .padding(12)
                                 .background(Color(.secondarySystemGroupedBackground))
