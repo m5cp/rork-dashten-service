@@ -161,6 +161,17 @@ enum PlanningRoute: Hashable {
     case transitionJournal
     case goalTracker
     case weeklyCheckIn
+    case elevatorPitch
+    case jargonTranslator
+    case jobOfferCompare
+    case decisionMatrix
+    case ninetyDayPlanner
+    case weeklyChallenges
+    case dailyPowerUp
+    case networkingEventPrep
+    case personalBrandAudit
+    case benefitsCountdown
+    case achievementBadges
 }
 
 struct PlanningCard: View {

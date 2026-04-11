@@ -60,6 +60,17 @@ struct PlanTabView: View {
         case .transitionJournal: TransitionJournalView(storage: storage)
         case .goalTracker: GoalTrackerView(storage: storage)
         case .weeklyCheckIn: WeeklyCheckInView(storage: storage)
+        case .elevatorPitch: ElevatorPitchBuilderView(storage: storage)
+        case .jargonTranslator: CivilianJargonTranslatorView()
+        case .jobOfferCompare: JobOfferComparisonView(storage: storage)
+        case .decisionMatrix: DecisionMatrixView(storage: storage)
+        case .ninetyDayPlanner: NinetyDayPlannerView(storage: storage)
+        case .weeklyChallenges: WeeklyChallengesView(storage: storage)
+        case .dailyPowerUp: DailyPowerUpView(storage: storage)
+        case .networkingEventPrep: NetworkingEventPrepView(storage: storage)
+        case .personalBrandAudit: PersonalBrandAuditView(storage: storage)
+        case .benefitsCountdown: BenefitsEnrollmentCountdownView(storage: storage)
+        case .achievementBadges: AchievementBadgesView(storage: storage)
         }
     }
 

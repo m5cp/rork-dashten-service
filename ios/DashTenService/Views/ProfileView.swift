@@ -22,6 +22,34 @@ struct ProfileView: View {
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
 
+                Section {
+                    NavigationLink(value: PlanningRoute.achievementBadges) {
+                        HStack(spacing: 14) {
+                            ProgressRing(progress: storage.transitionLevel.progressToNextLevel, size: 44, lineWidth: 4, color: AppTheme.gold)
+                                .overlay {
+                                    Text("Lv\(storage.transitionLevel.level)")
+                                        .font(.system(size: 9, weight: .heavy))
+                                        .foregroundStyle(AppTheme.gold)
+                                }
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(storage.transitionLevel.levelTitle)
+                                    .font(.subheadline.weight(.bold))
+                                HStack(spacing: 10) {
+                                    Text("\(storage.transitionLevel.totalXPEarned) XP")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(AppTheme.gold)
+                                    Text("\(storage.badges.filter(\.isUnlocked).count)/\(storage.badges.count) badges")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Level & Achievements")
+                }
+
                 Section("Goals") {
                     if storage.profile.goals.isEmpty {
                         Text("No goals selected")
@@ -170,6 +198,9 @@ struct ProfileView: View {
                 }
             }
             .navigationTitle("Profile")
+            .navigationDestination(for: PlanningRoute.self) { route in
+                profileRouteDestination(route)
+            }
             .sheet(isPresented: $showAbout) {
                 AboutView()
             }
@@ -199,6 +230,14 @@ struct ProfileView: View {
             } message: {
                 Text("This will erase all your progress, documents, and settings. This cannot be undone.")
             }
+        }
+    }
+
+    @ViewBuilder
+    private func profileRouteDestination(_ route: PlanningRoute) -> some View {
+        switch route {
+        case .achievementBadges: AchievementBadgesView(storage: storage)
+        default: EmptyView()
         }
     }
 
