@@ -46,6 +46,20 @@ struct PlanTabView: View {
         case .finalGearCheck: FinalGearCheckView(storage: storage)
         case .mentorTracker: MentorTrackerView(storage: storage)
         case .documents: DocumentsView(storage: storage)
+        case .tspRollover: TSPRolloverView()
+        case .salaryNegotiation: SalaryNegotiationView()
+        case .costOfLiving: CostOfLivingView()
+        case .resumeTranslator: ResumeTranslatorView()
+        case .interviewPrep: InterviewPrepView(storage: storage)
+        case .networkingScorecard: NetworkingScorecardView(storage: storage)
+        case .skillsInventory: SkillsInventoryView()
+        case .giBillBAH: GIBillBAHCalculatorView()
+        case .educationComparison: EducationBenefitComparisonView()
+        case .relocationCost: RelocationCostView()
+        case .stateBenefits: StateBenefitsFinderView()
+        case .transitionJournal: TransitionJournalView(storage: storage)
+        case .goalTracker: GoalTrackerView(storage: storage)
+        case .weeklyCheckIn: WeeklyCheckInView(storage: storage)
         }
     }
 

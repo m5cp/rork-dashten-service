@@ -147,6 +147,20 @@ enum PlanningRoute: Hashable {
     case finalGearCheck
     case mentorTracker
     case documents
+    case tspRollover
+    case salaryNegotiation
+    case costOfLiving
+    case resumeTranslator
+    case interviewPrep
+    case networkingScorecard
+    case skillsInventory
+    case giBillBAH
+    case educationComparison
+    case relocationCost
+    case stateBenefits
+    case transitionJournal
+    case goalTracker
+    case weeklyCheckIn
 }
 
 struct PlanningCard: View {

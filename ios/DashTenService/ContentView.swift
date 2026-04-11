@@ -22,8 +22,8 @@ struct ContentView: View {
             Tab("Roadmap", systemImage: "map.fill", value: 1) {
                 RoadmapView(storage: storage)
             }
-            Tab("Plan", systemImage: "square.grid.2x2.fill", value: 2) {
-                PlanTabView(storage: storage)
+            Tab("Toolbox", systemImage: "wrench.and.screwdriver.fill", value: 2) {
+                ToolboxView(storage: storage)
             }
             Tab("Benefits", systemImage: "star.fill", value: 3) {
                 BenefitsView(storage: storage)
