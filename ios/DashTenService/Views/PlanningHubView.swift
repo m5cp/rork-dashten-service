@@ -631,15 +631,50 @@ struct FamilyPlanningView: View {
     }
 }
 
+nonisolated enum FinancialCalculator: String, CaseIterable, Identifiable, Sendable {
+    case compensation = "Calculate current total compensation (base + BAH + BAS + special pay)"
+    case estimateIncome = "Estimate post-service income realistically"
+    case incomeGap = "Identify the income gap and plan for it"
+    case civilianBudget = "Create a civilian budget based on new income"
+    case reduceExpenses = "Reduce unnecessary expenses before separation"
+    case emergencyFund = "Build an emergency fund of 3-6 months expenses"
+
+    nonisolated var id: String { rawValue }
+
+    var hasCalculator: Bool {
+        switch self {
+        case .compensation, .estimateIncome, .incomeGap, .civilianBudget, .emergencyFund:
+            return true
+        case .reduceExpenses:
+            return false
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .compensation: return "equal.circle.fill"
+        case .estimateIncome: return "chart.line.uptrend.xyaxis"
+        case .incomeGap: return "chart.line.downtrend.xyaxis"
+        case .civilianBudget: return "creditcard.fill"
+        case .reduceExpenses: return "scissors"
+        case .emergencyFund: return "shield.lefthalf.filled"
+        }
+    }
+
+    var iconColor: Color {
+        switch self {
+        case .compensation: return AppTheme.forestGreen
+        case .estimateIncome: return .blue
+        case .incomeGap: return .orange
+        case .civilianBudget: return .purple
+        case .reduceExpenses: return .pink
+        case .emergencyFund: return .teal
+        }
+    }
+}
+
 struct FinancialPlanningView: View {
-    private let budgetChecklist = [
-        "Calculate current total compensation (base + BAH + BAS + special pay)",
-        "Estimate post-service income realistically",
-        "Identify the income gap and plan for it",
-        "Create a civilian budget based on new income",
-        "Reduce unnecessary expenses before separation",
-        "Build an emergency fund of 3-6 months expenses",
-    ]
+    @State private var activeCalculator: FinancialCalculator?
 
     private let insuranceItems = [
         "Note SGLI expiration date (120 days after separation)",
@@ -676,22 +711,39 @@ struct FinancialPlanningView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader("Budget Reset", icon: "dollarsign.circle.fill")
-                    CardView {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(budgetChecklist, id: \.self) { item in
-                                HStack(alignment: .top, spacing: 8) {
-                                    Image(systemName: "circle")
-                                        .font(.caption)
-                                        .foregroundStyle(.primary.opacity(0.5))
-                                        .padding(.top, 2)
-                                    Text(item)
-                                        .font(.caption.weight(.semibold))
-                                        .foregroundStyle(.primary.opacity(0.8))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Tap any item with a calculator icon to open an interactive tool")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .padding(.bottom, 4)
+
+                        ForEach(FinancialCalculator.allCases) { item in
+                            if item.hasCalculator {
+                                Button {
+                                    activeCalculator = item
+                                } label: {
+                                    FinancialChecklistRow(
+                                        text: item.rawValue,
+                                        icon: item.icon,
+                                        iconColor: item.iconColor,
+                                        hasCalculator: true
+                                    )
                                 }
+                                .buttonStyle(.plain)
+                            } else {
+                                FinancialChecklistRow(
+                                    text: item.rawValue,
+                                    icon: item.icon,
+                                    iconColor: item.iconColor,
+                                    hasCalculator: false
+                                )
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .padding(14)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(.rect(cornerRadius: 14))
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -747,6 +799,58 @@ struct FinancialPlanningView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Financial Reset")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $activeCalculator) { calc in
+            switch calc {
+            case .compensation, .estimateIncome:
+                MilitaryCompCalculatorView()
+            case .incomeGap:
+                IncomeGapCalculatorView()
+            case .civilianBudget:
+                CivilianBudgetCalculatorView()
+            case .emergencyFund:
+                EmergencyFundCalculatorView()
+            case .reduceExpenses:
+                EmptyView()
+            }
+        }
+    }
+}
+
+struct FinancialChecklistRow: View {
+    let text: String
+    let icon: String
+    let iconColor: Color
+    let hasCalculator: Bool
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 10) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundStyle(iconColor)
+                .frame(width: 20)
+
+            Text(text)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.8))
+                .multilineTextAlignment(.leading)
+
+            Spacer()
+
+            if hasCalculator {
+                Image(systemName: "chevron.right.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(iconColor.opacity(0.6))
+            }
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 4)
+        .contentShape(Rectangle())
+        .background {
+            if hasCalculator {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(iconColor.opacity(0.04))
+            }
+        }
     }
 }
 
