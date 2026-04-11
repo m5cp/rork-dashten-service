@@ -45,7 +45,7 @@ struct TSPRolloverView: View {
             .padding(.bottom, 32)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("TSP Rollover Advisor")
+        .navigationTitle("Research TSP")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -60,6 +60,18 @@ struct TSPRolloverView: View {
             Text("Your Thrift Savings Plan doesn't disappear when you separate. You have several options — each with different tax implications and growth potential.")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.primary.opacity(0.8))
+
+            HStack(spacing: 8) {
+                Image(systemName: "person.fill.badge.plus")
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.forestGreen)
+                Text("Consult with a financial advisor about your retirement plan before making any changes.")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(AppTheme.forestGreen)
+            }
+            .padding(10)
+            .background(AppTheme.forestGreen.opacity(0.08))
+            .clipShape(.rect(cornerRadius: 8))
         }
         .padding(14)
         .background(.blue.opacity(0.06))

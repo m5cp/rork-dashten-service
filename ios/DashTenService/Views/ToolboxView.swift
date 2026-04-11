@@ -18,6 +18,8 @@ struct ToolboxView: View {
         return .firstYear
     }
 
+    @State private var navPath: [PlanningRoute] = []
+
     private var recommendedTools: [(String, String, String, Color, ToolAction)] {
         var tools: [(String, String, String, Color, ToolAction)] = []
         let goals = Set(storage.profile.goals)
@@ -64,7 +66,7 @@ struct ToolboxView: View {
             ToolEntry(title: "Income Gap Planner", subtitle: "Estimate savings needed for the gap", icon: "chart.line.downtrend.xyaxis", color: .orange, action: .sheet(.incomeGap)),
             ToolEntry(title: "Civilian Budget Builder", subtitle: "Build your post-service budget", icon: "creditcard.fill", color: .purple, action: .sheet(.civilianBudget)),
             ToolEntry(title: "Emergency Fund Calculator", subtitle: "3-6 months of essential expenses", icon: "shield.lefthalf.filled", color: .teal, action: .sheet(.emergencyFund)),
-            ToolEntry(title: "TSP Rollover Advisor", subtitle: "Compare your rollover options", icon: "arrow.triangle.swap", color: .blue, action: .nav(.tspRollover)),
+            ToolEntry(title: "Research TSP", subtitle: "Explore your TSP rollover options", icon: "arrow.triangle.swap", color: .blue, action: .nav(.tspRollover)),
             ToolEntry(title: "Salary Negotiation", subtitle: "Compare total compensation packages", icon: "scalemass.fill", color: .indigo, action: .nav(.salaryNegotiation)),
             ToolEntry(title: "Cost of Living Comparator", subtitle: "Compare cities side by side", icon: "building.2.fill", color: .mint, action: .nav(.costOfLiving)),
             ToolEntry(title: "Job Offer Compare", subtitle: "Side-by-side offer analysis", icon: "scalemass.fill", color: .indigo, action: .nav(.jobOfferCompare)),
@@ -104,7 +106,7 @@ struct ToolboxView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navPath) {
             ScrollView {
                 VStack(spacing: 20) {
                     if isSearching {
@@ -295,8 +297,8 @@ struct ToolboxView: View {
         switch action {
         case .sheet(let sheet):
             activeSheet = sheet
-        case .nav:
-            break
+        case .nav(let route):
+            navPath.append(route)
         }
     }
 
@@ -327,7 +329,7 @@ struct ToolboxView: View {
             ToolboxSheetRow(title: "Emergency Fund Calculator", subtitle: "3-6 months of essential expenses", icon: "shield.lefthalf.filled", color: .teal) {
                 activeSheet = .emergencyFund
             }
-            ToolboxNavRow(title: "TSP Rollover Advisor", subtitle: "Compare your rollover options", icon: "arrow.triangle.swap", color: .blue, route: .tspRollover)
+            ToolboxNavRow(title: "Research TSP", subtitle: "Explore your TSP rollover options", icon: "arrow.triangle.swap", color: .blue, route: .tspRollover)
             ToolboxNavRow(title: "Salary Negotiation", subtitle: "Compare total compensation packages", icon: "scalemass.fill", color: .indigo, route: .salaryNegotiation)
             ToolboxNavRow(title: "Cost of Living Comparator", subtitle: "Compare cities side by side", icon: "building.2.fill", color: .mint, route: .costOfLiving)
             ToolboxNavRow(title: "Job Offer Compare", subtitle: "Side-by-side offer analysis", icon: "scalemass.fill", color: .indigo, route: .jobOfferCompare)
