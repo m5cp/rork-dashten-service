@@ -146,6 +146,7 @@ enum PlanningRoute: Hashable {
     case selfAssessment
     case finalGearCheck
     case mentorTracker
+    case documents
 }
 
 struct PlanningCard: View {

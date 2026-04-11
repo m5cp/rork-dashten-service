@@ -16,9 +16,6 @@ struct BenefitsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    NonAffiliationBanner()
-                        .padding(.horizontal, 16)
-
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
                         ForEach(filteredCategories) { category in
                             NavigationLink(value: category.id) {

@@ -13,27 +13,29 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                Button("Skip") {
-                    skipOnboarding()
+            if currentPage > 0 {
+                HStack {
+                    Spacer()
+                    Button("Skip") {
+                        skipOnboarding()
+                    }
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.primary.opacity(0.7))
                 }
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(.primary.opacity(0.7))
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 8)
+                .padding(.horizontal, 24)
+                .padding(.top, 8)
 
-            HStack(spacing: 6) {
-                ForEach(0..<totalPages, id: \.self) { index in
-                    Capsule()
-                        .fill(index <= currentPage ? AppTheme.forestGreen : AppTheme.forestGreen.opacity(0.2))
-                        .frame(height: 4)
-                        .animation(.spring(response: 0.3), value: currentPage)
+                HStack(spacing: 6) {
+                    ForEach(0..<totalPages, id: \.self) { index in
+                        Capsule()
+                            .fill(index <= currentPage ? AppTheme.forestGreen : AppTheme.forestGreen.opacity(0.2))
+                            .frame(height: 4)
+                            .animation(.spring(response: 0.3), value: currentPage)
+                    }
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 8)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 8)
 
             TabView(selection: $currentPage) {
                 welcomePage.tag(0)
@@ -45,90 +47,132 @@ struct OnboardingView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.spring(response: 0.4), value: currentPage)
 
-            bottomBar
-                .padding(.horizontal, 24)
-                .padding(.bottom, 16)
+            if currentPage > 0 {
+                bottomBar
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 16)
+            }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(currentPage == 0 ? Color.clear : Color(.systemGroupedBackground))
     }
 
     @State private var welcomeAnimated: Bool = false
+    @State private var counterValue: Int = 0
+    private let targetCounter = 200000
 
     private var welcomePage: some View {
         ZStack {
-            AppTheme.accentGradient
-                .ignoresSafeArea()
-
             MeshGradient(
                 width: 3, height: 3,
                 points: [
                     [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
-                    [0.0, 0.5], [0.6, 0.4], [1.0, 0.5],
+                    [0.0, 0.5], [0.55, 0.45], [1.0, 0.5],
                     [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
                 ],
                 colors: [
-                    AppTheme.darkGreen, AppTheme.forestGreen, AppTheme.darkGreen,
-                    AppTheme.forestGreen, AppTheme.gold.opacity(0.3), AppTheme.darkGreen,
-                    AppTheme.darkGreen, AppTheme.forestGreen, AppTheme.darkGreen
+                    Color(red: 0.05, green: 0.12, blue: 0.05),
+                    AppTheme.darkGreen,
+                    Color(red: 0.05, green: 0.12, blue: 0.05),
+                    AppTheme.darkGreen,
+                    AppTheme.gold.opacity(0.15),
+                    Color(red: 0.05, green: 0.12, blue: 0.05),
+                    Color(red: 0.05, green: 0.12, blue: 0.05),
+                    AppTheme.darkGreen,
+                    Color(red: 0.05, green: 0.12, blue: 0.05)
                 ]
             )
             .ignoresSafeArea()
-            .opacity(0.9)
 
             VStack(spacing: 0) {
                 Spacer()
 
-                VStack(spacing: 28) {
-                    Image(systemName: "arrow.up.forward.circle.fill")
-                        .font(.system(size: 80, weight: .thin))
-                        .foregroundStyle(.white.opacity(0.95))
-                        .shadow(color: .black.opacity(0.3), radius: 20, y: 10)
-                        .scaleEffect(welcomeAnimated ? 1.0 : 0.5)
-                        .opacity(welcomeAnimated ? 1 : 0)
-                        .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.2), value: welcomeAnimated)
+                VStack(spacing: 36) {
+                    VStack(spacing: 20) {
+                        Image(systemName: "arrow.up.forward.circle.fill")
+                            .font(.system(size: 72, weight: .thin))
+                            .foregroundStyle(AppTheme.gold)
+                            .shadow(color: AppTheme.gold.opacity(0.4), radius: 20, y: 8)
+                            .scaleEffect(welcomeAnimated ? 1.0 : 0.3)
+                            .opacity(welcomeAnimated ? 1 : 0)
+                            .animation(.spring(response: 1.0, dampingFraction: 0.5).delay(0.3), value: welcomeAnimated)
 
-                    VStack(spacing: 14) {
                         Text("DashTen")
-                            .font(.system(size: 48, weight: .bold))
+                            .font(.system(size: 52, weight: .bold))
                             .foregroundStyle(.white)
                             .opacity(welcomeAnimated ? 1 : 0)
-                            .offset(y: welcomeAnimated ? 0 : 20)
-                            .animation(.spring(response: 0.7, dampingFraction: 0.8).delay(0.5), value: welcomeAnimated)
+                            .offset(y: welcomeAnimated ? 0 : 30)
+                            .animation(.spring(response: 0.8, dampingFraction: 0.7).delay(0.7), value: welcomeAnimated)
+                    }
 
-                        Text("Your next chapter starts here.")
-                            .font(.title3.weight(.bold))
+                    VStack(spacing: 8) {
+                        Text("\(counterValue.formatted(.number))+")
+                            .font(.system(size: 36, weight: .bold, design: .rounded))
+                            .foregroundStyle(AppTheme.gold)
+                            .contentTransition(.numericText())
+                            .opacity(welcomeAnimated ? 1 : 0)
+                            .animation(.spring(response: 0.8).delay(1.2), value: welcomeAnimated)
+
+                        Text("service members transition every year.")
+                            .font(.title3.weight(.semibold))
                             .foregroundStyle(.white.opacity(0.9))
                             .opacity(welcomeAnimated ? 1 : 0)
-                            .offset(y: welcomeAnimated ? 0 : 12)
-                            .animation(.spring(response: 0.7, dampingFraction: 0.8).delay(0.7), value: welcomeAnimated)
+                            .animation(.spring(response: 0.8).delay(1.4), value: welcomeAnimated)
+
+                        Text("Most wish they started planning sooner.")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.7))
+                            .opacity(welcomeAnimated ? 1 : 0)
+                            .animation(.spring(response: 0.8).delay(1.6), value: welcomeAnimated)
                     }
                 }
 
                 Spacer()
 
-                VStack(spacing: 20) {
-                    HStack(spacing: 16) {
-                        WelcomeFeaturePill(icon: "map.fill", text: "Plan")
-                        WelcomeFeaturePill(icon: "checkmark.circle.fill", text: "Track")
-                        WelcomeFeaturePill(icon: "bolt.fill", text: "Act")
+                VStack(spacing: 24) {
+                    HStack(spacing: 20) {
+                        FeatureIcon(icon: "map.fill", label: "Plan")
+                        FeatureIcon(icon: "checkmark.circle.fill", label: "Track")
+                        FeatureIcon(icon: "bolt.fill", label: "Act")
                     }
                     .opacity(welcomeAnimated ? 1 : 0)
                     .offset(y: welcomeAnimated ? 0 : 20)
-                    .animation(.spring(response: 0.7, dampingFraction: 0.8).delay(1.0), value: welcomeAnimated)
+                    .animation(.spring(response: 0.7).delay(2.0), value: welcomeAnimated)
 
-                    Text("Organize your transition. Understand your benefits.\nStay ahead of every deadline.")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.85))
-                        .multilineTextAlignment(.center)
-                        .opacity(welcomeAnimated ? 1 : 0)
-                        .animation(.spring(response: 0.7).delay(1.2), value: welcomeAnimated)
+                    Button {
+                        withAnimation(.spring(response: 0.4)) { currentPage = 1 }
+                    } label: {
+                        Text("Begin Your Transition")
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(AppTheme.darkGreen)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 18)
+                            .background(AppTheme.gold)
+                            .clipShape(Capsule())
+                    }
+                    .opacity(welcomeAnimated ? 1 : 0)
+                    .offset(y: welcomeAnimated ? 0 : 20)
+                    .animation(.spring(response: 0.7).delay(2.3), value: welcomeAnimated)
+                    .sensoryFeedback(.impact(weight: .medium), trigger: currentPage)
                 }
+                .padding(.horizontal, 32)
                 .padding(.bottom, 48)
             }
-            .padding(.horizontal, 24)
         }
         .onAppear {
             welcomeAnimated = true
+            animateCounter()
+        }
+    }
+
+    private func animateCounter() {
+        let steps = 30
+        let increment = targetCounter / steps
+        for i in 1...steps {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2 + Double(i) * 0.03) {
+                withAnimation(.easeOut(duration: 0.05)) {
+                    counterValue = min(i * increment, targetCounter)
+                }
+            }
         }
     }
 
@@ -419,7 +463,7 @@ struct OnboardingView: View {
 
     private var bottomBar: some View {
         HStack {
-            if currentPage > 0 {
+            if currentPage > 1 {
                 Button("Back") {
                     withAnimation { currentPage -= 1 }
                 }
@@ -459,5 +503,24 @@ struct OnboardingView: View {
     private func skipOnboarding() {
         storage.profile.hasAcceptedDisclaimer = true
         storage.profile.hasCompletedOnboarding = true
+    }
+}
+
+struct FeatureIcon: View {
+    let icon: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(AppTheme.gold)
+                .frame(width: 52, height: 52)
+                .background(.white.opacity(0.1))
+                .clipShape(Circle())
+            Text(label)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.white.opacity(0.9))
+        }
     }
 }

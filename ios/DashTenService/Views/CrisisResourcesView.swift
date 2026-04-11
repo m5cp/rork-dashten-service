@@ -32,8 +32,7 @@ struct CrisisResourcesView: View {
                     CrisisResourceCard(resource: resource)
                 }
 
-                NonAffiliationBanner()
-                    .padding(.top, 8)
+
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)

@@ -24,4 +24,49 @@ enum AppTheme {
             endPoint: .bottomTrailing
         )
     }
+
+    static var heroMesh: MeshGradient {
+        MeshGradient(
+            width: 3, height: 3,
+            points: [
+                [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+                [0.0, 0.5], [0.6, 0.4], [1.0, 0.5],
+                [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+            ],
+            colors: [
+                darkGreen, forestGreen, darkGreen,
+                forestGreen, forestGreen.opacity(0.8), darkGreen,
+                darkGreen, forestGreen, darkGreen
+            ]
+        )
+    }
+
+    static var darkHeroMesh: MeshGradient {
+        MeshGradient(
+            width: 3, height: 3,
+            points: [
+                [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+                [0.0, 0.5], [0.55, 0.45], [1.0, 0.5],
+                [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+            ],
+            colors: [
+                Color(red: 0.05, green: 0.12, blue: 0.05),
+                darkGreen,
+                Color(red: 0.05, green: 0.12, blue: 0.05),
+                darkGreen,
+                gold.opacity(0.2),
+                Color(red: 0.05, green: 0.12, blue: 0.05),
+                Color(red: 0.05, green: 0.12, blue: 0.05),
+                darkGreen,
+                Color(red: 0.05, green: 0.12, blue: 0.05)
+            ]
+        )
+    }
+
+    static func timeOfDayGreeting() -> String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        if hour < 12 { return "Good morning" }
+        if hour < 17 { return "Good afternoon" }
+        return "Good evening"
+    }
 }

@@ -44,22 +44,28 @@ struct RoadmapView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(filteredPhases) { phase in
+                VStack(spacing: 0) {
+                    ForEach(Array(filteredPhases.enumerated()), id: \.element.id) { index, phase in
+                        let isCurrent = phase == currentPhase
+                        let isPast = isPhaseCompleted(phase)
+                        let isLast = index == filteredPhases.count - 1
+
                         NavigationLink(value: phase) {
-                            PhaseCard(
+                            TimelineRow(
                                 phase: phase,
                                 completion: completionForPhase(phase),
                                 itemCount: itemsForPhase(phase).count,
                                 completedCount: itemsForPhase(phase).filter(\.isCompleted).count,
-                                isCurrent: phase == currentPhase
+                                isCurrent: isCurrent,
+                                isPast: isPast,
+                                isLast: isLast
                             )
                         }
                         .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 24)
+                .padding(.bottom, 100)
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Roadmap")
@@ -81,6 +87,14 @@ struct RoadmapView: View {
                 PhaseDetailView(storage: storage, phase: phase)
             }
         }
+    }
+
+    private func isPhaseCompleted(_ phase: TimelinePhase) -> Bool {
+        guard let current = currentPhase else { return false }
+        let allPhases = TimelinePhase.allCases
+        guard let currentIdx = allPhases.firstIndex(of: current),
+              let phaseIdx = allPhases.firstIndex(of: phase) else { return false }
+        return phaseIdx < currentIdx
     }
 
     private var addItemSheet: some View {
@@ -132,64 +146,122 @@ struct RoadmapView: View {
     }
 }
 
-struct PhaseCard: View {
+struct TimelineRow: View {
     let phase: TimelinePhase
     let completion: Double
     let itemCount: Int
     let completedCount: Int
     let isCurrent: Bool
+    let isPast: Bool
+    let isLast: Bool
+
+    private var nodeColor: Color {
+        if isCurrent { return AppTheme.forestGreen }
+        if isPast { return AppTheme.forestGreen.opacity(0.6) }
+        return Color(.quaternaryLabel)
+    }
+
+    private var railColor: Color {
+        if isPast { return AppTheme.forestGreen.opacity(0.4) }
+        return Color(.quaternaryLabel)
+    }
 
     var body: some View {
-        HStack(spacing: 14) {
-            VStack(spacing: 6) {
+        HStack(alignment: .top, spacing: 16) {
+            VStack(spacing: 0) {
                 ZStack {
-                    Circle()
-                        .fill(isCurrent ? AppTheme.forestGreen : AppTheme.forestGreen.opacity(0.12))
-                        .frame(width: 44, height: 44)
-                    Image(systemName: phase.icon)
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(isCurrent ? .white : AppTheme.forestGreen)
+                    if isCurrent {
+                        Circle()
+                            .fill(AppTheme.forestGreen.opacity(0.15))
+                            .frame(width: 40, height: 40)
+
+                        Circle()
+                            .fill(AppTheme.forestGreen)
+                            .frame(width: 24, height: 24)
+
+                        Image(systemName: "location.fill")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.white)
+                    } else if isPast && completion >= 1.0 {
+                        Circle()
+                            .fill(AppTheme.forestGreen.opacity(0.15))
+                            .frame(width: 40, height: 40)
+
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(AppTheme.forestGreen)
+                    } else {
+                        Circle()
+                            .stroke(nodeColor, lineWidth: 2)
+                            .frame(width: 20, height: 20)
+
+                        if isPast {
+                            Circle()
+                                .fill(nodeColor)
+                                .frame(width: 10, height: 10)
+                        }
+                    }
                 }
-                if phase != TimelinePhase.allCases.last {
+                .frame(width: 40, height: 40)
+
+                if !isLast {
                     Rectangle()
-                        .fill(AppTheme.forestGreen.opacity(0.2))
-                        .frame(width: 2, height: 12)
+                        .fill(railColor)
+                        .frame(width: 2)
+                        .frame(maxHeight: .infinity)
                 }
             }
+            .frame(width: 40)
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(phase.rawValue)
                         .font(.headline.weight(.bold))
                     if isCurrent {
-                        StatusBadge(text: "Current", color: AppTheme.forestGreen)
+                        Text("YOU ARE HERE")
+                            .font(.caption2.weight(.heavy))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(AppTheme.forestGreen)
+                            .clipShape(Capsule())
                     }
                 }
+
                 Text(phase.subtitle)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.primary.opacity(0.7))
+
                 HStack(spacing: 12) {
-                    ProgressView(value: completion)
-                        .tint(AppTheme.forestGreen)
+                    GeometryReader { proxy in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(AppTheme.forestGreen.opacity(0.12))
+                                .frame(height: 6)
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(AppTheme.forestGreen)
+                                .frame(width: proxy.size.width * completion, height: 6)
+                                .animation(.spring(response: 0.5), value: completion)
+                        }
+                    }
+                    .frame(height: 6)
+
                     Text("\(completedCount)/\(itemCount)")
                         .font(.caption.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.7))
+                        .foregroundStyle(.primary.opacity(0.6))
+                        .fixedSize()
                 }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.primary.opacity(0.3))
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.primary.opacity(0.5))
+            .padding(.vertical, 12)
+            .padding(.trailing, 4)
         }
-        .padding(16)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(.rect(cornerRadius: 14))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(isCurrent ? AppTheme.forestGreen.opacity(0.3) : .clear, lineWidth: 1.5)
-        )
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 }
 
@@ -251,7 +323,10 @@ struct PhaseDetailView: View {
                                         Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
                                             .font(.title3)
                                             .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : Color.primary.opacity(0.5))
+                                            .symbolEffect(.bounce, value: item.isCompleted)
                                     }
+                                    .sensoryFeedback(.success, trigger: item.isCompleted)
+
                                     VStack(alignment: .leading, spacing: 2) {
                                         HStack(spacing: 6) {
                                             Text(item.title)
@@ -284,7 +359,21 @@ struct PhaseDetailView: View {
                                 .padding(12)
                                 .background(Color(.secondarySystemGroupedBackground))
                                 .clipShape(.rect(cornerRadius: 10))
-                                .sensoryFeedback(.success, trigger: item.isCompleted)
+                                .contextMenu {
+                                    Button {
+                                        withAnimation { storage.toggleChecklistItem(item.id) }
+                                    } label: {
+                                        Label(item.isCompleted ? "Mark Incomplete" : "Mark Complete",
+                                              systemImage: item.isCompleted ? "circle" : "checkmark.circle.fill")
+                                    }
+                                    if item.isCustom {
+                                        Button(role: .destructive) {
+                                            storage.removeChecklistItem(item.id)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

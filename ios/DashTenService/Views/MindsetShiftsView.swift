@@ -151,20 +151,3 @@ struct MindsetShiftCard: View {
     }
 }
 
-struct FilterChip: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(isSelected ? .white : .primary)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(isSelected ? AppTheme.forestGreen : Color(.secondarySystemGroupedBackground))
-                .clipShape(Capsule())
-        }
-    }
-}

@@ -22,11 +22,11 @@ struct ContentView: View {
             Tab("Roadmap", systemImage: "map.fill", value: 1) {
                 RoadmapView(storage: storage)
             }
-            Tab("Benefits", systemImage: "star.fill", value: 2) {
-                BenefitsView(storage: storage)
+            Tab("Plan", systemImage: "square.grid.2x2.fill", value: 2) {
+                PlanTabView(storage: storage)
             }
-            Tab("Documents", systemImage: "doc.text.fill", value: 3) {
-                DocumentsView(storage: storage)
+            Tab("Benefits", systemImage: "star.fill", value: 3) {
+                BenefitsView(storage: storage)
             }
             Tab("Profile", systemImage: "person.fill", value: 4) {
                 ProfileView(storage: storage)

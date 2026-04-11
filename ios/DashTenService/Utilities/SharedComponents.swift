@@ -87,36 +87,6 @@ struct StatusBadge: View {
     }
 }
 
-struct CountdownView: View {
-    let targetDate: Date
-
-    private var components: (days: Int, label: String) {
-        let calendar = Calendar.current
-        let now = Date()
-        let days = calendar.dateComponents([.day], from: now, to: targetDate).day ?? 0
-        if days > 0 {
-            return (days, days == 1 ? "day until separation" : "days until separation")
-        } else if days == 0 {
-            return (0, "Separation day")
-        } else {
-            return (abs(days), abs(days) == 1 ? "day since separation" : "days since separation")
-        }
-    }
-
-    var body: some View {
-        let info = components
-        VStack(spacing: 4) {
-            Text("\(info.days)")
-                .font(.system(size: 44, weight: .bold, design: .default))
-                .foregroundStyle(AppTheme.forestGreen)
-                .contentTransition(.numericText())
-            Text(info.label)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
-        }
-    }
-}
-
 struct NonAffiliationBanner: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -174,5 +144,116 @@ struct OfficialLinkButton: View {
                 .clipShape(.rect(cornerRadius: 10))
             }
         }
+    }
+}
+
+struct FilterChip: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(isSelected ? .white : .primary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(isSelected ? AppTheme.forestGreen : Color(.secondarySystemGroupedBackground))
+                .clipShape(Capsule())
+        }
+    }
+}
+
+struct CelebrationOverlay: View {
+    @Binding var isShowing: Bool
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        if isShowing {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture { withAnimation(.spring) { isShowing = false } }
+
+                VStack(spacing: 20) {
+                    Image(systemName: "party.popper.fill")
+                        .font(.system(size: 56))
+                        .foregroundStyle(AppTheme.gold)
+                        .symbolEffect(.bounce, value: isShowing)
+
+                    Text(title)
+                        .font(.title2.bold())
+
+                    Text(subtitle)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.8))
+                        .multilineTextAlignment(.center)
+
+                    Button {
+                        withAnimation(.spring) { isShowing = false }
+                    } label: {
+                        Text("Keep Going!")
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 14)
+                            .background(AppTheme.forestGreen)
+                            .clipShape(Capsule())
+                    }
+                }
+                .padding(32)
+                .background(.regularMaterial)
+                .clipShape(.rect(cornerRadius: 24))
+                .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
+                .padding(32)
+                .transition(.scale.combined(with: .opacity))
+            }
+        }
+    }
+}
+
+struct GradientHeroCard<Content: View>: View {
+    let color: Color
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        content
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                LinearGradient(
+                    colors: [color, color.opacity(0.8)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(.rect(cornerRadius: 20))
+    }
+}
+
+struct CompactStatCard: View {
+    let icon: String
+    let value: String
+    let label: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(color)
+            Text(value)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(color)
+            Text(label)
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.primary.opacity(0.6))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .background(color.opacity(0.08))
+        .clipShape(.rect(cornerRadius: 12))
     }
 }
