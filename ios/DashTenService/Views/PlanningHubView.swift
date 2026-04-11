@@ -149,9 +149,20 @@ struct CareerPlanningView: View {
         "Request informational interviews with industry professionals",
     ]
 
+    private let certificationSteps = [
+        "Research which civilian certifications apply to your field",
+        "Many military skills require separate civilian certification or licensing",
+        "Check state-specific requirements — licensing varies by state",
+        "Look into employer-sponsored certification programs",
+        "Consider industry-recognized credentials (PMP, CompTIA, AWS, OSHA, etc.)",
+        "Use education benefits to cover certification costs when possible",
+    ]
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
+                realityCheckBanner
+
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader("Resume Translation", icon: "doc.text.fill")
                     CardView {
@@ -166,6 +177,29 @@ struct CareerPlanningView: View {
                                         .foregroundStyle(AppTheme.forestGreen)
                                         .padding(.top, 2)
                                     Text(tip)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader("Certifications & Licensing", icon: "rosette")
+                    CardView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Civilian employers often require specific certifications or licenses — even for roles you performed in the military. Don't assume your experience alone qualifies you.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            ForEach(certificationSteps, id: \.self) { step in
+                                HStack(alignment: .top, spacing: 8) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(.purple)
+                                        .padding(.top, 2)
+                                    Text(step)
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
@@ -198,7 +232,10 @@ struct CareerPlanningView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader("Networking", icon: "person.3.fill")
                     CardView {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Networking is often the single most effective way to land a civilian job. Most positions are filled through connections, not cold applications.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                             ForEach(networkingSteps, id: \.self) { step in
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "arrow.right.circle.fill")
@@ -215,8 +252,39 @@ struct CareerPlanningView: View {
                     }
                 }
 
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader("Education & Continuous Learning", icon: "book.fill")
+                    CardView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Many civilian careers require degrees or continuing education that military training alone may not satisfy. Investing in education — whether a degree, certificate, or trade program — can significantly improve your competitiveness.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "lightbulb.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.blue)
+                                    .padding(.top, 2)
+                                Text("Use your education benefits strategically — align your program with your target career field.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "lightbulb.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.blue)
+                                    .padding(.top, 2)
+                                Text("Research which employers in your target industry value specific degrees or certifications.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
                 OfficialLinkButton(title: "Department of Labor Veterans' Employment", url: "https://www.dol.gov/agencies/vets")
                 OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
+                OfficialLinkButton(title: "O*NET Military Crosswalk Search", url: "https://www.onetonline.org/crosswalk/MOC/")
 
                 Text("Always verify employment programs and eligibility with official sources.")
                     .font(.caption2)
@@ -228,6 +296,53 @@ struct CareerPlanningView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Career Planning")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var realityCheckBanner: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.title3)
+                    .foregroundStyle(.orange)
+                Text("Set Realistic Expectations")
+                    .font(.headline)
+            }
+
+            Text("Military experience is valuable — but don't assume it will automatically translate to an equivalent or higher-level civilian position.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            Text("The civilian job market operates differently. Employers may not understand your military role, and many industries require specific civilian certifications, degrees, or licenses — even for work you've already done in uniform.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: 8) {
+                RealityCheckPoint(text: "Certifications matter — many military skills need civilian equivalents to be recognized")
+                RealityCheckPoint(text: "Networking is critical — who you know often matters more than what you've done")
+                RealityCheckPoint(text: "Education fills gaps — degrees and credentials open doors that experience alone may not")
+                RealityCheckPoint(text: "Start early — building credentials and connections takes time")
+                RealityCheckPoint(text: "Be open to entry-level roles as a bridge to your target position")
+            }
+        }
+        .padding(16)
+        .background(.orange.opacity(0.06))
+        .clipShape(.rect(cornerRadius: 14))
+    }
+}
+
+struct RealityCheckPoint: View {
+    let text: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "arrow.forward.circle.fill")
+                .font(.caption)
+                .foregroundStyle(.orange)
+                .padding(.top, 2)
+            Text(text)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
     }
 }
 
