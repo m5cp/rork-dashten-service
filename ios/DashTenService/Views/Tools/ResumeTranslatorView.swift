@@ -1,8 +1,11 @@
 import SwiftUI
 
 struct ResumeTranslatorView: View {
+    @State private var selectedTab: ResumeTab = .translate
     @State private var selectedMOS: String = ""
     @State private var showResults: Bool = false
+    @State private var jargonSearch: String = ""
+    @State private var jargonDirection: TranslationDirection = .milToCiv
 
     private let mosData: [MOSEntry] = [
         MOSEntry(code: "11B", title: "Infantryman", civilian: ["Security Manager", "Operations Supervisor", "Law Enforcement Officer", "Emergency Management Coordinator"], bullets: ["Led teams of 4-40 personnel in high-pressure environments", "Managed equipment valued at $2M+ with zero loss", "Trained and mentored junior team members on standard operating procedures", "Coordinated logistics for multi-day field operations"]),
@@ -18,6 +21,31 @@ struct ResumeTranslatorView: View {
     ]
 
     var body: some View {
+        VStack(spacing: 0) {
+            Picker("Mode", selection: $selectedTab) {
+                Text("Translate Resume").tag(ResumeTab.translate)
+                Text("Jargon Lookup").tag(ResumeTab.jargon)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 4)
+
+            switch selectedTab {
+            case .translate:
+                translateTab
+            case .jargon:
+                jargonTab
+            }
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Resume Translator")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: - Translate Tab
+
+    private var translateTab: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 10) {
@@ -27,7 +55,7 @@ struct ResumeTranslatorView: View {
                         Text("Translate Your Experience")
                             .font(.subheadline.weight(.bold))
                     }
-                    Text("Civilian employers don't understand military jargon. Select your job code to see how to translate your experience into language that resonates with hiring managers.")
+                    Text("Select your military job code to get civilian-friendly job titles and resume bullet points.")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.primary.opacity(0.8))
                 }
@@ -36,7 +64,7 @@ struct ResumeTranslatorView: View {
                 .clipShape(.rect(cornerRadius: 12))
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Select Your Military Role")
+                    Text("Select Your Role")
                         .font(.headline.weight(.bold))
 
                     ForEach(mosData, id: \.code) { entry in
@@ -83,9 +111,6 @@ struct ResumeTranslatorView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
         }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Resume Translator")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private func translationResults(_ entry: MOSEntry) -> some View {
@@ -139,6 +164,47 @@ struct ResumeTranslatorView: View {
         }
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
+
+    // MARK: - Jargon Tab
+
+    private var filteredJargon: [JargonEntry] {
+        let entries = jargonDirection == .milToCiv ? CivilianJargonTranslatorView.milToCivEntries : CivilianJargonTranslatorView.civToMilEntries
+        guard !jargonSearch.isEmpty else { return entries }
+        return entries.filter {
+            $0.term.localizedStandardContains(jargonSearch) ||
+            $0.translation.localizedStandardContains(jargonSearch) ||
+            $0.context.localizedStandardContains(jargonSearch)
+        }
+    }
+
+    private var jargonTab: some View {
+        VStack(spacing: 0) {
+            Picker("Direction", selection: $jargonDirection) {
+                Text("Military → Civilian").tag(TranslationDirection.milToCiv)
+                Text("Civilian → Military").tag(TranslationDirection.civToMil)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+
+            List {
+                if filteredJargon.isEmpty {
+                    ContentUnavailableView("No matches", systemImage: "magnifyingglass", description: Text("Try a different search term"))
+                } else {
+                    ForEach(filteredJargon) { entry in
+                        JargonRow(entry: entry, direction: jargonDirection)
+                    }
+                }
+            }
+            .listStyle(.insetGrouped)
+            .searchable(text: $jargonSearch, prompt: "Search terms...")
+        }
+    }
+}
+
+private nonisolated enum ResumeTab: String, Sendable {
+    case translate
+    case jargon
 }
 
 private nonisolated struct MOSEntry: Sendable {

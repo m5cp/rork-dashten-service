@@ -88,37 +88,65 @@ struct DecisionMatrixView: View {
                 Image(systemName: "square.grid.3x3.fill")
                     .font(.system(size: 44))
                     .foregroundStyle(AppTheme.forestGreen.opacity(0.4))
-                Text("No Decisions Yet")
+                Text("Pick a Template or Start Fresh")
                     .font(.title3.weight(.bold))
-                Text("Create your first decision matrix to compare options side by side with weighted criteria.")
+                Text("Choose a common scenario below to get started instantly, or create your own from scratch.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
 
-            VStack(alignment: .leading, spacing: 10) {
-                Label("Add your options (e.g. Job A vs. Job B)", systemImage: "1.circle.fill")
-                    .font(.subheadline.weight(.semibold))
-                Label("Define criteria that matter (salary, location, growth)", systemImage: "2.circle.fill")
-                    .font(.subheadline.weight(.semibold))
-                Label("Score each option and see the results", systemImage: "3.circle.fill")
-                    .font(.subheadline.weight(.semibold))
+            VStack(spacing: 10) {
+                TemplateButton(title: "Comparing Jobs", subtitle: "Salary, benefits, growth, culture, commute", icon: "briefcase.fill", color: .blue) {
+                    createFromTemplate(
+                        title: "Job Comparison",
+                        criteria: ["Salary", "Benefits", "Growth Potential", "Work-Life Balance", "Commute"],
+                        weights: [3.0, 2.0, 2.0, 2.0, 1.0],
+                        options: ["Job A", "Job B"]
+                    )
+                }
+                TemplateButton(title: "Choosing a City", subtitle: "Cost of living, jobs, schools, family", icon: "building.2.fill", color: .purple) {
+                    createFromTemplate(
+                        title: "City Comparison",
+                        criteria: ["Cost of Living", "Job Market", "Schools", "Family Nearby", "Quality of Life"],
+                        weights: [3.0, 3.0, 2.0, 1.0, 2.0],
+                        options: ["City A", "City B"]
+                    )
+                }
+                TemplateButton(title: "School vs. Work", subtitle: "Income, growth, time, fulfillment", icon: "graduationcap.fill", color: .teal) {
+                    createFromTemplate(
+                        title: "School vs. Work",
+                        criteria: ["Immediate Income", "Long-Term Earning", "Time Investment", "Fulfillment", "Flexibility"],
+                        weights: [2.0, 3.0, 2.0, 2.0, 1.0],
+                        options: ["Go to School", "Start Working"]
+                    )
+                }
             }
-            .foregroundStyle(.secondary)
 
             Button {
                 showNewMatrix = true
             } label: {
-                Label("Create Decision", systemImage: "plus")
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 28)
+                Label("Create from Scratch", systemImage: "plus")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(AppTheme.forestGreen)
+                    .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(AppTheme.forestGreen)
+                    .background(AppTheme.forestGreen.opacity(0.08))
                     .clipShape(.rect(cornerRadius: 14))
             }
         }
-        .padding(28)
+        .padding(20)
+    }
+
+    private func createFromTemplate(title: String, criteria: [String], weights: [Double], options: [String]) {
+        var matrix = DecisionMatrix(title: title)
+        matrix.criteria = criteria
+        matrix.weights = weights
+        matrix.options = options.map { DecisionOption(name: $0, criteriaCount: criteria.count) }
+        storage.decisionMatrices.append(matrix)
+        storage.unlockBadge("decision_made")
+        storage.trackToolUsed("decision_matrix")
+        selectedMatrix = matrix
     }
 }
 
@@ -536,6 +564,47 @@ struct DecisionMatrixDetailView: View {
             .padding(.vertical, 14)
             .background(Color.red.opacity(0.08))
             .clipShape(.rect(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct TemplateButton: View {
+    let title: String
+    let subtitle: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 40, height: 40)
+                    .background(color)
+                    .clipShape(.rect(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text(subtitle)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                Image(systemName: "arrow.right.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(color)
+            }
+            .padding(14)
+            .background(color.opacity(0.06))
+            .clipShape(.rect(cornerRadius: 14))
         }
         .buttonStyle(.plain)
     }

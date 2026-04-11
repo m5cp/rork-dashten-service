@@ -3,93 +3,39 @@ import SwiftUI
 struct MilitaryCompCalculatorView: View {
     @Environment(\.dismiss) private var dismiss
 
-    @State private var basePay: String = ""
-    @State private var bah: String = ""
-    @State private var bas: String = ""
-    @State private var specialtyPay: String = ""
-    @State private var incentivePay: String = ""
-    @State private var boardCertPay: String = ""
+    @State private var basePay: Double = 3500
+    @State private var bah: Double = 1800
+    @State private var bas: Double = 450
+    @State private var specialtyPay: Double = 0
+    @State private var expectedCivilianSalary: Double = 55000
 
-    @State private var expectedCivilianSalary: String = ""
-    @State private var showResults: Bool = false
+    private var militaryBaseTaxable: Double { basePay }
+    private var militaryNonTaxable: Double { bah + bas + specialtyPay }
+    private var totalMilitaryMonthly: Double { militaryBaseTaxable + militaryNonTaxable }
+    private var totalMilitaryAnnual: Double { totalMilitaryMonthly * 12 }
+    private var civilianMonthly: Double { expectedCivilianSalary / 12 }
 
-    private var militaryBaseTaxable: Double {
-        (Double(basePay) ?? 0)
-    }
-
-    private var militaryNonTaxable: Double {
-        (Double(bah) ?? 0) +
-        (Double(bas) ?? 0) +
-        (Double(specialtyPay) ?? 0) +
-        (Double(incentivePay) ?? 0) +
-        (Double(boardCertPay) ?? 0)
-    }
-
-    private var totalMilitaryMonthly: Double {
-        militaryBaseTaxable + militaryNonTaxable
-    }
-
-    private var totalMilitaryAnnual: Double {
-        totalMilitaryMonthly * 12
-    }
-
-    private var civilianMonthly: Double {
-        (Double(expectedCivilianSalary) ?? 0) / 12
-    }
-
-    private var civilianAnnual: Double {
-        Double(expectedCivilianSalary) ?? 0
-    }
-
-    private var estimatedMilitaryTax: Double {
-        militaryBaseTaxable * 0.22
-    }
-
-    private var estimatedCivilianTax: Double {
-        civilianAnnual * 0.22
-    }
-
-    private var militaryTakeHome: Double {
-        (militaryBaseTaxable - estimatedMilitaryTax) + (militaryNonTaxable * 12)
-    }
-
-    private var civilianTakeHome: Double {
-        civilianAnnual - estimatedCivilianTax
-    }
-
-    private var annualDifference: Double {
-        civilianTakeHome - militaryTakeHome
-    }
+    private var estimatedMilitaryTax: Double { militaryBaseTaxable * 12 * 0.22 }
+    private var estimatedCivilianTax: Double { expectedCivilianSalary * 0.22 }
+    private var militaryTakeHome: Double { (militaryBaseTaxable * 12 - estimatedMilitaryTax) + (militaryNonTaxable * 12) }
+    private var civilianTakeHome: Double { expectedCivilianSalary - estimatedCivilianTax }
+    private var annualDifference: Double { civilianTakeHome - militaryTakeHome }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    infoBanner
+                    resultsBanner
 
                     militaryPaySection
 
                     civilianPaySection
 
-                    if showResults {
-                        resultsSection
-                    }
+                    detailedBreakdown
 
-                    Button {
-                        withAnimation(.spring(response: 0.4)) {
-                            showResults = true
-                        }
-                    } label: {
-                        Text("Calculate Comparison")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(AppTheme.forestGreen)
-                            .clipShape(.rect(cornerRadius: 14))
-                    }
+                    monthlyComparison
 
-                    Text("This is an estimate only. Actual tax rates vary by filing status, state, deductions, and other factors. Consult a tax professional.")
+                    Text("This is an estimate only. Actual tax rates vary by filing status, state, deductions, and other factors. Consult a tax professional for personalized advice.")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.primary.opacity(0.5))
                 }
@@ -108,208 +54,204 @@ struct MilitaryCompCalculatorView: View {
         }
     }
 
-    private var infoBanner: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Image(systemName: "info.circle.fill")
-                    .foregroundStyle(AppTheme.forestGreen)
-                Text("Why This Matters")
-                    .font(.subheadline.weight(.bold))
+    private var resultsBanner: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 24) {
+                VStack(spacing: 4) {
+                    Text("Military")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.6))
+                    Text(formatCurrency(militaryTakeHome))
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(AppTheme.forestGreen)
+                    Text("take-home/yr")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.5))
+                }
+
+                VStack(spacing: 4) {
+                    Text("vs")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.tertiary)
+                    Image(systemName: "arrow.left.arrow.right")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+
+                VStack(spacing: 4) {
+                    Text("Civilian")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.6))
+                    Text(formatCurrency(civilianTakeHome))
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.blue)
+                    Text("take-home/yr")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.5))
+                }
             }
-            Text("Your military compensation includes non-taxable benefits (BAH, BAS, specialty pay) that you won't receive as a civilian. A $60K civilian salary may feel like far less than a $60K total military package once you factor in taxes and lost benefits.")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.primary.opacity(0.8))
+
+            HStack(spacing: 8) {
+                Image(systemName: annualDifference >= 0 ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
+                    .foregroundStyle(annualDifference >= 0 ? AppTheme.forestGreen : .red)
+                Text(annualDifference >= 0 ? "+\(formatCurrency(annualDifference))" : formatCurrency(annualDifference))
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(annualDifference >= 0 ? AppTheme.forestGreen : .red)
+                Text("annual difference")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.6))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(annualDifference >= 0 ? AppTheme.forestGreen.opacity(0.08) : Color.red.opacity(0.08))
+            .clipShape(.rect(cornerRadius: 10))
         }
-        .padding(14)
-        .background(AppTheme.forestGreen.opacity(0.06))
-        .clipShape(.rect(cornerRadius: 12))
+        .padding(20)
+        .frame(maxWidth: .infinity)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 18))
     }
 
     private var militaryPaySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
                 Image(systemName: "shield.fill")
                     .foregroundStyle(AppTheme.forestGreen)
-                Text("Current Military Pay")
+                Text("Military Pay")
                     .font(.headline.weight(.bold))
-                Text("(Monthly)")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.5))
-            }
-
-            VStack(spacing: 10) {
-                PayInputRow(label: "Base Pay", sublabel: "Taxable", value: $basePay, color: AppTheme.forestGreen)
-                Divider()
-                PayInputRow(label: "BAH", sublabel: "Non-Taxable", value: $bah, color: .teal)
-                Divider()
-                PayInputRow(label: "BAS", sublabel: "Non-Taxable", value: $bas, color: .teal)
-                Divider()
-                PayInputRow(label: "Specialty Pay", sublabel: "Non-Taxable", value: $specialtyPay, color: .teal)
-                Divider()
-                PayInputRow(label: "Incentive Pay", sublabel: "Non-Taxable", value: $incentivePay, color: .teal)
-                Divider()
-                PayInputRow(label: "Board Cert Pay", sublabel: "Non-Taxable", value: $boardCertPay, color: .teal)
-            }
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 14))
-
-            HStack {
-                Text("Total Monthly")
-                    .font(.subheadline.weight(.bold))
                 Spacer()
-                Text(formatCurrency(totalMilitaryMonthly))
-                    .font(.headline.weight(.bold))
+                Text(formatCurrency(totalMilitaryMonthly) + "/mo")
+                    .font(.subheadline.weight(.bold))
                     .foregroundStyle(AppTheme.forestGreen)
             }
-            .padding(.horizontal, 4)
+
+            PaySliderRow(label: "Base Pay", sublabel: "Taxable", value: $basePay, range: 1500...8000, step: 100, color: AppTheme.forestGreen)
+            PaySliderRow(label: "BAH", sublabel: "Non-Taxable", value: $bah, range: 0...4000, step: 50, color: .teal)
+            PaySliderRow(label: "BAS", sublabel: "Non-Taxable", value: $bas, range: 0...600, step: 25, color: .teal)
+            PaySliderRow(label: "Special/Incentive Pay", sublabel: "Non-Taxable", value: $specialtyPay, range: 0...2000, step: 50, color: .teal)
         }
+        .padding(16)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 14))
     }
 
     private var civilianPaySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
                 Image(systemName: "briefcase.fill")
                     .foregroundStyle(.blue)
-                Text("Expected Civilian Salary")
+                Text("Civilian Salary")
                     .font(.headline.weight(.bold))
-                Text("(Annual)")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                Spacer()
+                Text(formatCurrency(civilianMonthly) + "/mo")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.blue)
             }
 
-            VStack(spacing: 10) {
-                PayInputRow(label: "Gross Salary", sublabel: "All Taxable", value: $expectedCivilianSalary, color: .blue)
-            }
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 14))
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Annual Gross Salary")
+                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    Text(formatCurrency(expectedCivilianSalary))
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.blue)
+                        .monospacedDigit()
+                }
 
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .top, spacing: 6) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.orange)
-                        .padding(.top, 2)
-                    Text("No BAH, no BAS, no incentive pay, no specialty pay. Your entire civilian salary is taxable income.")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.8))
+                Slider(value: $expectedCivilianSalary, in: 25000...200000, step: 1000)
+                    .tint(.blue)
+
+                HStack {
+                    Text("$25K")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.4))
+                    Spacer()
+                    Text("$200K")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.4))
                 }
             }
-            .padding(.horizontal, 4)
+
+            HStack(alignment: .top, spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .padding(.top, 2)
+                Text("Your entire civilian salary is taxable. No BAH, no BAS, no tax-free allowances.")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.primary.opacity(0.7))
+            }
+            .padding(10)
+            .background(.orange.opacity(0.06))
+            .clipShape(.rect(cornerRadius: 8))
         }
+        .padding(16)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 14))
     }
 
-    private var resultsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+    private var detailedBreakdown: some View {
+        VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: "chart.bar.fill")
                     .foregroundStyle(AppTheme.gold)
-                Text("Estimated Comparison")
+                Text("Detailed Breakdown")
                     .font(.headline.weight(.bold))
             }
 
-            VStack(spacing: 12) {
-                ComparisonRow(
-                    label: "Military Annual (Gross)",
-                    value: formatCurrency(totalMilitaryAnnual),
-                    color: AppTheme.forestGreen
-                )
-                ComparisonRow(
-                    label: "Non-Taxable Portion",
-                    value: formatCurrency(militaryNonTaxable * 12),
-                    color: .teal
-                )
-                ComparisonRow(
-                    label: "Est. Military Tax (~22%)",
-                    value: "-" + formatCurrency(estimatedMilitaryTax),
-                    color: .red
-                )
+            VStack(spacing: 10) {
+                ComparisonRow(label: "Military Annual (Gross)", value: formatCurrency(totalMilitaryAnnual), color: AppTheme.forestGreen)
+                ComparisonRow(label: "Non-Taxable Portion", value: formatCurrency(militaryNonTaxable * 12), color: .teal)
+                ComparisonRow(label: "Est. Military Tax (~22%)", value: "-" + formatCurrency(estimatedMilitaryTax), color: .red)
                 Divider()
-                ComparisonRow(
-                    label: "Military Take-Home (Est.)",
-                    value: formatCurrency(militaryTakeHome),
-                    color: AppTheme.forestGreen,
-                    isBold: true
-                )
+                ComparisonRow(label: "Military Take-Home (Est.)", value: formatCurrency(militaryTakeHome), color: AppTheme.forestGreen, isBold: true)
 
                 Rectangle()
                     .fill(.primary.opacity(0.08))
                     .frame(height: 2)
                     .padding(.vertical, 4)
 
-                ComparisonRow(
-                    label: "Civilian Annual (Gross)",
-                    value: formatCurrency(civilianAnnual),
-                    color: .blue
-                )
-                ComparisonRow(
-                    label: "Est. Civilian Tax (~22%)",
-                    value: "-" + formatCurrency(estimatedCivilianTax),
-                    color: .red
-                )
+                ComparisonRow(label: "Civilian Annual (Gross)", value: formatCurrency(expectedCivilianSalary), color: .blue)
+                ComparisonRow(label: "Est. Civilian Tax (~22%)", value: "-" + formatCurrency(estimatedCivilianTax), color: .red)
                 Divider()
-                ComparisonRow(
-                    label: "Civilian Take-Home (Est.)",
-                    value: formatCurrency(civilianTakeHome),
-                    color: .blue,
-                    isBold: true
-                )
-
-                Rectangle()
-                    .fill(.primary.opacity(0.08))
-                    .frame(height: 2)
-                    .padding(.vertical, 4)
-
-                HStack {
-                    Text("Annual Difference")
-                        .font(.subheadline.weight(.bold))
-                    Spacer()
-                    Text(annualDifference >= 0 ? "+" + formatCurrency(annualDifference) : formatCurrency(annualDifference))
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(annualDifference >= 0 ? AppTheme.forestGreen : .red)
-                }
-
-                if annualDifference < 0 {
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                            .padding(.top, 2)
-                        Text("Your estimated civilian take-home is \(formatCurrency(abs(annualDifference))) less per year. Plan for this gap before separating.")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(10)
-                    .background(.red.opacity(0.06))
-                    .clipShape(.rect(cornerRadius: 10))
-                }
-
-                if annualDifference >= 0 {
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.caption)
-                            .foregroundStyle(AppTheme.forestGreen)
-                            .padding(.top, 2)
-                        Text("Your civilian salary matches or exceeds your military take-home. Factor in new costs like health insurance, commute, and retirement contributions.")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(10)
-                    .background(AppTheme.forestGreen.opacity(0.06))
-                    .clipShape(.rect(cornerRadius: 10))
-                }
+                ComparisonRow(label: "Civilian Take-Home (Est.)", value: formatCurrency(civilianTakeHome), color: .blue, isBold: true)
             }
             .padding(14)
             .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 14))
+            .clipShape(.rect(cornerRadius: 12))
 
-            monthlyBreakdown
+            if annualDifference < 0 {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .padding(.top, 2)
+                    Text("Your estimated civilian take-home is \(formatCurrency(abs(annualDifference))) less per year. Plan for this gap before separating.")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.8))
+                }
+                .padding(10)
+                .background(.red.opacity(0.06))
+                .clipShape(.rect(cornerRadius: 10))
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.caption)
+                        .foregroundStyle(AppTheme.forestGreen)
+                        .padding(.top, 2)
+                    Text("Your civilian salary matches or exceeds your military take-home. Factor in new costs like health insurance, commute, and retirement contributions.")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.8))
+                }
+                .padding(10)
+                .background(AppTheme.forestGreen.opacity(0.06))
+                .clipShape(.rect(cornerRadius: 10))
+            }
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
-    private var monthlyBreakdown: some View {
+    private var monthlyComparison: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: "calendar")
@@ -360,6 +302,44 @@ struct MilitaryCompCalculatorView: View {
         formatter.currencyCode = "USD"
         formatter.maximumFractionDigits = 0
         return formatter.string(from: NSNumber(value: value)) ?? "$0"
+    }
+}
+
+struct PaySliderRow: View {
+    let label: String
+    let sublabel: String
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+    let step: Double
+    let color: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(label)
+                        .font(.subheadline.weight(.semibold))
+                    Text(sublabel)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(color)
+                }
+                Spacer()
+                Text(formatValue(value))
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(color)
+                    .monospacedDigit()
+            }
+            Slider(value: $value, in: range, step: step)
+                .tint(color)
+        }
+    }
+
+    private func formatValue(_ val: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = "USD"
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: val)) ?? "$0"
     }
 }
 
