@@ -53,7 +53,7 @@ struct OnboardingView: View {
                     .padding(.bottom, 16)
             }
         }
-        .background(currentPage == 0 ? Color.clear : Color(.systemGroupedBackground))
+        .background(currentPage == 0 ? Color(red: 0.05, green: 0.12, blue: 0.05) : Color(.systemGroupedBackground))
     }
 
     @State private var welcomeAnimated: Bool = false
@@ -62,6 +62,9 @@ struct OnboardingView: View {
 
     private var welcomePage: some View {
         ZStack {
+            Color(red: 0.05, green: 0.12, blue: 0.05)
+                .ignoresSafeArea()
+
             MeshGradient(
                 width: 3, height: 3,
                 points: [
