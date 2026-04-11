@@ -18,8 +18,8 @@ struct OnboardingView: View {
                 Button("Skip") {
                     skipOnboarding()
                 }
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.primary.opacity(0.7))
             }
             .padding(.horizontal, 24)
             .padding(.top, 8)
@@ -96,8 +96,8 @@ struct OnboardingView: View {
                             .animation(.spring(response: 0.7, dampingFraction: 0.8).delay(0.5), value: welcomeAnimated)
 
                         Text("Your next chapter starts here.")
-                            .font(.title3.weight(.medium))
-                            .foregroundStyle(.white.opacity(0.8))
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.white.opacity(0.9))
                             .opacity(welcomeAnimated ? 1 : 0)
                             .offset(y: welcomeAnimated ? 0 : 12)
                             .animation(.spring(response: 0.7, dampingFraction: 0.8).delay(0.7), value: welcomeAnimated)
@@ -117,8 +117,8 @@ struct OnboardingView: View {
                     .animation(.spring(response: 0.7, dampingFraction: 0.8).delay(1.0), value: welcomeAnimated)
 
                     Text("Organize your transition. Understand your benefits.\nStay ahead of every deadline.")
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.7))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
                         .opacity(welcomeAnimated ? 1 : 0)
                         .animation(.spring(response: 0.7).delay(1.2), value: welcomeAnimated)
@@ -151,8 +151,8 @@ struct OnboardingView: View {
                         .animation(.spring(response: 0.5).delay(0.2), value: branchAnimated)
 
                     Text("Select your branch or affiliation")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.7))
                         .opacity(branchAnimated ? 1 : 0)
                         .animation(.spring(response: 0.5).delay(0.3), value: branchAnimated)
                 }
@@ -167,7 +167,7 @@ struct OnboardingView: View {
                                 Image(systemName: branch.icon)
                                     .font(.title2)
                                 Text(branch.rawValue)
-                                    .font(.subheadline.weight(.medium))
+                                    .font(.subheadline.weight(.bold))
                                     .multilineTextAlignment(.center)
                             }
                             .frame(maxWidth: .infinity)
@@ -212,8 +212,8 @@ struct OnboardingView: View {
                         .animation(.spring(response: 0.5).delay(0.2), value: timelineAnimated)
 
                     Text("How far are you from separation or retirement?")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .opacity(timelineAnimated ? 1 : 0)
                         .animation(.spring(response: 0.5).delay(0.3), value: timelineAnimated)
@@ -230,7 +230,7 @@ struct OnboardingView: View {
                                     .font(.title3)
                                     .frame(width: 36)
                                 Text(timeline.rawValue)
-                                    .font(.body.weight(.medium))
+                                    .font(.body.weight(.bold))
                                 Spacer()
                                 if selectedTimeline == timeline {
                                     Image(systemName: "checkmark.circle.fill")
@@ -256,7 +256,7 @@ struct OnboardingView: View {
                 if selectedTimeline != nil && selectedTimeline != .separated {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Estimated Separation Date")
-                            .font(.subheadline.weight(.medium))
+                            .font(.subheadline.weight(.bold))
                         DatePicker("", selection: $separationDate, displayedComponents: .date)
                             .datePickerStyle(.compact)
                             .labelsHidden()
@@ -292,8 +292,8 @@ struct OnboardingView: View {
                         .animation(.spring(response: 0.5).delay(0.2), value: goalsAnimated)
 
                     Text("What matters most to you right now?\nSelect all that apply.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .opacity(goalsAnimated ? 1 : 0)
                         .animation(.spring(response: 0.5).delay(0.3), value: goalsAnimated)
@@ -313,7 +313,7 @@ struct OnboardingView: View {
                                 Image(systemName: goal.icon)
                                     .font(.title3)
                                 Text(goal.rawValue)
-                                    .font(.caption.weight(.medium))
+                                    .font(.caption.weight(.bold))
                                     .multilineTextAlignment(.center)
                                     .lineLimit(2)
                             }
@@ -339,7 +339,7 @@ struct OnboardingView: View {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundStyle(AppTheme.forestGreen)
                         Text("\(selectedGoals.count) goal\(selectedGoals.count == 1 ? "" : "s") selected")
-                            .font(.subheadline.weight(.medium))
+                            .font(.subheadline.weight(.bold))
                             .foregroundStyle(AppTheme.forestGreen)
                     }
                     .transition(.opacity.combined(with: .scale))
@@ -367,7 +367,7 @@ struct OnboardingView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Important Notices", systemImage: "exclamationmark.triangle.fill")
-                        .font(.subheadline.weight(.semibold))
+                        .font(.subheadline.weight(.bold))
                         .foregroundStyle(.orange)
 
                     Group {
@@ -377,8 +377,8 @@ struct OnboardingView: View {
                         Text("• Information in this app is based on publicly available resources and may change.")
                         Text("• This app is not an emergency service. For crisis support, call 988.")
                     }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.8))
                 }
                 .padding(16)
                 .background(Color(.secondarySystemGroupedBackground))
@@ -390,9 +390,9 @@ struct OnboardingView: View {
                     HStack(spacing: 12) {
                         Image(systemName: disclaimerAccepted ? "checkmark.square.fill" : "square")
                             .font(.title3)
-                            .foregroundStyle(disclaimerAccepted ? AppTheme.forestGreen : .secondary)
+                            .foregroundStyle(disclaimerAccepted ? AppTheme.forestGreen : .primary.opacity(0.5))
                         Text("I understand and accept these terms")
-                            .font(.subheadline)
+                            .font(.subheadline.weight(.bold))
                             .foregroundStyle(.primary)
                         Spacer()
                     }
@@ -423,7 +423,8 @@ struct OnboardingView: View {
                 Button("Back") {
                     withAnimation { currentPage -= 1 }
                 }
-                .foregroundStyle(.secondary)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.primary.opacity(0.7))
             }
             Spacer()
             Button {
@@ -434,7 +435,7 @@ struct OnboardingView: View {
                 }
             } label: {
                 Text(currentPage == totalPages - 1 ? "Get Started" : "Continue")
-                    .font(.headline)
+                    .font(.headline.weight(.bold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 14)

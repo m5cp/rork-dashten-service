@@ -25,28 +25,33 @@ struct ProfileView: View {
                 Section("Goals") {
                     if storage.profile.goals.isEmpty {
                         Text("No goals selected")
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.6))
                     } else {
                         ForEach(storage.profile.goals) { goal in
                             Label(goal.rawValue, systemImage: goal.icon)
-                                .font(.subheadline)
+                                .font(.subheadline.weight(.semibold))
                         }
                     }
                 }
 
                 Section("Personal Info") {
                     TextField("Display Name", text: $storage.profile.displayName)
+                        .font(.body.weight(.semibold))
 
                     if storage.profile.separationDate != nil {
                         DatePicker("Separation Date", selection: Binding(
                             get: { storage.profile.separationDate ?? Date() },
                             set: { storage.profile.separationDate = $0 }
                         ), displayedComponents: .date)
+                        .font(.body.weight(.semibold))
                     }
 
                     Stepper("Household Size: \(storage.profile.householdSize)", value: $storage.profile.householdSize, in: 1...20)
+                        .font(.body.weight(.semibold))
 
                     TextField("Spouse Name", text: $storage.profile.spouseName)
+                        .font(.body.weight(.semibold))
                 }
 
                 Section("Notifications") {
@@ -70,12 +75,13 @@ struct ProfileView: View {
                             }
                         }
                     ))
+                    .font(.body.weight(.semibold))
                     .tint(AppTheme.forestGreen)
 
                     if storage.profile.notificationsEnabled {
                         Label("You'll get weekly check-ins and separation countdown alerts", systemImage: "bell.badge.fill")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
                 }
 
@@ -84,18 +90,21 @@ struct ProfileView: View {
                         showAbout = true
                     } label: {
                         Label("About DashTen", systemImage: "info.circle")
+                            .font(.body.weight(.semibold))
                     }
 
                     Button {
                         showTransparency = true
                     } label: {
                         Label("Source Transparency", systemImage: "doc.text.magnifyingglass")
+                            .font(.body.weight(.semibold))
                     }
 
                     NavigationLink {
                         CrisisResourcesView()
                     } label: {
                         Label("Crisis Resources", systemImage: "heart.fill")
+                            .font(.body.weight(.semibold))
                             .foregroundStyle(.red)
                     }
                 }
@@ -105,30 +114,35 @@ struct ProfileView: View {
                         showTerms = true
                     } label: {
                         Label("Terms of Use", systemImage: "doc.plaintext")
+                            .font(.body.weight(.semibold))
                     }
 
                     Button {
                         showPrivacy = true
                     } label: {
                         Label("Privacy Policy", systemImage: "lock.shield")
+                            .font(.body.weight(.semibold))
                     }
 
                     Button {
                         showEULA = true
                     } label: {
                         Label("Apple EULA", systemImage: "doc.text")
+                            .font(.body.weight(.semibold))
                     }
 
                     Button {
                         showAccessibility = true
                     } label: {
                         Label("Accessibility", systemImage: "accessibility")
+                            .font(.body.weight(.semibold))
                     }
 
                     Button {
                         showDisclaimer = true
                     } label: {
                         Label("Disclaimer & Risks", systemImage: "exclamationmark.triangle")
+                            .font(.body.weight(.semibold))
                     }
                 }
 
@@ -141,15 +155,17 @@ struct ProfileView: View {
                     Button("Reset All Data", role: .destructive) {
                         showResetAlert = true
                     }
+                    .font(.body.weight(.bold))
                 }
 
                 Section {} footer: {
                     VStack(spacing: 4) {
                         Text("DashTen v1.0.0")
+                            .font(.caption.weight(.bold))
                         Text("Built independently for the transition community")
+                            .font(.caption.weight(.semibold))
                     }
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.primary.opacity(0.5))
                     .frame(maxWidth: .infinity)
                 }
             }
@@ -203,14 +219,14 @@ struct ProfileView: View {
                         .font(.title3.bold())
                     if let branch = storage.profile.branch {
                         Text(branch.rawValue)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
                     if let date = storage.profile.separationDate {
                         let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
                         Text(days > 0 ? "\(days) days until separation" : "\(abs(days)) days since separation")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.6))
                     }
                 }
 
@@ -247,11 +263,11 @@ struct MiniReadinessCard: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.headline)
+                .font(.headline.weight(.bold))
                 .foregroundStyle(color)
             Text(title)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.primary.opacity(0.7))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 10)
@@ -274,27 +290,27 @@ struct AboutView: View {
                         Text("DashTen")
                             .font(.largeTitle.bold())
                         Text("Your transition, organized.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
                     .frame(maxWidth: .infinity)
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Why This App Exists")
-                            .font(.headline)
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(AppTheme.forestGreen)
 
                         Text("I built this app because I wasn't as prepared as I should have been when I separated from the military. The transition was overwhelming — too many decisions, too many deadlines, and not enough clarity on what mattered most.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.primary.opacity(0.8))
 
                         Text("DashTen is the tool I wish I had. A single place to organize your plan, understand your benefits, track your documents, and stay on top of what matters — on your timeline.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.primary.opacity(0.8))
 
                         Text("This app is for every service member, veteran, and military family navigating the transition to civilian life. You've earned the preparation.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -310,6 +326,7 @@ struct AboutView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .font(.body.weight(.bold))
                 }
             }
         }
@@ -325,7 +342,7 @@ struct SourceTransparencyView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("How We Source Information", systemImage: "doc.text.magnifyingglass")
-                            .font(.headline)
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(AppTheme.forestGreen)
 
                         Group {
@@ -333,8 +350,8 @@ struct SourceTransparencyView: View {
                             Text("All content in this app is based on publicly accessible resources from official websites, publicly available guides, and common transition knowledge.")
                             Text("This app does not claim to have insider, proprietary, or classified information. All information should be verified with official sources before making decisions.")
                         }
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -342,7 +359,7 @@ struct SourceTransparencyView: View {
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Important Reminders")
-                            .font(.headline)
+                            .font(.headline.weight(.bold))
 
                         Group {
                             Label("Eligibility requirements can change. Always verify with official sources.", systemImage: "exclamationmark.triangle")
@@ -350,8 +367,8 @@ struct SourceTransparencyView: View {
                             Label("Benefit details are summaries, not official determinations.", systemImage: "doc.text")
                             Label("External links go to official or established organization websites.", systemImage: "link")
                         }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -359,7 +376,7 @@ struct SourceTransparencyView: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Official Resources")
-                            .font(.headline)
+                            .font(.headline.weight(.bold))
                         OfficialLinkButton(title: "Military OneSource", url: "https://www.militaryonesource.mil/")
                         OfficialLinkButton(title: "Department of Labor Veterans' Employment", url: "https://www.dol.gov/agencies/vets")
                         OfficialLinkButton(title: "National Archives (Records)", url: "https://www.archives.gov/veterans")
@@ -376,6 +393,7 @@ struct SourceTransparencyView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .font(.body.weight(.bold))
                 }
             }
         }
@@ -394,8 +412,8 @@ struct TermsOfUseView: View {
                             .font(.title3.bold())
 
                         Text("By using DashTen, you acknowledge and agree to the following:")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.8))
 
                         Group {
                             Text("1. DashTen is an informational and organizational tool designed to help users plan their transition from military to civilian life.")
@@ -406,8 +424,8 @@ struct TermsOfUseView: View {
                             Text("6. All data is stored locally on your device. You are responsible for backing up your own data.")
                             Text("7. The app creator reserves the right to update these terms at any time.")
                         }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -421,6 +439,7 @@ struct TermsOfUseView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .font(.body.weight(.bold))
                 }
             }
         }
@@ -446,8 +465,8 @@ struct PrivacyPolicyView: View {
                             Text("If you delete the app, all local data is permanently removed from your device.")
                             Text("External links in the app will open in your browser. Those websites have their own privacy policies.")
                         }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -463,6 +482,7 @@ struct PrivacyPolicyView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .font(.body.weight(.bold))
                 }
             }
         }
@@ -484,8 +504,8 @@ struct EULAView: View {
                             Text("This application is licensed, not sold, to you under the terms of Apple's Standard End User License Agreement (EULA).")
                             Text("By downloading, installing, or using DashTen, you agree to Apple's Licensed Application End User License Agreement, available at:")
                         }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
 
                         OfficialLinkButton(title: "Apple Standard EULA", url: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
 
@@ -494,8 +514,8 @@ struct EULAView: View {
                             Text("In the event of any failure of DashTen to conform to any applicable warranty, you may notify Apple for a refund of the purchase price (if any). Apple has no other warranty obligation.")
                             Text("Any claims relating to DashTen, including product liability claims, are the responsibility of the app developer, not Apple.")
                         }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -509,6 +529,7 @@ struct EULAView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .font(.body.weight(.bold))
                 }
             }
         }
@@ -527,8 +548,8 @@ struct AccessibilityStatementView: View {
                             .font(.title3.bold())
 
                         Text("DashTen is committed to being accessible to all users. We strive to follow Apple's accessibility guidelines and support the following features:")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.8))
 
                         Group {
                             Label("Dynamic Type — text scales with your system font size settings", systemImage: "textformat.size")
@@ -537,12 +558,12 @@ struct AccessibilityStatementView: View {
                             Label("Reduced Motion — respects system reduced motion preferences", systemImage: "figure.walk")
                             Label("Touch Targets — all buttons meet the minimum 44×44pt touch target", systemImage: "hand.tap.fill")
                         }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
 
                         Text("If you experience any accessibility issues, please contact us through the App Store.")
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.6))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -556,6 +577,7 @@ struct AccessibilityStatementView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .font(.body.weight(.bold))
                 }
             }
         }
@@ -571,15 +593,15 @@ struct DisclaimerRisksView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Disclaimer", systemImage: "exclamationmark.triangle.fill")
-                            .font(.headline)
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(.orange)
 
                         Group {
                             Text("DashTen is a planning and organization tool only. It does not provide legal, medical, financial, or career advice of any kind.")
                             Text("Users should consult qualified professionals and official agencies for specific guidance about benefits, eligibility, claims, and any other matters discussed in this app.")
                         }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -587,7 +609,7 @@ struct DisclaimerRisksView: View {
 
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Risk Acknowledgment", systemImage: "shield.lefthalf.filled")
-                            .font(.headline)
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(.red)
 
                         Group {
@@ -596,8 +618,8 @@ struct DisclaimerRisksView: View {
                             Text("Eligibility requirements, deadlines, and benefit details can change at any time. Always verify with official sources.")
                             Text("The app creator assumes no liability for any actions taken or decisions made based on information in this app.")
                         }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -605,12 +627,12 @@ struct DisclaimerRisksView: View {
 
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Crisis Support", systemImage: "heart.fill")
-                            .font(.headline)
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(.red)
 
                         Text("If you are experiencing a crisis, please contact the 988 Suicide & Crisis Lifeline by calling or texting 988. This app is not an emergency service.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.primary.opacity(0.8))
                     }
                     .padding(16)
                     .background(Color(.secondarySystemGroupedBackground))
@@ -626,6 +648,7 @@ struct DisclaimerRisksView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .font(.body.weight(.bold))
                 }
             }
         }

@@ -117,8 +117,8 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     if !storage.profile.displayName.isEmpty {
                         Text("Welcome back,")
-                            .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.7))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.9))
                         Text(storage.profile.displayName)
                             .font(.title2.bold())
                             .foregroundStyle(.white)
@@ -129,8 +129,8 @@ struct TodayView: View {
                     }
                     if let branch = storage.profile.branch {
                         Text(branch.rawValue)
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.white.opacity(0.6))
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.white.opacity(0.85))
                     }
                 }
 
@@ -160,11 +160,11 @@ struct TodayView: View {
                             .contentTransition(.numericText())
                         VStack(alignment: .leading, spacing: 0) {
                             Text(info.days == 1 ? "day" : "days")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.white.opacity(0.8))
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.white.opacity(0.9))
                             Text(info.label)
-                                .font(.caption2)
-                                .foregroundStyle(.white.opacity(0.5))
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.white.opacity(0.8))
                         }
                     }
 
@@ -173,11 +173,11 @@ struct TodayView: View {
                     if let phase = currentPhase {
                         VStack(alignment: .trailing, spacing: 2) {
                             Text(phase.rawValue)
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.white.opacity(0.8))
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.white.opacity(0.9))
                             Text(phase.subtitle)
-                                .font(.caption2)
-                                .foregroundStyle(.white.opacity(0.5))
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.white.opacity(0.8))
                         }
                     }
                 }
@@ -186,10 +186,10 @@ struct TodayView: View {
             } else {
                 HStack {
                     Image(systemName: "calendar.badge.plus")
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(.white.opacity(0.85))
                     Text("Set your separation date in Profile to see countdown")
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.6))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.85))
                     Spacer()
                 }
                 .padding(.horizontal, 20)
@@ -237,10 +237,10 @@ struct TodayView: View {
                             .foregroundStyle(AppTheme.forestGreen)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("You're all caught up")
-                                .font(.subheadline.weight(.medium))
+                                .font(.subheadline.weight(.bold))
                             Text("Check back for new tasks as your timeline progresses")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.7))
                         }
                         Spacer()
                     }
@@ -258,16 +258,16 @@ struct TodayView: View {
                                 } label: {
                                     Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
                                         .font(.title3)
-                                        .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : .secondary)
+                                        .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : .primary.opacity(0.5))
                                 }
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(item.title)
-                                        .font(.subheadline.weight(.medium))
+                                        .font(.subheadline.weight(.semibold))
                                         .strikethrough(item.isCompleted)
                                     if !item.subtitle.isEmpty {
                                         Text(item.subtitle)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                            .font(.caption.weight(.medium))
+                                            .foregroundStyle(.primary.opacity(0.7))
                                     }
                                 }
                                 Spacer()
@@ -297,8 +297,8 @@ struct TodayView: View {
                                         .foregroundStyle(AppTheme.forestGreen)
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -341,10 +341,10 @@ struct TodayView: View {
                                 Spacer()
                             }
                             Text(card.title)
-                                .font(.subheadline.weight(.semibold))
+                                .font(.subheadline.weight(.bold))
                             Text(card.body)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.8))
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -366,10 +366,10 @@ struct TodayView: View {
                                         .foregroundStyle(doc.status == .missing ? .red : .orange)
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(doc.name)
-                                            .font(.subheadline.weight(.medium))
+                                            .font(.subheadline.weight(.semibold))
                                         Text(doc.category.rawValue)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(.primary.opacity(0.7))
                                     }
                                     Spacer()
                                     StatusBadge(text: doc.status.rawValue, color: doc.status == .missing ? .red : .orange)
@@ -392,15 +392,15 @@ struct TodayView: View {
                         .foregroundStyle(.red)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Need support?")
-                            .font(.subheadline.weight(.medium))
+                            .font(.subheadline.weight(.bold))
                         Text("Crisis Lifeline: call or text 988")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.tertiary)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.5))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -427,7 +427,7 @@ struct PlanningToolChip: View {
                         .foregroundStyle(color)
                 }
                 Text(title)
-                    .font(.caption2.weight(.medium))
+                    .font(.caption2.weight(.bold))
                     .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)

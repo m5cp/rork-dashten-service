@@ -13,16 +13,16 @@ struct CrisisResourcesView: View {
                     Text("You Are Not Alone")
                         .font(.title2.bold())
                     Text("If you or someone you know is struggling, help is available 24/7. These resources are free and confidential.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.8))
                         .multilineTextAlignment(.center)
                 }
                 .padding(.vertical, 8)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("This app is not an emergency service or mental health provider. The resources below connect you directly to trained professionals.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.8))
                 }
                 .padding(14)
                 .background(.red.opacity(0.06))
@@ -55,16 +55,16 @@ struct CrisisResourceCard: View {
                         .fill(resource.isEmergency ? .red.opacity(0.12) : AppTheme.forestGreen.opacity(0.12))
                         .frame(width: 44, height: 44)
                     Image(systemName: resource.icon)
-                        .font(.body.weight(.semibold))
+                        .font(.body.weight(.bold))
                         .foregroundStyle(resource.isEmergency ? .red : AppTheme.forestGreen)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(resource.title)
-                        .font(.subheadline.weight(.semibold))
+                        .font(.subheadline.weight(.bold))
                     Text(resource.subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
             }
 
@@ -73,7 +73,7 @@ struct CrisisResourceCard: View {
                     if let url = URL(string: "tel:\(phone.replacingOccurrences(of: "-", with: ""))") {
                         Link(destination: url) {
                             Label("Call \(phone)", systemImage: "phone.fill")
-                                .font(.caption.weight(.semibold))
+                                .font(.caption.weight(.bold))
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 8)
@@ -87,7 +87,7 @@ struct CrisisResourceCard: View {
                     if let url = URL(string: "sms:\(text)") {
                         Link(destination: url) {
                             Label("Text \(text)", systemImage: "message.fill")
-                                .font(.caption.weight(.semibold))
+                                .font(.caption.weight(.bold))
                                 .foregroundStyle(resource.isEmergency ? .red : AppTheme.forestGreen)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 8)
@@ -100,8 +100,8 @@ struct CrisisResourceCard: View {
                 if let urlString = resource.url, let url = URL(string: urlString) {
                     Link(destination: url) {
                         Label("Website", systemImage: "arrow.up.right.square")
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
                 }
             }

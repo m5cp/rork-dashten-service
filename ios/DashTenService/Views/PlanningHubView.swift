@@ -106,23 +106,23 @@ struct PlanningCard: View {
                     .fill(color.opacity(0.12))
                     .frame(width: 50, height: 50)
                 Image(systemName: icon)
-                    .font(.title3.weight(.semibold))
+                    .font(.title3.weight(.bold))
                     .foregroundStyle(color)
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.headline)
+                    .font(.headline.weight(.bold))
                 Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.7))
             }
 
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.tertiary)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.primary.opacity(0.5))
         }
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground))
@@ -179,8 +179,8 @@ struct CareerPlanningView: View {
                     CardView {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Translating military experience to civilian language is one of the most important steps in your job search.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.8))
                             ForEach(resumeTips, id: \.self) { tip in
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "checkmark.circle.fill")
@@ -188,8 +188,8 @@ struct CareerPlanningView: View {
                                         .foregroundStyle(AppTheme.forestGreen)
                                         .padding(.top, 2)
                                     Text(tip)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -202,8 +202,8 @@ struct CareerPlanningView: View {
                     CardView {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Civilian employers often require specific certifications or licenses — even for roles you performed in the military. Don't assume your experience alone qualifies you.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.8))
                             ForEach(certificationSteps, id: \.self) { step in
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "checkmark.circle.fill")
@@ -211,8 +211,8 @@ struct CareerPlanningView: View {
                                         .foregroundStyle(.purple)
                                         .padding(.top, 2)
                                     Text(step)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -228,11 +228,11 @@ struct CareerPlanningView: View {
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "circle")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.primary.opacity(0.5))
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -245,8 +245,8 @@ struct CareerPlanningView: View {
                     CardView {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Networking is often the single most effective way to land a civilian job. Most positions are filled through connections, not cold applications.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.8))
                             ForEach(networkingSteps, id: \.self) { step in
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "arrow.right.circle.fill")
@@ -254,8 +254,8 @@ struct CareerPlanningView: View {
                                         .foregroundStyle(.teal)
                                         .padding(.top, 2)
                                     Text(step)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -268,16 +268,16 @@ struct CareerPlanningView: View {
                     CardView {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Many civilian careers require degrees or continuing education that military training alone may not satisfy. Investing in education — whether a degree, certificate, or trade program — can significantly improve your competitiveness.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.8))
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "lightbulb.fill")
                                     .font(.caption)
                                     .foregroundStyle(.blue)
                                     .padding(.top, 2)
                                 Text("Use your education benefits strategically — align your program with your target career field.")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.primary.opacity(0.8))
                             }
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "lightbulb.fill")
@@ -285,8 +285,8 @@ struct CareerPlanningView: View {
                                     .foregroundStyle(.blue)
                                     .padding(.top, 2)
                                 Text("Research which employers in your target industry value specific degrees or certifications.")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.primary.opacity(0.8))
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -298,8 +298,8 @@ struct CareerPlanningView: View {
                 OfficialLinkButton(title: "O*NET Military Crosswalk Search", url: "https://www.onetonline.org/crosswalk/MOC/")
 
                 Text("Always verify employment programs and eligibility with official sources.")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.6))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
@@ -316,16 +316,16 @@ struct CareerPlanningView: View {
                     .font(.title3)
                     .foregroundStyle(.orange)
                 Text("Set Realistic Expectations")
-                    .font(.headline)
+                    .font(.headline.weight(.bold))
             }
 
             Text("Military experience is valuable — but don't assume it will automatically translate to an equivalent or higher-level civilian position.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.8))
 
             Text("The civilian job market operates differently. Employers may not understand your military role, and many industries require specific civilian certifications, degrees, or licenses — even for work you've already done in uniform.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.8))
 
             VStack(alignment: .leading, spacing: 8) {
                 RealityCheckPoint(text: "Certifications matter — many military skills need civilian equivalents to be recognized")
@@ -351,8 +351,8 @@ struct RealityCheckPoint: View {
                 .foregroundStyle(.orange)
                 .padding(.top, 2)
             Text(text)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.8))
         }
     }
 }
@@ -398,11 +398,11 @@ struct EducationPlanningView: View {
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "circle")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.primary.opacity(0.5))
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -418,11 +418,11 @@ struct EducationPlanningView: View {
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "circle")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.primary.opacity(0.5))
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -436,15 +436,15 @@ struct EducationPlanningView: View {
                         ForEach(pathComparison, id: \.0) { title, icon, desc in
                             HStack(spacing: 12) {
                                 Image(systemName: icon)
-                                    .font(.body)
+                                    .font(.body.weight(.semibold))
                                     .foregroundStyle(.blue)
                                     .frame(width: 28)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(title)
-                                        .font(.subheadline.weight(.medium))
+                                        .font(.subheadline.weight(.bold))
                                     Text(desc)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.7))
                                 }
                                 Spacer()
                             }
@@ -459,8 +459,8 @@ struct EducationPlanningView: View {
                 OfficialLinkButton(title: "Education Benefit Comparison Tool", url: "https://www.va.gov/gi-bill-comparison-tool/")
 
                 Text("Verify all education benefit details with official sources before making enrollment decisions.")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.6))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
@@ -510,11 +510,11 @@ struct FamilyPlanningView: View {
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "circle")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.primary.opacity(0.5))
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -533,8 +533,8 @@ struct FamilyPlanningView: View {
                                         .foregroundStyle(.pink)
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -550,11 +550,11 @@ struct FamilyPlanningView: View {
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "circle")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.primary.opacity(0.5))
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -565,8 +565,8 @@ struct FamilyPlanningView: View {
                 OfficialLinkButton(title: "Military OneSource Relocation", url: "https://www.militaryonesource.mil/moving-pcs/")
 
                 Text("Research state-specific requirements for licensing, registration, and enrollment in your target area.")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.6))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
@@ -610,11 +610,11 @@ struct FinancialPlanningView: View {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("Not Financial Advice", systemImage: "exclamationmark.triangle.fill")
-                        .font(.subheadline.weight(.semibold))
+                        .font(.subheadline.weight(.bold))
                         .foregroundStyle(.orange)
                     Text("This section provides general planning guidance. Consult a qualified financial professional for advice specific to your situation.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.8))
                 }
                 .padding(14)
                 .background(.orange.opacity(0.06))
@@ -628,11 +628,11 @@ struct FinancialPlanningView: View {
                                 HStack(alignment: .top, spacing: 8) {
                                     Image(systemName: "circle")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.primary.opacity(0.5))
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -651,8 +651,8 @@ struct FinancialPlanningView: View {
                                         .foregroundStyle(.orange)
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -671,8 +671,8 @@ struct FinancialPlanningView: View {
                                         .foregroundStyle(AppTheme.gold)
                                         .padding(.top, 2)
                                     Text(item)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.primary.opacity(0.8))
                                 }
                             }
                         }
@@ -684,8 +684,8 @@ struct FinancialPlanningView: View {
                 OfficialLinkButton(title: "TSP.gov (Thrift Savings Plan)", url: "https://www.tsp.gov/")
 
                 Text("This is not financial advice. Consult qualified professionals for decisions about investments, taxes, and insurance.")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.6))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
@@ -735,8 +735,8 @@ struct FirstThirtyDaysView: View {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Your first 30 days as a civilian are about stabilizing, not perfecting. Focus on the essentials and build from there.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.8))
                 }
                 .padding(14)
                 .background(.purple.opacity(0.06))
@@ -748,8 +748,8 @@ struct FirstThirtyDaysView: View {
                 weekSection(title: "Week 4: Assess & Adjust", icon: "4.circle.fill", color: AppTheme.forestGreen, items: week4)
 
                 Text("Everyone's transition is different. Adjust this guide to fit your situation.")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.6))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
@@ -766,7 +766,7 @@ struct FirstThirtyDaysView: View {
                     .font(.title3)
                     .foregroundStyle(color)
                 Text(title)
-                    .font(.headline)
+                    .font(.headline.weight(.bold))
             }
 
             CardView {
@@ -775,11 +775,11 @@ struct FirstThirtyDaysView: View {
                         HStack(alignment: .top, spacing: 8) {
                             Image(systemName: "circle")
                                 .font(.caption)
-                                .foregroundStyle(color.opacity(0.6))
+                                .foregroundStyle(color)
                                 .padding(.top, 2)
                             Text(item)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.8))
                         }
                     }
                 }

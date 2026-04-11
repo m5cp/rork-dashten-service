@@ -66,12 +66,12 @@ struct BenefitCategoryCard: View {
                     .fill(color.opacity(0.12))
                     .frame(width: 44, height: 44)
                 Image(systemName: category.type.icon)
-                    .font(.body.weight(.semibold))
+                    .font(.body.weight(.bold))
                     .foregroundStyle(color)
             }
 
             Text(category.type.rawValue)
-                .font(.subheadline.weight(.semibold))
+                .font(.subheadline.weight(.bold))
                 .multilineTextAlignment(.leading)
                 .lineLimit(2)
 
@@ -81,8 +81,8 @@ struct BenefitCategoryCard: View {
                         .tint(color)
                     HStack(spacing: 4) {
                         Text("\(completedActions)/\(category.actionItems.count)")
-                            .font(.caption2.weight(.medium))
-                            .foregroundStyle(.secondary)
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.7))
                         if category.isStarted {
                             Image(systemName: "arrow.right.circle.fill")
                                 .font(.caption2)
@@ -157,7 +157,7 @@ struct BenefitDetailView: View {
                     storage.markBenefitStarted(category.id)
                 } label: {
                     Label("Mark as Started", systemImage: "play.fill")
-                        .font(.subheadline.weight(.medium))
+                        .font(.subheadline.weight(.bold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
@@ -177,17 +177,17 @@ struct BenefitDetailView: View {
             CardView {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(category.overview)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.8))
 
                     Divider()
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Why It Matters")
-                            .font(.subheadline.weight(.semibold))
+                            .font(.subheadline.weight(.bold))
                         Text(category.whyItMatters)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.8))
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -205,8 +205,8 @@ struct BenefitDetailView: View {
                             .foregroundStyle(color)
                             .padding(.top, 2)
                         Text(factor)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.8))
                     }
                 }
             }
@@ -224,8 +224,8 @@ struct BenefitDetailView: View {
                             .foregroundStyle(.orange)
                             .padding(.top, 2)
                         Text(doc)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.8))
                     }
                 }
             }
@@ -243,8 +243,8 @@ struct BenefitDetailView: View {
                             .foregroundStyle(.red)
                             .padding(.top, 2)
                         Text(mistake)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.8))
                     }
                 }
             }
@@ -262,8 +262,8 @@ struct BenefitDetailView: View {
                             .foregroundStyle(.blue)
                             .padding(.top, 2)
                         Text(question)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.8))
                     }
                 }
             }
@@ -274,30 +274,7 @@ struct BenefitDetailView: View {
     private var actionChecklistSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             SectionHeader("Action Checklist", icon: "checklist")
-            VStack(spacing: 6) {
-                ForEach(currentCategory.actionItems) { action in
-                    HStack(spacing: 12) {
-                        Button {
-                            withAnimation(.spring(response: 0.3)) {
-                                storage.toggleBenefitAction(categoryId: category.id, actionId: action.id)
-                            }
-                        } label: {
-                            Image(systemName: action.isCompleted ? "checkmark.circle.fill" : "circle")
-                                .font(.title3)
-                                .foregroundStyle(action.isCompleted ? color : .secondary)
-                        }
-                        Text(action.title)
-                            .font(.subheadline)
-                            .strikethrough(action.isCompleted)
-                            .foregroundStyle(action.isCompleted ? .secondary : .primary)
-                        Spacer()
-                    }
-                    .padding(12)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 10))
-                    .sensoryFeedback(.success, trigger: action.isCompleted)
-                }
-            }
+            ActionChecklistContent(storage: storage, categoryId: category.id, color: color)
         }
     }
 
@@ -308,10 +285,56 @@ struct BenefitDetailView: View {
     private var disclaimerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Always verify eligibility, deadlines, and benefit details through official government sources. Information in this app may change without notice.")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.6))
         }
         .padding(.top, 8)
+    }
+}
+
+struct ActionChecklistContent: View {
+    let storage: StorageService
+    let categoryId: String
+    let color: Color
+
+    private var actions: [BenefitAction] {
+        storage.benefitCategories.first(where: { $0.id == categoryId })?.actionItems ?? []
+    }
+
+    var body: some View {
+        VStack(spacing: 6) {
+            ForEach(Array(actions.enumerated()), id: \.element.id) { _, action in
+                ActionRow(action: action, color: color) {
+                    withAnimation(.spring(response: 0.3)) {
+                        storage.toggleBenefitAction(categoryId: categoryId, actionId: action.id)
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct ActionRow: View {
+    let action: BenefitAction
+    let color: Color
+    let onToggle: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button(action: onToggle) {
+                Image(systemName: action.isCompleted ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(action.isCompleted ? color : Color.primary.opacity(0.5))
+            }
+            Text(action.title)
+                .font(.subheadline.weight(.semibold))
+                .strikethrough(action.isCompleted)
+                .foregroundStyle(action.isCompleted ? Color.primary.opacity(0.5) : Color.primary)
+            Spacer()
+        }
+        .padding(12)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 10))
     }
 }
 
@@ -331,14 +354,14 @@ struct CollapsibleSection<Content: View>: View {
             } label: {
                 HStack {
                     Image(systemName: icon)
-                        .font(.subheadline.weight(.semibold))
+                        .font(.subheadline.weight(.bold))
                         .foregroundStyle(color)
                     Text(title)
-                        .font(.headline)
+                        .font(.headline.weight(.bold))
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.tertiary)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.5))
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
                 }
                 .contentShape(Rectangle())

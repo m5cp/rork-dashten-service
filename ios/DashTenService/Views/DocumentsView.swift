@@ -41,7 +41,7 @@ struct DocumentsView: View {
                     ForEach(filteredGroups, id: \.0) { category, docs in
                         VStack(alignment: .leading, spacing: 8) {
                             Label(category.rawValue, systemImage: category.icon)
-                                .font(.subheadline.weight(.semibold))
+                                .font(.subheadline.weight(.bold))
                                 .foregroundStyle(AppTheme.forestGreen)
                                 .padding(.horizontal, 4)
 
@@ -70,10 +70,10 @@ struct DocumentsView: View {
                 .foregroundStyle(.orange)
             VStack(alignment: .leading, spacing: 4) {
                 Text("Do Not Upload Documents Here")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.subheadline.weight(.bold))
                 Text("This is a checklist to track which documents you have in your physical possession. Obtain and secure physical or digital copies yourself. Do not upload sensitive documents to this app.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.8))
             }
         }
         .padding(14)
@@ -85,10 +85,10 @@ struct DocumentsView: View {
         VStack(spacing: 10) {
             HStack {
                 Text("Document Readiness")
-                    .font(.headline)
+                    .font(.headline.weight(.bold))
                 Spacer()
                 Text("\(Int(overallProgress * 100))%")
-                    .font(.headline)
+                    .font(.headline.weight(.bold))
                     .foregroundStyle(AppTheme.forestGreen)
             }
 
@@ -108,8 +108,8 @@ struct DocumentsView: View {
 
             HStack {
                 Text("\(storage.documents.filter { $0.status == .received || $0.status == .verified }.count) of \(totalCount) secured")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.primary.opacity(0.7))
                 Spacer()
             }
         }
@@ -160,8 +160,8 @@ struct StatCard: View {
                 .font(.title2.bold())
                 .foregroundStyle(color)
             Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.primary.opacity(0.7))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14)
@@ -178,7 +178,7 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.caption.weight(.medium))
+                .font(.caption.weight(.bold))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 7)
                 .background(isSelected ? AppTheme.forestGreen : Color(.secondarySystemGroupedBackground))
@@ -205,19 +205,19 @@ struct DocumentRow: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 12) {
                 Image(systemName: document.status.icon)
-                    .font(.body)
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(statusColor)
                     .frame(width: 28)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(document.name)
-                        .font(.subheadline)
+                        .font(.subheadline.weight(.bold))
                         .foregroundStyle(.primary)
                         .multilineTextAlignment(.leading)
                     if !document.notes.isEmpty {
                         Text(document.notes)
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.primary.opacity(0.6))
                     }
                 }
 
@@ -233,14 +233,14 @@ struct DocumentRow: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: status.icon)
-                                .font(.caption2)
+                                .font(.caption2.weight(.semibold))
                             Text(status.rawValue)
-                                .font(.caption2.weight(.medium))
+                                .font(.caption2.weight(.bold))
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
                         .background(document.status == status ? statusColorFor(status).opacity(0.15) : Color(.tertiarySystemGroupedBackground))
-                        .foregroundStyle(document.status == status ? statusColorFor(status) : .secondary)
+                        .foregroundStyle(document.status == status ? statusColorFor(status) : .primary.opacity(0.6))
                         .clipShape(Capsule())
                         .overlay(
                             Capsule()

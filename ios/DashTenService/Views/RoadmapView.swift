@@ -160,28 +160,28 @@ struct PhaseCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(phase.rawValue)
-                        .font(.headline)
+                        .font(.headline.weight(.bold))
                     if isCurrent {
                         StatusBadge(text: "Current", color: AppTheme.forestGreen)
                     }
                 }
                 Text(phase.subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.7))
                 HStack(spacing: 12) {
                     ProgressView(value: completion)
                         .tint(AppTheme.forestGreen)
                     Text("\(completedCount)/\(itemCount)")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
             }
 
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.tertiary)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.primary.opacity(0.5))
         }
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground))
@@ -221,23 +221,23 @@ struct PhaseDetailView: View {
                             .font(.title2.bold())
                     }
                     Text(phase.subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.7))
 
                     let completed = items.filter(\.isCompleted).count
                     HStack(spacing: 8) {
                         ProgressView(value: items.isEmpty ? 0 : Double(completed) / Double(items.count))
                             .tint(AppTheme.forestGreen)
                         Text("\(completed) of \(items.count) complete")
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.secondary)
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
                 }
 
                 ForEach(groupedByCategory, id: \.0) { category, categoryItems in
                     VStack(alignment: .leading, spacing: 10) {
                         Label(category.rawValue, systemImage: category.icon)
-                            .font(.subheadline.weight(.semibold))
+                            .font(.subheadline.weight(.bold))
                             .foregroundStyle(AppTheme.forestGreen)
 
                         VStack(spacing: 6) {
@@ -250,24 +250,24 @@ struct PhaseDetailView: View {
                                     } label: {
                                         Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
                                             .font(.title3)
-                                            .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : .secondary)
+                                            .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : Color.primary.opacity(0.5))
                                     }
                                     VStack(alignment: .leading, spacing: 2) {
                                         HStack(spacing: 6) {
                                             Text(item.title)
-                                                .font(.subheadline)
+                                                .font(.subheadline.weight(.semibold))
                                                 .strikethrough(item.isCompleted)
-                                                .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                                                .foregroundStyle(item.isCompleted ? Color.primary.opacity(0.5) : Color.primary)
                                             if item.isCustom {
                                                 Image(systemName: "person.fill")
                                                     .font(.caption2)
-                                                    .foregroundStyle(.tertiary)
+                                                    .foregroundStyle(Color.primary.opacity(0.5))
                                             }
                                         }
                                         if !item.subtitle.isEmpty {
                                             Text(item.subtitle)
-                                                .font(.caption)
-                                                .foregroundStyle(.tertiary)
+                                                .font(.caption.weight(.medium))
+                                                .foregroundStyle(.primary.opacity(0.6))
                                         }
                                     }
                                     Spacer()
@@ -277,7 +277,7 @@ struct PhaseDetailView: View {
                                         } label: {
                                             Image(systemName: "trash")
                                                 .font(.caption)
-                                                .foregroundStyle(.red.opacity(0.6))
+                                                .foregroundStyle(.red.opacity(0.8))
                                         }
                                     }
                                 }

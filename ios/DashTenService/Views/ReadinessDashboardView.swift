@@ -52,14 +52,14 @@ struct ReadinessDashboardView: View {
                                 .font(.title.bold())
                                 .foregroundStyle(AppTheme.forestGreen)
                             Text("Ready")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.primary.opacity(0.7))
                         }
                     }
 
                 Text(readinessMessage)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.8))
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
@@ -83,17 +83,17 @@ struct ReadinessDashboardView: View {
                     let pct = readiness.percent(for: category)
                     HStack(spacing: 12) {
                         Image(systemName: category.icon)
-                            .font(.body)
+                            .font(.body.weight(.semibold))
                             .foregroundStyle(colorForCategory(category))
                             .frame(width: 28)
 
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
                                 Text(category.rawValue)
-                                    .font(.subheadline.weight(.medium))
+                                    .font(.subheadline.weight(.bold))
                                 Spacer()
                                 Text("\(pct)%")
-                                    .font(.subheadline.weight(.semibold))
+                                    .font(.subheadline.weight(.bold))
                                     .foregroundStyle(colorForPercent(pct))
                             }
                             ProgressView(value: Double(pct) / 100.0)
@@ -120,8 +120,8 @@ struct ReadinessDashboardView: View {
                             .foregroundStyle(achieved ? AppTheme.gold : Color(.quaternaryLabel))
                             .symbolEffect(.bounce, value: achieved)
                         Text(title)
-                            .font(.caption2.weight(.medium))
-                            .foregroundStyle(achieved ? .primary : .tertiary)
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(achieved ? Color.primary : Color.primary.opacity(0.4))
                             .multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity)
@@ -148,10 +148,10 @@ struct ReadinessDashboardView: View {
                             Text("Share Milestone Card")
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.white.opacity(0.7))
                         }
-                        .font(.subheadline.weight(.medium))
+                        .font(.subheadline.weight(.bold))
                         .foregroundStyle(.white)
                         .padding(14)
                         .background(AppTheme.forestGreen)
@@ -164,8 +164,8 @@ struct ReadinessDashboardView: View {
 
     private var disclaimerNote: some View {
         Text("Your readiness score is based on completed tasks within this app. It does not represent an official assessment or guarantee any specific outcome.")
-            .font(.caption2)
-            .foregroundStyle(.tertiary)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.primary.opacity(0.6))
             .multilineTextAlignment(.center)
             .padding(.top, 8)
     }
@@ -233,8 +233,8 @@ struct MilestoneShareCard: View {
                     .font(.title.bold())
                     .foregroundStyle(.white)
                 Text("\(readinessPercent)% Transition Ready")
-                    .font(.headline)
-                    .foregroundStyle(.white.opacity(0.8))
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.white.opacity(0.9))
             }
 
             HStack(spacing: 24) {
@@ -243,22 +243,22 @@ struct MilestoneShareCard: View {
                         .font(.title2.bold())
                         .foregroundStyle(.white)
                     Text("Tasks Done")
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.7))
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.white.opacity(0.85))
                 }
                 VStack(spacing: 2) {
                     Text("\(totalTasks)")
                         .font(.title2.bold())
                         .foregroundStyle(.white)
                     Text("Total Tasks")
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.7))
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.white.opacity(0.85))
                 }
             }
 
             Text("Planning my transition with DashTen")
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.5))
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.white.opacity(0.7))
         }
         .padding(32)
         .frame(width: 350)

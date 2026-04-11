@@ -42,15 +42,15 @@ struct SectionHeader: View {
         HStack {
             if let icon {
                 Image(systemName: icon)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.subheadline.weight(.bold))
                     .foregroundStyle(AppTheme.forestGreen)
             }
             Text(title)
-                .font(.headline)
+                .font(.headline.weight(.bold))
             Spacer()
             if let action {
                 Button("See All", action: action)
-                    .font(.subheadline)
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(AppTheme.forestGreen)
             }
         }
@@ -78,7 +78,7 @@ struct StatusBadge: View {
 
     var body: some View {
         Text(text)
-            .font(.caption2.weight(.semibold))
+            .font(.caption2.weight(.bold))
             .padding(.horizontal, 8)
             .padding(.vertical, 3)
             .background(color.opacity(0.15))
@@ -111,8 +111,8 @@ struct CountdownView: View {
                 .foregroundStyle(AppTheme.forestGreen)
                 .contentTransition(.numericText())
             Text(info.label)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
         }
     }
 }
@@ -121,11 +121,11 @@ struct NonAffiliationBanner: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Label("Independent App", systemImage: "info.circle.fill")
-                .font(.subheadline.weight(.semibold))
+                .font(.subheadline.weight(.bold))
                 .foregroundStyle(AppTheme.forestGreen)
             Text("This app is independently built and is not affiliated with, endorsed by, or sponsored by any branch of the U.S. military, the Department of Defense, or any federal, state, or local government agency.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.8))
         }
         .padding(14)
         .background(AppTheme.forestGreen.opacity(0.06))
@@ -140,9 +140,9 @@ struct WelcomeFeaturePill: View {
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.caption.weight(.semibold))
+                .font(.caption.weight(.bold))
             Text(text)
-                .font(.caption.weight(.semibold))
+                .font(.caption.weight(.bold))
         }
         .foregroundStyle(.white)
         .padding(.horizontal, 16)
@@ -164,10 +164,10 @@ struct OfficialLinkButton: View {
                     Text(title)
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.5))
                 }
-                .font(.subheadline.weight(.medium))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(AppTheme.forestGreen)
                 .padding(14)
                 .background(AppTheme.forestGreen.opacity(0.08))
