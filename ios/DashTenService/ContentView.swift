@@ -19,14 +19,14 @@ struct ContentView: View {
             Tab("Today", systemImage: "sun.max.fill", value: 0) {
                 TodayView(storage: storage)
             }
-            Tab("Roadmap", systemImage: "map.fill", value: 1) {
-                RoadmapView(storage: storage)
+            Tab("Plan", systemImage: "map.fill", value: 1) {
+                PlanView(storage: storage)
             }
-            Tab("Toolbox", systemImage: "wrench.and.screwdriver.fill", value: 2) {
+            Tab("Tools", systemImage: "wrench.and.screwdriver.fill", value: 2) {
                 ToolboxView(storage: storage)
             }
-            Tab("Benefits", systemImage: "star.fill", value: 3) {
-                BenefitsView(storage: storage)
+            Tab("Learn", systemImage: "book.fill", value: 3) {
+                LearnView(storage: storage)
             }
             Tab("Profile", systemImage: "person.fill", value: 4) {
                 ProfileView(storage: storage)

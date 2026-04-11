@@ -63,6 +63,28 @@ enum AppTheme {
         )
     }
 
+    static var urgentHeroMesh: MeshGradient {
+        MeshGradient(
+            width: 3, height: 3,
+            points: [
+                [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+                [0.0, 0.5], [0.6, 0.4], [1.0, 0.5],
+                [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+            ],
+            colors: [
+                Color(red: 0.3, green: 0.15, blue: 0.05),
+                Color(red: 0.4, green: 0.2, blue: 0.05),
+                Color(red: 0.3, green: 0.15, blue: 0.05),
+                Color(red: 0.35, green: 0.18, blue: 0.05),
+                gold.opacity(0.4),
+                Color(red: 0.3, green: 0.15, blue: 0.05),
+                Color(red: 0.3, green: 0.15, blue: 0.05),
+                Color(red: 0.35, green: 0.18, blue: 0.05),
+                Color(red: 0.3, green: 0.15, blue: 0.05)
+            ]
+        )
+    }
+
     static func timeOfDayGreeting() -> String {
         let hour = Calendar.current.component(.hour, from: Date())
         if hour < 12 { return "Good morning" }

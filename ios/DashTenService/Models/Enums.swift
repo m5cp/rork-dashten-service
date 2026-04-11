@@ -165,6 +165,18 @@ nonisolated enum ReadinessCategory: String, Codable, CaseIterable, Identifiable,
         case .housing: "house.fill"
         }
     }
+
+    var shortLabel: String {
+        switch self {
+        case .admin: "Admin"
+        case .health: "Health"
+        case .education: "Edu"
+        case .employment: "Jobs"
+        case .family: "Family"
+        case .finance: "Finance"
+        case .housing: "Housing"
+        }
+    }
 }
 
 nonisolated enum TimelinePhase: String, Codable, CaseIterable, Identifiable, Sendable {
