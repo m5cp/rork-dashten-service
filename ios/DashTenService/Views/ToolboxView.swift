@@ -4,52 +4,15 @@ struct ToolboxView: View {
     let storage: StorageService
     @State private var activeSheet: ToolboxSheet?
     @State private var searchText: String = ""
-
-    private var currentPhase: TimelinePhase? {
-        guard let sepDate = storage.profile.separationDate else { return nil }
-        let months = Calendar.current.dateComponents([.month], from: Date(), to: sepDate).month ?? 0
-        if months > 18 { return .eighteenToTwentyFour }
-        if months > 12 { return .twelveMonths }
-        if months > 6 { return .sixMonths }
-        if months > 3 { return .ninetyDays }
-        if months > 0 { return .thirtyDays }
-        let monthsSince = Calendar.current.dateComponents([.month], from: sepDate, to: Date()).month ?? 0
-        if monthsSince <= 3 { return .firstNinety }
-        return .firstYear
-    }
-
     @State private var navPath: [PlanningRoute] = []
 
-    private var recommendedTools: [(String, String, String, Color, ToolAction)] {
-        var tools: [(String, String, String, Color, ToolAction)] = []
-        let goals = Set(storage.profile.goals)
-
-        if goals.contains(.financialReset) || goals.contains(.employment) {
-            tools.append(("Compensation Calculator", "Compare military vs. civilian pay", "equal.circle.fill", AppTheme.forestGreen, .sheet(.compensation)))
-        }
-        if goals.contains(.employment) || goals.contains(.certification) {
-            tools.append(("Elevator Pitch Builder", "Craft your intro", "mic.fill", .purple, .nav(.elevatorPitch)))
-        }
-        if goals.contains(.school) || goals.contains(.certification) {
-            tools.append(("GI Bill BAH Calculator", "Estimate housing by location", "house.fill", .blue, .nav(.giBillBAH)))
-        }
-        if goals.contains(.relocation) || goals.contains(.familyReadiness) {
-            tools.append(("Relocation Cost Estimator", "Plan your moving budget", "shippingbox.fill", .pink, .nav(.relocationCost)))
-        }
-        if goals.contains(.financialReset) {
-            tools.append(("Job Offer Compare", "Side-by-side offers", "scalemass.fill", .indigo, .nav(.jobOfferCompare)))
-        }
-
-        if tools.isEmpty {
-            tools.append(("Daily Power-Up", "Your daily motivation", "bolt.fill", AppTheme.gold, .nav(.dailyPowerUp)))
-            tools.append(("Elevator Pitch Builder", "Craft your intro", "mic.fill", .purple, .nav(.elevatorPitch)))
-            tools.append(("Jargon Translator", "Military ↔ civilian", "character.book.closed.fill", .teal, .nav(.jargonTranslator)))
-        }
-
-        return Array(tools.prefix(4))
-    }
-
     private var isSearching: Bool { !searchText.isEmpty }
+
+    private var hasUsedAnyTool: Bool {
+        !storage.checklistItems.filter(\.isCompleted).isEmpty ||
+        !storage.goals.isEmpty ||
+        !storage.journalEntries.isEmpty
+    }
 
     private struct ToolEntry: Identifiable {
         let id = UUID()
@@ -62,38 +25,33 @@ struct ToolboxView: View {
 
     private var allTools: [ToolEntry] {
         [
-            ToolEntry(title: "Compensation Calculator", subtitle: "Military vs. civilian pay comparison", icon: "equal.circle.fill", color: AppTheme.forestGreen, action: .sheet(.compensation)),
-            ToolEntry(title: "Income Gap Planner", subtitle: "Estimate savings needed for the gap", icon: "chart.line.downtrend.xyaxis", color: .orange, action: .sheet(.incomeGap)),
-            ToolEntry(title: "Civilian Budget Builder", subtitle: "Build your post-service budget", icon: "creditcard.fill", color: .purple, action: .sheet(.civilianBudget)),
-            ToolEntry(title: "Emergency Fund Calculator", subtitle: "3-6 months of essential expenses", icon: "shield.lefthalf.filled", color: .teal, action: .sheet(.emergencyFund)),
-            ToolEntry(title: "Research TSP", subtitle: "Explore your TSP rollover options", icon: "arrow.triangle.swap", color: .blue, action: .nav(.tspRollover)),
-            ToolEntry(title: "Salary Negotiation", subtitle: "Compare total compensation packages", icon: "scalemass.fill", color: .indigo, action: .nav(.salaryNegotiation)),
+            ToolEntry(title: "Compensation Calculator", subtitle: "Military vs. civilian pay", icon: "equal.circle.fill", color: AppTheme.forestGreen, action: .sheet(.compensation)),
+            ToolEntry(title: "Income Gap Planner", subtitle: "Savings needed for the gap", icon: "chart.line.downtrend.xyaxis", color: .orange, action: .sheet(.incomeGap)),
+            ToolEntry(title: "Civilian Budget Builder", subtitle: "Post-service budget", icon: "creditcard.fill", color: .purple, action: .sheet(.civilianBudget)),
+            ToolEntry(title: "Emergency Fund Calculator", subtitle: "3–6 months of expenses", icon: "shield.lefthalf.filled", color: .teal, action: .sheet(.emergencyFund)),
             ToolEntry(title: "Cost of Living Comparator", subtitle: "Compare cities side by side", icon: "building.2.fill", color: .mint, action: .nav(.costOfLiving)),
+            ToolEntry(title: "Research TSP", subtitle: "Explore rollover options", icon: "arrow.triangle.swap", color: .blue, action: .nav(.tspRollover)),
             ToolEntry(title: "Job Offer Compare", subtitle: "Side-by-side offer analysis", icon: "scalemass.fill", color: .indigo, action: .nav(.jobOfferCompare)),
-            ToolEntry(title: "Benefits Enrollment Countdown", subtitle: "Track enrollment deadlines", icon: "clock.badge.exclamationmark.fill", color: .orange, action: .nav(.benefitsCountdown)),
-            ToolEntry(title: "Resume Translator", subtitle: "Military to civilian language", icon: "doc.text.fill", color: .teal, action: .nav(.resumeTranslator)),
-            ToolEntry(title: "Interview Prep", subtitle: "Practice behavioral questions", icon: "person.fill.questionmark", color: .blue, action: .nav(.interviewPrep)),
+            ToolEntry(title: "Resume Translator", subtitle: "Military → civilian language", icon: "doc.text.fill", color: .teal, action: .nav(.resumeTranslator)),
+            ToolEntry(title: "Jargon Translator", subtitle: "Military ↔ civilian terms", icon: "character.book.closed.fill", color: .teal, action: .nav(.jargonTranslator)),
+            ToolEntry(title: "Interview Prep", subtitle: "Behavioral questions", icon: "person.fill.questionmark", color: .blue, action: .nav(.interviewPrep)),
+            ToolEntry(title: "Elevator Pitch Builder", subtitle: "30/60/90-second intro", icon: "mic.fill", color: .purple, action: .nav(.elevatorPitch)),
+            ToolEntry(title: "Skills Inventory", subtitle: "Map skills to careers", icon: "list.clipboard.fill", color: .orange, action: .nav(.skillsInventory)),
+            ToolEntry(title: "Personal Brand Audit", subtitle: "Score your presence", icon: "person.crop.circle.badge.checkmark", color: .blue, action: .nav(.personalBrandAudit)),
             ToolEntry(title: "Networking Scorecard", subtitle: "Track weekly connections", icon: "person.3.fill", color: .purple, action: .nav(.networkingScorecard)),
-            ToolEntry(title: "Skills Inventory", subtitle: "Map skills to civilian careers", icon: "list.clipboard.fill", color: .orange, action: .nav(.skillsInventory)),
-            ToolEntry(title: "Elevator Pitch Builder", subtitle: "Craft your 30/60/90-second intro", icon: "mic.fill", color: .purple, action: .nav(.elevatorPitch)),
-            ToolEntry(title: "Jargon Translator", subtitle: "Military ↔ civilian language", icon: "character.book.closed.fill", color: .teal, action: .nav(.jargonTranslator)),
-            ToolEntry(title: "Personal Brand Audit", subtitle: "Score your professional presence", icon: "person.crop.circle.badge.checkmark", color: .blue, action: .nav(.personalBrandAudit)),
             ToolEntry(title: "Networking Event Prep", subtitle: "Prepare and follow up", icon: "person.3.sequence.fill", color: .pink, action: .nav(.networkingEventPrep)),
-            ToolEntry(title: "GI Bill BAH Calculator", subtitle: "Estimate housing allowance by location", icon: "house.fill", color: .blue, action: .nav(.giBillBAH)),
-            ToolEntry(title: "Education Benefit Comparison", subtitle: "Compare GI Bill options side by side", icon: "chart.bar.doc.horizontal.fill", color: .indigo, action: .nav(.educationComparison)),
+            ToolEntry(title: "GI Bill BAH Calculator", subtitle: "Housing allowance by location", icon: "house.fill", color: .blue, action: .nav(.giBillBAH)),
+            ToolEntry(title: "Education Benefit Comparison", subtitle: "Compare GI Bill options", icon: "chart.bar.doc.horizontal.fill", color: .indigo, action: .nav(.educationComparison)),
             ToolEntry(title: "Relocation Cost Estimator", subtitle: "Plan your moving budget", icon: "shippingbox.fill", color: .pink, action: .nav(.relocationCost)),
-            ToolEntry(title: "State Benefits Finder", subtitle: "Find state-specific veteran benefits", icon: "flag.fill", color: AppTheme.forestGreen, action: .nav(.stateBenefits)),
+            ToolEntry(title: "State Benefits Finder", subtitle: "State-specific veteran benefits", icon: "flag.fill", color: AppTheme.forestGreen, action: .nav(.stateBenefits)),
+            ToolEntry(title: "Benefits Enrollment Countdown", subtitle: "Track enrollment deadlines", icon: "clock.badge.exclamationmark.fill", color: .orange, action: .nav(.benefitsCountdown)),
             ToolEntry(title: "Decision Matrix", subtitle: "Weighted decision tool", icon: "square.grid.3x3.fill", color: .blue, action: .nav(.decisionMatrix)),
             ToolEntry(title: "First 90 Days Planner", subtitle: "Week-by-week post-hire plan", icon: "calendar.badge.clock", color: .purple, action: .nav(.ninetyDayPlanner)),
+            ToolEntry(title: "90-Day Goal Tracker", subtitle: "Set and track top goals", icon: "target", color: AppTheme.forestGreen, action: .nav(.goalTracker)),
             ToolEntry(title: "Transition Journal", subtitle: "Daily guided prompts", icon: "book.fill", color: .purple, action: .nav(.transitionJournal)),
-            ToolEntry(title: "90-Day Goal Tracker", subtitle: "Set and track your top goals", icon: "target", color: AppTheme.forestGreen, action: .nav(.goalTracker)),
-            ToolEntry(title: "Weekly Check-In", subtitle: "Track your well-being over time", icon: "chart.xyaxis.line", color: .blue, action: .nav(.weeklyCheckIn)),
-            ToolEntry(title: "Weekly Challenges", subtitle: "Earn XP with weekly tasks", icon: "bolt.fill", color: AppTheme.gold, action: .nav(.weeklyChallenges)),
-            ToolEntry(title: "Daily Power-Up", subtitle: "Daily motivation + priority", icon: "bolt.fill", color: AppTheme.gold, action: .nav(.dailyPowerUp)),
+            ToolEntry(title: "Weekly Check-In", subtitle: "Track well-being over time", icon: "chart.xyaxis.line", color: .blue, action: .nav(.weeklyCheckIn)),
             ToolEntry(title: "Readiness Check-In", subtitle: "Quick self-assessment", icon: "checklist.checked", color: .teal, action: .nav(.selfAssessment)),
             ToolEntry(title: "Final Gear Check", subtitle: "Pre-separation review", icon: "checkmark.shield.fill", color: .orange, action: .nav(.finalGearCheck)),
-            ToolEntry(title: "Mentor Tracker", subtitle: "Build your civilian network", icon: "person.2.fill", color: .pink, action: .nav(.mentorTracker)),
-            ToolEntry(title: "Achievement Badges", subtitle: "Track your accomplishments", icon: "trophy.fill", color: AppTheme.gold, action: .nav(.achievementBadges)),
         ]
     }
 
@@ -108,19 +66,17 @@ struct ToolboxView: View {
     var body: some View {
         NavigationStack(path: $navPath) {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 24) {
                     if isSearching {
                         searchResultsSection
                     } else {
-                        gamificationHeader
-                        recommendedSection
-                        interactiveToolsSection
-                        financialToolsSection
-                        careerToolsSection
-                        educationToolsSection
-                        relocationToolsSection
-                        planningToolsSection
-                        wellnessToolsSection
+                        if !hasUsedAnyTool {
+                            startHereSection
+                        }
+                        financialSection
+                        careerSection
+                        educationRelocationSection
+                        planningSection
                     }
                 }
                 .padding(.horizontal, 16)
@@ -192,80 +148,67 @@ struct ToolboxView: View {
         }
     }
 
-    private var gamificationHeader: some View {
-        NavigationLink(value: PlanningRoute.achievementBadges) {
-            HStack(spacing: 16) {
-                ProgressRing(progress: storage.transitionLevel.progressToNextLevel, size: 48, lineWidth: 4, color: AppTheme.gold)
-                    .overlay {
-                        Text("Lv\(storage.transitionLevel.level)")
-                            .font(.system(size: 10, weight: .heavy))
-                            .foregroundStyle(AppTheme.gold)
-                    }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(storage.transitionLevel.levelTitle)
-                        .font(.headline.weight(.bold))
-                    HStack(spacing: 12) {
-                        Label("\(storage.transitionLevel.totalXPEarned) XP", systemImage: "star.fill")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(AppTheme.gold)
-                        Label("\(storage.badges.filter(\.isUnlocked).count) badges", systemImage: "trophy.fill")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(16)
-            .background(
-                LinearGradient(colors: [AppTheme.gold.opacity(0.08), AppTheme.gold.opacity(0.02)], startPoint: .leading, endPoint: .trailing)
-            )
-            .clipShape(.rect(cornerRadius: 16))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(AppTheme.gold.opacity(0.15), lineWidth: 1)
-            )
+    private func handleAction(_ action: ToolAction) {
+        switch action {
+        case .sheet(let sheet):
+            activeSheet = sheet
+        case .nav(let route):
+            navPath.append(route)
         }
-        .buttonStyle(.plain)
     }
 
-    private var recommendedSection: some View {
+    // MARK: - Start Here
+
+    private var startHereSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 8) {
-                Image(systemName: "sparkles")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(AppTheme.gold)
-                Text("Recommended for You")
+            HStack(spacing: 10) {
+                Image(systemName: "signpost.right.and.left.fill")
                     .font(.title3.weight(.bold))
-            }
-
-            if !storage.profile.goals.isEmpty {
-                Text("Based on your goals")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(Array(recommendedTools.enumerated()), id: \.offset) { _, tool in
-                        RecommendedToolCard(
-                            title: tool.0,
-                            subtitle: tool.1,
-                            icon: tool.2,
-                            color: tool.3,
-                            action: { handleAction(tool.4) }
-                        )
-                    }
+                    .foregroundStyle(AppTheme.forestGreen)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Start Here")
+                        .font(.title3.weight(.bold))
+                    Text("Not sure where to begin? Start with these three.")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
                 }
             }
-            .contentMargins(.horizontal, 0)
+
+            VStack(spacing: 2) {
+                StartHereRow(
+                    step: "1",
+                    title: "Compensation Calculator",
+                    subtitle: "See what your military pay really equals in the civilian world",
+                    icon: "equal.circle.fill",
+                    color: AppTheme.forestGreen
+                ) {
+                    activeSheet = .compensation
+                }
+                StartHereRow(
+                    step: "2",
+                    title: "Skills Inventory",
+                    subtitle: "Map your military experience to civilian career fields",
+                    icon: "list.clipboard.fill",
+                    color: .orange
+                ) {
+                    navPath.append(.skillsInventory)
+                }
+                StartHereRow(
+                    step: "3",
+                    title: "Readiness Check-In",
+                    subtitle: "Take a quick self-assessment to see where you stand",
+                    icon: "checklist.checked",
+                    color: .teal
+                ) {
+                    navPath.append(.selfAssessment)
+                }
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 14))
         }
     }
+
+    // MARK: - Search
 
     private var searchResultsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -293,30 +236,10 @@ struct ToolboxView: View {
         }
     }
 
-    private func handleAction(_ action: ToolAction) {
-        switch action {
-        case .sheet(let sheet):
-            activeSheet = sheet
-        case .nav(let route):
-            navPath.append(route)
-        }
-    }
+    // MARK: - Financial
 
-    private var interactiveToolsSection: some View {
-        ToolboxSection(title: "Interactive Tools", icon: "sparkle.magnifyingglass", color: AppTheme.forestGreen) {
-            ToolboxNavRow(title: "Daily Power-Up", subtitle: "Daily motivation + #1 priority", icon: "bolt.fill", color: AppTheme.gold, route: .dailyPowerUp)
-            ToolboxNavRow(title: "Weekly Challenges", subtitle: "Earn XP with weekly tasks", icon: "flame.fill", color: .orange, route: .weeklyChallenges)
-            ToolboxNavRow(title: "Achievement Badges", subtitle: "Track your accomplishments", icon: "trophy.fill", color: AppTheme.gold, route: .achievementBadges)
-            ToolboxNavRow(title: "Elevator Pitch Builder", subtitle: "Craft your 30/60/90-second intro", icon: "mic.fill", color: .purple, route: .elevatorPitch)
-            ToolboxNavRow(title: "Jargon Translator", subtitle: "Military ↔ civilian language", icon: "character.book.closed.fill", color: .teal, route: .jargonTranslator)
-            ToolboxNavRow(title: "Decision Matrix", subtitle: "Weighted decision-making tool", icon: "square.grid.3x3.fill", color: .blue, route: .decisionMatrix)
-            ToolboxNavRow(title: "First 90 Days Planner", subtitle: "Week-by-week post-hire plan", icon: "calendar.badge.clock", color: .purple, route: .ninetyDayPlanner)
-            ToolboxNavRow(title: "Personal Brand Audit", subtitle: "Score your professional presence", icon: "person.crop.circle.badge.checkmark", color: .blue, route: .personalBrandAudit)
-        }
-    }
-
-    private var financialToolsSection: some View {
-        ToolboxSection(title: "Financial", icon: "dollarsign.circle.fill", color: AppTheme.gold) {
+    private var financialSection: some View {
+        ToolboxSection(title: "Know Your Numbers", icon: "dollarsign.circle.fill", color: AppTheme.gold) {
             ToolboxSheetRow(title: "Compensation Calculator", subtitle: "Military vs. civilian pay comparison", icon: "equal.circle.fill", color: AppTheme.forestGreen) {
                 activeSheet = .compensation
             }
@@ -326,56 +249,53 @@ struct ToolboxView: View {
             ToolboxSheetRow(title: "Civilian Budget Builder", subtitle: "Build your post-service budget", icon: "creditcard.fill", color: .purple) {
                 activeSheet = .civilianBudget
             }
-            ToolboxSheetRow(title: "Emergency Fund Calculator", subtitle: "3-6 months of essential expenses", icon: "shield.lefthalf.filled", color: .teal) {
+            ToolboxSheetRow(title: "Emergency Fund Calculator", subtitle: "3–6 months of essential expenses", icon: "shield.lefthalf.filled", color: .teal) {
                 activeSheet = .emergencyFund
             }
             ToolboxNavRow(title: "Research TSP", subtitle: "Explore your TSP rollover options", icon: "arrow.triangle.swap", color: .blue, route: .tspRollover)
-            ToolboxNavRow(title: "Salary Negotiation", subtitle: "Compare total compensation packages", icon: "scalemass.fill", color: .indigo, route: .salaryNegotiation)
             ToolboxNavRow(title: "Cost of Living Comparator", subtitle: "Compare cities side by side", icon: "building.2.fill", color: .mint, route: .costOfLiving)
             ToolboxNavRow(title: "Job Offer Compare", subtitle: "Side-by-side offer analysis", icon: "scalemass.fill", color: .indigo, route: .jobOfferCompare)
+        }
+    }
+
+    // MARK: - Career
+
+    private var careerSection: some View {
+        ToolboxSection(title: "Get Career Ready", icon: "briefcase.fill", color: .teal) {
+            ToolboxNavRow(title: "Resume Translator", subtitle: "Military → civilian language", icon: "doc.text.fill", color: .teal, route: .resumeTranslator)
+            ToolboxNavRow(title: "Jargon Translator", subtitle: "Military ↔ civilian terms", icon: "character.book.closed.fill", color: .teal, route: .jargonTranslator)
+            ToolboxNavRow(title: "Interview Prep", subtitle: "Practice behavioral questions", icon: "person.fill.questionmark", color: .blue, route: .interviewPrep)
+            ToolboxNavRow(title: "Elevator Pitch Builder", subtitle: "Craft your 30/60/90-second intro", icon: "mic.fill", color: .purple, route: .elevatorPitch)
+            ToolboxNavRow(title: "Skills Inventory", subtitle: "Map skills to civilian careers", icon: "list.clipboard.fill", color: .orange, route: .skillsInventory)
+            ToolboxNavRow(title: "Personal Brand Audit", subtitle: "Score your professional presence", icon: "person.crop.circle.badge.checkmark", color: .blue, route: .personalBrandAudit)
+            ToolboxNavRow(title: "Networking Scorecard", subtitle: "Track weekly connections", icon: "person.3.fill", color: .purple, route: .networkingScorecard)
+            ToolboxNavRow(title: "Networking Event Prep", subtitle: "Prepare and follow up on events", icon: "person.3.sequence.fill", color: .pink, route: .networkingEventPrep)
+        }
+    }
+
+    // MARK: - Education & Relocation
+
+    private var educationRelocationSection: some View {
+        ToolboxSection(title: "Plan Your Move", icon: "graduationcap.fill", color: .blue) {
+            ToolboxNavRow(title: "GI Bill BAH Calculator", subtitle: "Estimate housing allowance by location", icon: "house.fill", color: .blue, route: .giBillBAH)
+            ToolboxNavRow(title: "Education Benefit Comparison", subtitle: "Compare GI Bill options side by side", icon: "chart.bar.doc.horizontal.fill", color: .indigo, route: .educationComparison)
+            ToolboxNavRow(title: "Relocation Cost Estimator", subtitle: "Plan your moving budget", icon: "shippingbox.fill", color: .pink, route: .relocationCost)
+            ToolboxNavRow(title: "State Benefits Finder", subtitle: "Find state-specific veteran benefits", icon: "flag.fill", color: AppTheme.forestGreen, route: .stateBenefits)
             ToolboxNavRow(title: "Benefits Enrollment Countdown", subtitle: "Track enrollment deadlines", icon: "clock.badge.exclamationmark.fill", color: .orange, route: .benefitsCountdown)
         }
     }
 
-    private var careerToolsSection: some View {
-        ToolboxSection(title: "Career", icon: "briefcase.fill", color: .teal) {
-            ToolboxNavRow(title: "Resume Translator", subtitle: "Military to civilian language", icon: "doc.text.fill", color: .teal, route: .resumeTranslator)
-            ToolboxNavRow(title: "Interview Prep", subtitle: "Practice behavioral questions", icon: "person.fill.questionmark", color: .blue, route: .interviewPrep)
-            ToolboxNavRow(title: "Networking Scorecard", subtitle: "Track weekly connections", icon: "person.3.fill", color: .purple, route: .networkingScorecard)
-            ToolboxNavRow(title: "Networking Event Prep", subtitle: "Prepare and follow up on events", icon: "person.3.sequence.fill", color: .pink, route: .networkingEventPrep)
-            ToolboxNavRow(title: "Skills Inventory", subtitle: "Map skills to civilian careers", icon: "list.clipboard.fill", color: .orange, route: .skillsInventory)
-        }
-    }
+    // MARK: - Planning & Tracking
 
-    private var educationToolsSection: some View {
-        ToolboxSection(title: "Education", icon: "graduationcap.fill", color: .blue) {
-            ToolboxNavRow(title: "GI Bill BAH Calculator", subtitle: "Estimate housing allowance by location", icon: "house.fill", color: .blue, route: .giBillBAH)
-            ToolboxNavRow(title: "Education Benefit Comparison", subtitle: "Compare GI Bill options side by side", icon: "chart.bar.doc.horizontal.fill", color: .indigo, route: .educationComparison)
-        }
-    }
-
-    private var relocationToolsSection: some View {
-        ToolboxSection(title: "Relocation", icon: "map.fill", color: .pink) {
-            ToolboxNavRow(title: "Relocation Cost Estimator", subtitle: "Plan your moving budget", icon: "shippingbox.fill", color: .pink, route: .relocationCost)
-            ToolboxNavRow(title: "State Benefits Finder", subtitle: "Find state-specific veteran benefits", icon: "flag.fill", color: AppTheme.forestGreen, route: .stateBenefits)
-        }
-    }
-
-    private var planningToolsSection: some View {
-        ToolboxSection(title: "Planning & Decisions", icon: "map.fill", color: .purple) {
+    private var planningSection: some View {
+        ToolboxSection(title: "Stay on Track", icon: "chart.xyaxis.line", color: .purple) {
             ToolboxNavRow(title: "Decision Matrix", subtitle: "Weighted decision-making tool", icon: "square.grid.3x3.fill", color: .blue, route: .decisionMatrix)
             ToolboxNavRow(title: "First 90 Days Planner", subtitle: "Week-by-week post-hire plan", icon: "calendar.badge.clock", color: .purple, route: .ninetyDayPlanner)
-        }
-    }
-
-    private var wellnessToolsSection: some View {
-        ToolboxSection(title: "Wellness & Tracking", icon: "heart.fill", color: .red) {
-            ToolboxNavRow(title: "Transition Journal", subtitle: "Daily guided prompts", icon: "book.fill", color: .purple, route: .transitionJournal)
             ToolboxNavRow(title: "90-Day Goal Tracker", subtitle: "Set and track your top goals", icon: "target", color: AppTheme.forestGreen, route: .goalTracker)
+            ToolboxNavRow(title: "Transition Journal", subtitle: "Daily guided prompts", icon: "book.fill", color: .purple, route: .transitionJournal)
             ToolboxNavRow(title: "Weekly Check-In", subtitle: "Track your well-being over time", icon: "chart.xyaxis.line", color: .blue, route: .weeklyCheckIn)
             ToolboxNavRow(title: "Readiness Check-In", subtitle: "Quick self-assessment", icon: "checklist.checked", color: .teal, route: .selfAssessment)
             ToolboxNavRow(title: "Final Gear Check", subtitle: "Pre-separation review", icon: "checkmark.shield.fill", color: .orange, route: .finalGearCheck)
-            ToolboxNavRow(title: "Mentor Tracker", subtitle: "Build your civilian network", icon: "person.2.fill", color: .pink, route: .mentorTracker)
         }
     }
 }
@@ -390,7 +310,10 @@ enum ToolboxSheet: String, Identifiable {
     var id: String { rawValue }
 }
 
-struct RecommendedToolCard: View {
+// MARK: - Start Here Row
+
+struct StartHereRow: View {
+    let step: String
     let title: String
     let subtitle: String
     let icon: String
@@ -399,33 +322,41 @@ struct RecommendedToolCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 12) {
-                Image(systemName: icon)
-                    .font(.title2.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background(color.gradient)
-                    .clipShape(.rect(cornerRadius: 12))
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(color)
+                        .frame(width: 32, height: 32)
+                    Text(step)
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(.white)
+                }
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 3) {
                     Text(title)
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(.primary)
-                        .lineLimit(2)
                     Text(subtitle)
-                        .font(.caption2.weight(.semibold))
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
                 }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
             }
-            .frame(width: 150, alignment: .leading)
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 16))
+            .padding(.horizontal, 14)
+            .padding(.vertical, 14)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 }
+
+// MARK: - Section & Row Components
 
 struct ToolboxSection<Content: View>: View {
     let title: String
@@ -443,11 +374,35 @@ struct ToolboxSection<Content: View>: View {
                     .font(.headline.weight(.bold))
             }
 
-            VStack(spacing: 2) {
+            ToolboxDividedStack {
                 content
             }
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(.rect(cornerRadius: 14))
+        }
+    }
+}
+
+struct ToolboxDividedStack<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        _VariadicView.Tree(DividedLayout()) {
+            content
+        }
+    }
+}
+
+private struct DividedLayout: _VariadicView_MultiViewRoot {
+    func body(children: _VariadicView.Children) -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(children.enumerated()), id: \.element.id) { index, child in
+                child
+                if index < children.count - 1 {
+                    Divider()
+                        .padding(.leading, 58)
+                }
+            }
         }
     }
 }
