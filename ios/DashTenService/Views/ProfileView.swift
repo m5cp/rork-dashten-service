@@ -377,8 +377,7 @@ struct SourceTransparencyView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Official Resources")
                             .font(.headline.weight(.bold))
-                        OfficialLinkButton(title: "Military OneSource", url: "https://www.militaryonesource.mil/")
-                        OfficialLinkButton(title: "Department of Labor Veterans' Employment", url: "https://www.dol.gov/agencies/vets")
+                        OfficialLinkButton(title: "Benefits.gov", url: "https://www.benefits.gov/")
                         OfficialLinkButton(title: "National Archives (Records)", url: "https://www.archives.gov/veterans")
                         OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
                     }

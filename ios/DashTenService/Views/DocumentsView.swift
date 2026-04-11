@@ -170,23 +170,7 @@ struct StatCard: View {
     }
 }
 
-struct FilterChip: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
 
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.caption.weight(.bold))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
-                .background(isSelected ? AppTheme.forestGreen : Color(.secondarySystemGroupedBackground))
-                .foregroundStyle(isSelected ? .white : .primary)
-                .clipShape(Capsule())
-        }
-    }
-}
 
 struct DocumentRow: View {
     let document: DocumentItem

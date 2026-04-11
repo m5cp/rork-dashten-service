@@ -81,6 +81,7 @@ struct TodayView: View {
                     nextActionsSection
                     weeklyFocusSection
                     planningToolsSection
+                    mindsetSpotlight
                     insightSpotlight
                     documentsAlert
                     crisisQuickAccess
@@ -106,6 +107,16 @@ struct TodayView: View {
                     CrisisResourcesView()
                 case .firstThirtyDays:
                     FirstThirtyDaysView()
+                case .mindsetShifts:
+                    MindsetShiftsView()
+                case .civilianPlaybook:
+                    CivilianPlaybookView()
+                case .selfAssessment:
+                    SelfAssessmentView(storage: storage)
+                case .finalGearCheck:
+                    FinalGearCheckView(storage: storage)
+                case .mentorTracker:
+                    MentorTrackerView(storage: storage)
                 }
             }
         }
@@ -321,11 +332,51 @@ struct TodayView: View {
                     PlanningToolChip(title: "Financial", icon: "dollarsign.circle.fill", color: AppTheme.gold, route: .financial)
                     PlanningToolChip(title: "Readiness", icon: "chart.bar.fill", color: AppTheme.forestGreen, route: .readiness)
                     PlanningToolChip(title: "First 30\nDays", icon: "flag.fill", color: .purple, route: .firstThirtyDays)
+                    PlanningToolChip(title: "Mindset", icon: "brain.fill", color: .purple, route: .mindsetShifts)
+                    PlanningToolChip(title: "Playbook", icon: "book.closed.fill", color: .blue, route: .civilianPlaybook)
+                    PlanningToolChip(title: "Check-In", icon: "checklist.checked", color: .teal, route: .selfAssessment)
+                    PlanningToolChip(title: "Gear\nCheck", icon: "checkmark.shield.fill", color: .orange, route: .finalGearCheck)
+                    PlanningToolChip(title: "Mentors", icon: "person.2.fill", color: .pink, route: .mentorTracker)
                     PlanningToolChip(title: "Crisis Help", icon: "heart.fill", color: .red, route: .crisis)
                 }
             }
             .contentMargins(.horizontal, 0)
             .scrollIndicators(.hidden)
+        }
+    }
+
+    private var mindsetSpotlight: some View {
+        Group {
+            let shifts = TransitionDataService.mindsetShifts()
+            if !shifts.isEmpty {
+                let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
+                let shift = shifts[dayOfYear % shifts.count]
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader("Mindset Shift", icon: "brain.fill")
+                    NavigationLink(value: PlanningRoute.mindsetShifts) {
+                        CardView {
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack {
+                                    StatusBadge(text: shift.category.rawValue, color: .purple)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.primary.opacity(0.4))
+                                }
+                                Text(shift.title)
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.primary)
+                                Text(shift.insight)
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.primary.opacity(0.8))
+                                    .lineLimit(3)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
     }
 

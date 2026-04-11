@@ -66,10 +66,60 @@ struct PlanningHubView: View {
                 }
                 .buttonStyle(.plain)
 
+                NavigationLink(value: PlanningRoute.mindsetShifts) {
+                    PlanningCard(
+                        title: "Mindset Shifts",
+                        subtitle: "Navigate the mental side of transition",
+                        icon: "brain.fill",
+                        color: .purple
+                    )
+                }
+                .buttonStyle(.plain)
+
+                NavigationLink(value: PlanningRoute.civilianPlaybook) {
+                    PlanningCard(
+                        title: "Civilian Playbook",
+                        subtitle: "Unwritten rules of civilian life",
+                        icon: "book.closed.fill",
+                        color: .blue
+                    )
+                }
+                .buttonStyle(.plain)
+
+                NavigationLink(value: PlanningRoute.selfAssessment) {
+                    PlanningCard(
+                        title: "Readiness Check-In",
+                        subtitle: "Quick self-assessment across all categories",
+                        icon: "checklist.checked",
+                        color: .teal
+                    )
+                }
+                .buttonStyle(.plain)
+
+                NavigationLink(value: PlanningRoute.finalGearCheck) {
+                    PlanningCard(
+                        title: "Final Gear Check",
+                        subtitle: "Pre-separation readiness review",
+                        icon: "checkmark.shield.fill",
+                        color: .orange
+                    )
+                }
+                .buttonStyle(.plain)
+
+                NavigationLink(value: PlanningRoute.mentorTracker) {
+                    PlanningCard(
+                        title: "Mentor Tracker",
+                        subtitle: "Build your civilian network",
+                        icon: "person.2.fill",
+                        color: .pink
+                    )
+                }
+                .buttonStyle(.plain)
+
                 NavigationLink(value: PlanningRoute.crisis) {
                     PlanningCard(
                         title: "Crisis & Support Resources",
-                        subtitle: "24/7 help lines and veteran support",
+                        subtitle: "24/7 help lines and support",
                         icon: "heart.fill",
                         color: .red
                     )
@@ -91,6 +141,11 @@ enum PlanningRoute: Hashable {
     case readiness
     case crisis
     case firstThirtyDays
+    case mindsetShifts
+    case civilianPlaybook
+    case selfAssessment
+    case finalGearCheck
+    case mentorTracker
 }
 
 struct PlanningCard: View {
@@ -293,9 +348,8 @@ struct CareerPlanningView: View {
                     }
                 }
 
-                OfficialLinkButton(title: "Department of Labor Veterans' Employment", url: "https://www.dol.gov/agencies/vets")
-                OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
                 OfficialLinkButton(title: "O*NET Military Crosswalk Search", url: "https://www.onetonline.org/crosswalk/MOC/")
+                OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
 
                 Text("Always verify employment programs and eligibility with official sources.")
                     .font(.caption.weight(.semibold))
@@ -455,8 +509,7 @@ struct EducationPlanningView: View {
                     }
                 }
 
-                OfficialLinkButton(title: "Education Benefits Info", url: "https://www.va.gov/education/")
-                OfficialLinkButton(title: "Education Benefit Comparison Tool", url: "https://www.va.gov/gi-bill-comparison-tool/")
+                OfficialLinkButton(title: "Education Benefits Info", url: "https://www.benefits.gov/benefit/4769")
 
                 Text("Verify all education benefit details with official sources before making enrollment decisions.")
                     .font(.caption.weight(.semibold))
@@ -562,7 +615,7 @@ struct FamilyPlanningView: View {
                     }
                 }
 
-                OfficialLinkButton(title: "Military OneSource Relocation", url: "https://www.militaryonesource.mil/moving-pcs/")
+                OfficialLinkButton(title: "USA.gov Moving Checklist", url: "https://www.usa.gov/moving")
 
                 Text("Research state-specific requirements for licensing, registration, and enrollment in your target area.")
                     .font(.caption.weight(.semibold))

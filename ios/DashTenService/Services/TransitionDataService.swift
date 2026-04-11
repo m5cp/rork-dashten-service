@@ -141,9 +141,9 @@ enum TransitionDataService {
                     "What happens to my health coverage during the transition gap?",
                     "Can my dependents receive health care through veteran programs?"
                 ],
-                officialLink: "https://www.va.gov/health-care/",
+                officialLink: "https://www.healthcare.gov/",
                 actionItems: [
-                    BenefitAction(id: "ba1", title: "Research veteran health care eligibility"),
+                    BenefitAction(id: "ba1", title: "Research post-service health care eligibility"),
                     BenefitAction(id: "ba2", title: "Gather required documents"),
                     BenefitAction(id: "ba3", title: "Complete health benefits application"),
                     BenefitAction(id: "ba4", title: "Locate nearest medical facility"),
@@ -182,11 +182,11 @@ enum TransitionDataService {
                     "What conditions should I document before separating?",
                     "How do I request my complete medical records?"
                 ],
-                officialLink: "https://www.va.gov/disability/",
+                officialLink: "https://www.benefits.gov/benefit/4868",
                 actionItems: [
                     BenefitAction(id: "ba6", title: "Review all medical conditions from service"),
                     BenefitAction(id: "ba7", title: "Request complete service medical records"),
-                    BenefitAction(id: "ba8", title: "Contact a Veterans Service Organization"),
+                    BenefitAction(id: "ba8", title: "Contact a veteran service organization for guidance"),
                     BenefitAction(id: "ba9", title: "File initial claim or intent to file"),
                     BenefitAction(id: "ba10", title: "Attend all scheduled examinations"),
                 ],
@@ -222,7 +222,7 @@ enum TransitionDataService {
                     "Is my intended school/program approved for veteran education benefits?",
                     "What is the monthly housing allowance for my school's ZIP code?"
                 ],
-                officialLink: "https://www.va.gov/education/",
+                officialLink: "https://www.benefits.gov/benefit/4769",
                 actionItems: [
                     BenefitAction(id: "ba11", title: "Determine which education benefit applies to you"),
                     BenefitAction(id: "ba12", title: "Request your Certificate of Eligibility"),
@@ -262,7 +262,7 @@ enum TransitionDataService {
                     "What support services are available beyond tuition?",
                     "How do career readiness programs interact with my education benefits?"
                 ],
-                officialLink: "https://www.va.gov/careers-employment/vocational-rehabilitation/",
+                officialLink: "https://www.benefits.gov/benefit/5886",
                 actionItems: [
                     BenefitAction(id: "ba16", title: "Check eligibility based on disability rating"),
                     BenefitAction(id: "ba17", title: "Complete career readiness application"),
@@ -343,7 +343,7 @@ enum TransitionDataService {
                     "Can I use a veteran home loan for a multi-family property?",
                     "What credit score do approved lenders require?"
                 ],
-                officialLink: "https://www.va.gov/housing-assistance/home-loans/",
+                officialLink: "https://www.benefits.gov/benefit/5574",
                 actionItems: [
                     BenefitAction(id: "ba25", title: "Request Certificate of Eligibility"),
                     BenefitAction(id: "ba26", title: "Research approved lenders"),
@@ -382,7 +382,7 @@ enum TransitionDataService {
                     "Should I convert to VGLI or get private life insurance?",
                     "Am I eligible for TSGLI?"
                 ],
-                officialLink: "https://www.va.gov/life-insurance/",
+                officialLink: "https://www.benefits.gov/benefit/4785",
                 actionItems: [
                     BenefitAction(id: "ba29", title: "Note your SGLI expiration date"),
                     BenefitAction(id: "ba30", title: "Research VGLI vs. private insurance costs"),
@@ -421,7 +421,7 @@ enum TransitionDataService {
                     "How do I update DEERS after separation?",
                     "What survivor benefits should I set up?"
                 ],
-                officialLink: "https://www.va.gov/family-member-benefits/",
+                officialLink: "https://www.benefits.gov/benefit/4868",
                 actionItems: [
                     BenefitAction(id: "ba33", title: "Update DEERS records"),
                     BenefitAction(id: "ba34", title: "Research dependent health care options"),
@@ -516,8 +516,8 @@ enum TransitionDataService {
                 overview: "The transition period can be challenging. Connecting with community support, veteran organizations, and knowing how to access crisis resources is important for long-term wellbeing.",
                 whyItMatters: "Isolation is one of the biggest risks during transition. Building connections and knowing where to turn in difficult moments can make a critical difference.",
                 eligibilityFactors: [
-                    "988 Suicide & Crisis Lifeline is available to all veterans and service members",
-                    "Vet Centers provide readjustment counseling at no cost",
+                    "988 Suicide & Crisis Lifeline is available to everyone",
+                    "Readjustment counseling centers offer free support",
                     "Many non-profit organizations serve veterans and families",
                     "State and local programs vary by location"
                 ],
@@ -528,22 +528,22 @@ enum TransitionDataService {
                 ],
                 commonMistakes: [
                     "Thinking asking for help is a sign of weakness",
-                    "Not knowing about Vet Centers (separate from veteran hospitals)",
+                    "Not knowing readjustment counseling centers exist",
                     "Waiting until crisis to find resources",
                     "Not connecting with local veteran community"
                 ],
                 questionsToAsk: [
-                    "Where is my nearest Vet Center?",
+                    "Where is my nearest counseling or support center?",
                     "What veteran organizations are active in my area?",
                     "Are there peer support groups near me?",
                     "What crisis resources are available 24/7?"
                 ],
-                officialLink: "https://www.veteranscrisisline.net/",
+                officialLink: "https://988lifeline.org/",
                 actionItems: [
                     BenefitAction(id: "ba46", title: "Save 988 Suicide & Crisis Lifeline number"),
-                    BenefitAction(id: "ba47", title: "Locate nearest Vet Center"),
+                    BenefitAction(id: "ba47", title: "Locate nearest counseling or support center"),
                     BenefitAction(id: "ba48", title: "Research local veteran organizations"),
-                    BenefitAction(id: "ba49", title: "Connect with at least one veteran community group"),
+                    BenefitAction(id: "ba49", title: "Connect with at least one community group"),
                 ],
                 isStarted: false,
                 isSaved: false
@@ -576,9 +576,157 @@ enum TransitionDataService {
             CrisisResource(title: "988 Suicide & Crisis Lifeline", subtitle: "Free, confidential support 24/7 for veterans, service members, and their families", phoneNumber: "988", textLine: "838255", url: "https://www.veteranscrisisline.net/", icon: "phone.fill", isEmergency: true),
             CrisisResource(title: "Crisis Text Line", subtitle: "Text HOME to 741741 for free crisis support", textLine: "741741", url: "https://www.crisistextline.org/", icon: "message.fill", isEmergency: true),
             CrisisResource(title: "National Suicide Prevention Lifeline", subtitle: "Call or text 988 for immediate help", phoneNumber: "988", url: "https://988lifeline.org/", icon: "heart.fill", isEmergency: true),
-            CrisisResource(title: "Vet Centers", subtitle: "Free readjustment counseling for combat veterans and families", url: "https://www.vetcenter.va.gov/", icon: "building.2.fill"),
             CrisisResource(title: "SAMHSA National Helpline", subtitle: "Free referrals for substance abuse and mental health", phoneNumber: "1-800-662-4357", url: "https://www.samhsa.gov/find-help/national-helpline", icon: "cross.case.fill"),
-            CrisisResource(title: "Military OneSource", subtitle: "Free counseling and support for service members and families", phoneNumber: "1-800-342-9647", url: "https://www.militaryonesource.mil/", icon: "person.2.fill"),
+        ]
+    }
+
+    static func mindsetShifts() -> [MindsetShift] {
+        [
+            MindsetShift(
+                id: "ms1",
+                title: "Identity Beyond the Uniform",
+                militaryMindset: "I am my rank and role. My identity is tied to my unit and mission.",
+                civilianMindset: "I am more than my job title. My identity includes my values, interests, relationships, and goals.",
+                insight: "Losing the structure of military identity is one of the hardest parts of transition. Give yourself permission to explore who you are outside of service. It takes time — and that's completely normal.",
+                category: .identity
+            ),
+            MindsetShift(
+                id: "ms2",
+                title: "Purpose After the Mission",
+                militaryMindset: "My purpose was clear every day — the mission came first.",
+                civilianMindset: "I get to define my own purpose now. It can be family, career, community, or something entirely new.",
+                insight: "Many people describe feeling adrift after leaving service. Building a new sense of purpose is a process, not a switch. Start small — volunteer, mentor, or pursue something you've always been curious about.",
+                category: .identity
+            ),
+            MindsetShift(
+                id: "ms3",
+                title: "Daily Structure",
+                militaryMindset: "My day was planned for me — PT, formations, duty hours, chow.",
+                civilianMindset: "I own my schedule now. Building my own routine is a skill I need to develop.",
+                insight: "The sudden absence of externally imposed structure can feel liberating and terrifying at the same time. Create your own morning routine, set weekly goals, and protect your productive hours.",
+                category: .dailyLife
+            ),
+            MindsetShift(
+                id: "ms4",
+                title: "Communication Styles",
+                militaryMindset: "Direct, brief, assertive. Say what needs to be said. Time is limited.",
+                civilianMindset: "Civilian workplaces often value diplomacy, context, and collaborative language.",
+                insight: "Your directness is a strength — but in some civilian settings, it can be misread as aggressive or dismissive. Practice adding context to requests and asking for input before giving directives.",
+                category: .communication
+            ),
+            MindsetShift(
+                id: "ms5",
+                title: "Hierarchy vs. Flat Teams",
+                militaryMindset: "Chain of command is everything. Respect flows through rank.",
+                civilianMindset: "Many workplaces use flat or matrixed teams. Input is expected from everyone regardless of seniority.",
+                insight: "You may find yourself in meetings where a junior employee challenges a VP — and that's normal. Civilian authority is often earned through expertise, not position. Be ready to collaborate as an equal.",
+                category: .culture
+            ),
+            MindsetShift(
+                id: "ms6",
+                title: "Feedback Culture",
+                militaryMindset: "Feedback is direct, immediate, and sometimes harsh. You adapt or you don't.",
+                civilianMindset: "Feedback cycles are slower, more nuanced, and often delivered in 1-on-1s or annual reviews.",
+                insight: "If you're used to immediate corrective feedback, civilian workplaces may feel frustratingly vague. Ask for feedback proactively and be specific about what you want to improve.",
+                category: .culture
+            ),
+            MindsetShift(
+                id: "ms7",
+                title: "Accountability Differences",
+                militaryMindset: "If the standard isn't met, someone is held accountable — immediately.",
+                civilianMindset: "Accountability varies widely. Some workplaces are rigorous, others are... flexible.",
+                insight: "You may be frustrated by what seems like a lack of accountability. Channel that energy into leading by example rather than trying to impose military standards on a civilian team.",
+                category: .culture
+            ),
+            MindsetShift(
+                id: "ms8",
+                title: "Asking for Help",
+                militaryMindset: "Self-reliance is valued. Asking for help can feel like admitting weakness.",
+                civilianMindset: "Successful civilians build networks and ask for help constantly. It's called being resourceful.",
+                insight: "The strongest thing you can do during transition is ask for help. Reach out to mentors, join communities, and don't try to figure everything out alone.",
+                category: .relationships
+            ),
+            MindsetShift(
+                id: "ms9",
+                title: "Professional Networking",
+                militaryMindset: "Connections happen naturally through units, deployments, and shared experiences.",
+                civilianMindset: "You have to intentionally build and maintain a professional network.",
+                insight: "Networking feels unnatural to many transitioning service members. Start by reconnecting with people who've already made the jump. They understand your experience and can open doors.",
+                category: .relationships
+            ),
+            MindsetShift(
+                id: "ms10",
+                title: "Work-Life Boundaries",
+                militaryMindset: "The mission comes first. Personal time is what's left over.",
+                civilianMindset: "Healthy boundaries between work and personal life are expected and respected.",
+                insight: "You don't have to be available 24/7 anymore. Setting boundaries isn't being lazy — it's being sustainable. Protect your time for family, hobbies, and rest.",
+                category: .dailyLife
+            ),
+        ]
+    }
+
+    static func assessmentQuestions() -> [AssessmentQuestion] {
+        [
+            AssessmentQuestion(id: "aq1", question: "How confident are you in your post-service career plan?", category: .employment, options: [
+                AssessmentOption(id: "aq1a", label: "No plan yet", score: 0),
+                AssessmentOption(id: "aq1b", label: "Some ideas but nothing concrete", score: 1),
+                AssessmentOption(id: "aq1c", label: "Clear direction, working on it", score: 2),
+                AssessmentOption(id: "aq1d", label: "Plan is set and in motion", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq2", question: "Have you started building a civilian resume?", category: .employment, options: [
+                AssessmentOption(id: "aq2a", label: "Haven't started", score: 0),
+                AssessmentOption(id: "aq2b", label: "Started but it needs work", score: 1),
+                AssessmentOption(id: "aq2c", label: "Draft is complete", score: 2),
+                AssessmentOption(id: "aq2d", label: "Polished and reviewed by others", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq3", question: "How prepared are you financially for the transition?", category: .finance, options: [
+                AssessmentOption(id: "aq3a", label: "Haven't thought about it", score: 0),
+                AssessmentOption(id: "aq3b", label: "Aware of the gap but no plan", score: 1),
+                AssessmentOption(id: "aq3c", label: "Budget created, building savings", score: 2),
+                AssessmentOption(id: "aq3d", label: "Emergency fund ready, budget set", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq4", question: "Do you know what health care options are available to you after service?", category: .health, options: [
+                AssessmentOption(id: "aq4a", label: "No idea", score: 0),
+                AssessmentOption(id: "aq4b", label: "Vaguely aware", score: 1),
+                AssessmentOption(id: "aq4c", label: "Researched options", score: 2),
+                AssessmentOption(id: "aq4d", label: "Enrolled or plan in place", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq5", question: "How organized are your service and personal records?", category: .admin, options: [
+                AssessmentOption(id: "aq5a", label: "Scattered or missing", score: 0),
+                AssessmentOption(id: "aq5b", label: "Some gathered, gaps remain", score: 1),
+                AssessmentOption(id: "aq5c", label: "Most records in hand", score: 2),
+                AssessmentOption(id: "aq5d", label: "Everything organized and verified", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq6", question: "Do you have a post-service housing plan?", category: .housing, options: [
+                AssessmentOption(id: "aq6a", label: "No plan yet", score: 0),
+                AssessmentOption(id: "aq6b", label: "Researching areas", score: 1),
+                AssessmentOption(id: "aq6c", label: "Location chosen, searching", score: 2),
+                AssessmentOption(id: "aq6d", label: "Housing secured", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq7", question: "Have you explored education or training options?", category: .education, options: [
+                AssessmentOption(id: "aq7a", label: "Not applicable or not started", score: 0),
+                AssessmentOption(id: "aq7b", label: "Browsing options", score: 1),
+                AssessmentOption(id: "aq7c", label: "Applied or enrolled", score: 2),
+                AssessmentOption(id: "aq7d", label: "Enrolled and benefits confirmed", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq8", question: "How is your family prepared for the transition?", category: .family, options: [
+                AssessmentOption(id: "aq8a", label: "Haven't discussed it", score: 0),
+                AssessmentOption(id: "aq8b", label: "Talked about it, no actions yet", score: 1),
+                AssessmentOption(id: "aq8c", label: "Plan in place, working on it", score: 2),
+                AssessmentOption(id: "aq8d", label: "Family is aligned and ready", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq9", question: "Do you have a civilian support network or mentor?", category: .employment, options: [
+                AssessmentOption(id: "aq9a", label: "No civilian connections", score: 0),
+                AssessmentOption(id: "aq9b", label: "A few contacts", score: 1),
+                AssessmentOption(id: "aq9c", label: "Active network growing", score: 2),
+                AssessmentOption(id: "aq9d", label: "Strong network with mentors", score: 3),
+            ]),
+            AssessmentQuestion(id: "aq10", question: "How would you rate your emotional readiness for this change?", category: .health, options: [
+                AssessmentOption(id: "aq10a", label: "Overwhelmed or avoiding it", score: 0),
+                AssessmentOption(id: "aq10b", label: "Anxious but working through it", score: 1),
+                AssessmentOption(id: "aq10c", label: "Cautiously optimistic", score: 2),
+                AssessmentOption(id: "aq10d", label: "Confident and motivated", score: 3),
+            ]),
         ]
     }
 }
