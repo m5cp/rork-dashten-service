@@ -1,0 +1,206 @@
+import SwiftUI
+
+struct RoadmapView: View {
+    let storage: StorageService
+
+    private func itemsForPhase(_ phase: TimelinePhase) -> [ChecklistItem] {
+        storage.checklistItems.filter { $0.phase == phase }
+    }
+
+    private func completionForPhase(_ phase: TimelinePhase) -> Double {
+        let items = itemsForPhase(phase)
+        guard !items.isEmpty else { return 0 }
+        return Double(items.filter(\.isCompleted).count) / Double(items.count)
+    }
+
+    private var currentPhase: TimelinePhase? {
+        guard let sepDate = storage.profile.separationDate else { return nil }
+        let months = Calendar.current.dateComponents([.month], from: Date(), to: sepDate).month ?? 0
+        if months > 18 { return .eighteenToTwentyFour }
+        if months > 12 { return .twelveMonths }
+        if months > 6 { return .sixMonths }
+        if months > 3 { return .ninetyDays }
+        if months > 0 { return .thirtyDays }
+        let monthsSince = Calendar.current.dateComponents([.month], from: sepDate, to: Date()).month ?? 0
+        if monthsSince <= 3 { return .firstNinety }
+        return .firstYear
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(TimelinePhase.allCases) { phase in
+                        NavigationLink(value: phase) {
+                            PhaseCard(
+                                phase: phase,
+                                completion: completionForPhase(phase),
+                                itemCount: itemsForPhase(phase).count,
+                                completedCount: itemsForPhase(phase).filter(\.isCompleted).count,
+                                isCurrent: phase == currentPhase
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Roadmap")
+            .navigationDestination(for: TimelinePhase.self) { phase in
+                PhaseDetailView(storage: storage, phase: phase)
+            }
+        }
+    }
+}
+
+struct PhaseCard: View {
+    let phase: TimelinePhase
+    let completion: Double
+    let itemCount: Int
+    let completedCount: Int
+    let isCurrent: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            VStack(spacing: 6) {
+                ZStack {
+                    Circle()
+                        .fill(isCurrent ? AppTheme.forestGreen : AppTheme.forestGreen.opacity(0.12))
+                        .frame(width: 44, height: 44)
+                    Image(systemName: phase.icon)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(isCurrent ? .white : AppTheme.forestGreen)
+                }
+                if phase != TimelinePhase.allCases.last {
+                    Rectangle()
+                        .fill(AppTheme.forestGreen.opacity(0.2))
+                        .frame(width: 2, height: 12)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text(phase.rawValue)
+                        .font(.headline)
+                    if isCurrent {
+                        StatusBadge(text: "Current", color: AppTheme.forestGreen)
+                    }
+                }
+                Text(phase.subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 12) {
+                    ProgressView(value: completion)
+                        .tint(AppTheme.forestGreen)
+                    Text("\(completedCount)/\(itemCount)")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .padding(16)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(isCurrent ? AppTheme.forestGreen.opacity(0.3) : .clear, lineWidth: 1.5)
+        )
+    }
+}
+
+struct PhaseDetailView: View {
+    let storage: StorageService
+    let phase: TimelinePhase
+
+    private var items: [ChecklistItem] {
+        storage.checklistItems.filter { $0.phase == phase }
+    }
+
+    private var groupedByCategory: [(ReadinessCategory, [ChecklistItem])] {
+        let grouped = Dictionary(grouping: items, by: \.readinessCategory)
+        return ReadinessCategory.allCases.compactMap { cat in
+            guard let items = grouped[cat], !items.isEmpty else { return nil }
+            return (cat, items)
+        }
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: phase.icon)
+                            .font(.title2)
+                            .foregroundStyle(AppTheme.forestGreen)
+                        Text(phase.rawValue)
+                            .font(.title2.bold())
+                    }
+                    Text(phase.subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    let completed = items.filter(\.isCompleted).count
+                    HStack(spacing: 8) {
+                        ProgressView(value: items.isEmpty ? 0 : Double(completed) / Double(items.count))
+                            .tint(AppTheme.forestGreen)
+                        Text("\(completed) of \(items.count) complete")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                ForEach(groupedByCategory, id: \.0) { category, categoryItems in
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label(category.rawValue, systemImage: category.icon)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(AppTheme.forestGreen)
+
+                        VStack(spacing: 6) {
+                            ForEach(categoryItems) { item in
+                                HStack(spacing: 12) {
+                                    Button {
+                                        withAnimation(.spring(response: 0.3)) {
+                                            storage.toggleChecklistItem(item.id)
+                                        }
+                                    } label: {
+                                        Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
+                                            .font(.title3)
+                                            .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : .secondary)
+                                    }
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(item.title)
+                                            .font(.subheadline)
+                                            .strikethrough(item.isCompleted)
+                                            .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                                        if !item.subtitle.isEmpty {
+                                            Text(item.subtitle)
+                                                .font(.caption)
+                                                .foregroundStyle(.tertiary)
+                                        }
+                                    }
+                                    Spacer()
+                                }
+                                .padding(12)
+                                .background(Color(.secondarySystemGroupedBackground))
+                                .clipShape(.rect(cornerRadius: 10))
+                                .sensoryFeedback(.success, trigger: item.isCompleted)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
