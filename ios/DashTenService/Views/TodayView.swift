@@ -114,6 +114,7 @@ struct TodayView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     heroSection
+                    aiCoachCard
                     focusCardSection
                     weeklyActivitySection
                     quickStatsBar
@@ -192,6 +193,7 @@ struct TodayView: View {
         case .benefitsCountdown: BenefitsEnrollmentCountdownView(storage: storage)
         case .achievementBadges: AchievementBadgesView(storage: storage)
         case .firstYearGuide: FirstYearGuideView()
+        case .aiCoach: AICoachView()
         }
     }
 
@@ -303,6 +305,54 @@ struct TodayView: View {
         if days > 0 { return (days, "until separation") }
         if days == 0 { return (0, "separation day") }
         return (abs(days), "since separation")
+    }
+
+    private var aiCoachCard: some View {
+        NavigationLink(value: PlanningRoute.aiCoach) {
+            HStack(spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(
+                            LinearGradient(
+                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 44, height: 44)
+                    Image(systemName: "bubble.left.and.text.bubble.right.fill")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.white)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("AI Transition Coach")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text("Get personalized guidance on benefits, resume, timeline & more")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(AppTheme.forestGreen.opacity(0.06))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(AppTheme.forestGreen.opacity(0.15), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .opacity(appeared ? 1 : 0)
+        .offset(y: appeared ? 0 : 12)
+        .animation(.spring(response: 0.6).delay(0.12), value: appeared)
     }
 
     private var focusCardSection: some View {
