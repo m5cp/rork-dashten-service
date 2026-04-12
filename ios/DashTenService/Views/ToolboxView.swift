@@ -8,7 +8,7 @@ struct ToolboxView: View {
 
     private var isSearching: Bool { !searchText.isEmpty }
 
-    private struct ToolEntry: Identifiable {
+    struct ToolEntry: Identifiable {
         let id = UUID()
         let title: String
         let subtitle: String
@@ -135,14 +135,12 @@ struct ToolboxView: View {
     var body: some View {
         NavigationStack(path: $navPath) {
             ScrollView {
-                VStack(spacing: 28) {
+                VStack(spacing: 24) {
                     if isSearching {
                         searchResultsSection
                     } else {
                         recommendedSection
-                        toolLane(title: "Money", icon: "dollarsign.circle.fill", color: AppTheme.gold, tools: moneyTools)
-                        toolLane(title: "Career", icon: "briefcase.fill", color: .teal, tools: careerTools)
-                        toolLane(title: "Planning", icon: "chart.xyaxis.line", color: .purple, tools: planningTools)
+                        heroCategoriesSection
                     }
                 }
                 .padding(.horizontal, 16)
@@ -154,8 +152,30 @@ struct ToolboxView: View {
             .navigationDestination(for: PlanningRoute.self) { route in
                 routeDestination(route)
             }
+            .navigationDestination(for: ToolCategory.self) { category in
+                CategoryToolsView(storage: storage, category: category, tools: toolsFor(category), onAction: handleAction)
+            }
             .sheet(item: $activeSheet) { sheet in
                 sheetContent(sheet)
+            }
+        }
+    }
+
+    private func toolsFor(_ category: ToolCategory) -> [ToolEntry] {
+        switch category {
+        case .money: return moneyTools
+        case .career: return careerTools
+        case .planning: return planningTools
+        }
+    }
+
+    private var heroCategoriesSection: some View {
+        VStack(spacing: 14) {
+            ForEach(ToolCategory.allCases) { category in
+                NavigationLink(value: category) {
+                    ToolCategoryHeroCard(category: category, toolCount: toolsFor(category).count)
+                }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -279,33 +299,97 @@ struct ToolboxView: View {
         }
     }
 
-    // MARK: - Tool Lane
+}
 
-    private func toolLane(title: String, icon: String, color: Color, tools: [ToolEntry]) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(color)
-                Text(title)
-                    .font(.headline.weight(.bold))
-            }
+enum ToolCategory: String, CaseIterable, Identifiable, Hashable {
+    case money = "Money"
+    case career = "Career"
+    case planning = "Planning"
 
-            ToolboxDividedStack {
-                ForEach(tools) { tool in
-                    switch tool.action {
-                    case .sheet:
-                        ToolboxSheetRow(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color) {
-                            handleAction(tool.action)
-                        }
-                    case .nav(let route):
-                        ToolboxNavRow(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color, route: route)
-                    }
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .money: return "dollarsign.circle.fill"
+        case .career: return "briefcase.fill"
+        case .planning: return "chart.xyaxis.line"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .money: return "Pay, budgets, savings & financial tools"
+        case .career: return "Resume, skills, interviews & networking"
+        case .planning: return "Decisions, goals, wellness & education"
+        }
+    }
+
+    var gradient: LinearGradient {
+        switch self {
+        case .money:
+            return LinearGradient(colors: [Color(red: 0.18, green: 0.42, blue: 0.22), Color(red: 0.12, green: 0.30, blue: 0.14)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .career:
+            return LinearGradient(colors: [Color(red: 0.12, green: 0.38, blue: 0.42), Color(red: 0.08, green: 0.26, blue: 0.32)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .planning:
+            return LinearGradient(colors: [Color(red: 0.30, green: 0.22, blue: 0.46), Color(red: 0.20, green: 0.14, blue: 0.36)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+    }
+
+    var accentColor: Color {
+        switch self {
+        case .money: return AppTheme.gold
+        case .career: return .teal
+        case .planning: return .purple
+        }
+    }
+}
+
+private struct ToolCategoryHeroCard: View {
+    let category: ToolCategory
+    let toolCount: Int
+
+    var body: some View {
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 8) {
+                Image(systemName: category.icon)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .frame(width: 44, height: 44)
+                    .background(.white.opacity(0.15))
+                    .clipShape(.rect(cornerRadius: 12))
+
+                Spacer(minLength: 0)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(category.rawValue)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+                    Text(category.subtitle)
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .lineLimit(2)
                 }
             }
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 14))
+
+            Spacer(minLength: 12)
+
+            VStack {
+                Spacer()
+                HStack(spacing: 6) {
+                    Text("\(toolCount) tools")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.white.opacity(0.8))
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+            }
         }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: 140)
+        .background(category.gradient)
+        .clipShape(.rect(cornerRadius: 20))
     }
 }
 
@@ -354,6 +438,94 @@ private struct RecommendedToolCard: View {
         .frame(width: 160, height: 170, alignment: .topLeading)
         .background(color.opacity(0.08))
         .clipShape(.rect(cornerRadius: 16))
+    }
+}
+
+// MARK: - Category Tools View
+
+struct CategoryToolsView: View {
+    let storage: StorageService
+    let category: ToolCategory
+    let tools: [ToolboxView.ToolEntry]
+    let onAction: (ToolAction) -> Void
+    @State private var activeSheet: ToolboxSheet?
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                headerSection
+
+                VStack(spacing: 2) {
+                    ForEach(Array(tools.enumerated()), id: \.element.id) { index, tool in
+                        toolRow(tool)
+                        if index < tools.count - 1 {
+                            Divider()
+                                .padding(.leading, 58)
+                        }
+                    }
+                }
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(.rect(cornerRadius: 14))
+                .padding(.horizontal, 16)
+                .padding(.top, 20)
+                .padding(.bottom, 100)
+            }
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle(category.rawValue)
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .compensation: MilitaryCompCalculatorView()
+            case .incomeGap: IncomeGapCalculatorView()
+            case .civilianBudget: CivilianBudgetCalculatorView()
+            case .emergencyFund: EmergencyFundCalculatorView()
+            }
+        }
+    }
+
+    private var headerSection: some View {
+        VStack(spacing: 12) {
+            Image(systemName: category.icon)
+                .font(.largeTitle.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(width: 64, height: 64)
+                .background(category.gradient)
+                .clipShape(.rect(cornerRadius: 18))
+
+            Text(category.subtitle)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            Text("\(tools.count) tools")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(category.accentColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .background(category.accentColor.opacity(0.12))
+                .clipShape(Capsule())
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 8)
+    }
+
+    @ViewBuilder
+    private func toolRow(_ tool: ToolboxView.ToolEntry) -> some View {
+        switch tool.action {
+        case .sheet(let sheet):
+            Button {
+                activeSheet = sheet
+            } label: {
+                ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color)
+            }
+            .buttonStyle(.plain)
+        case .nav(let route):
+            NavigationLink(value: route) {
+                ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color)
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
 
