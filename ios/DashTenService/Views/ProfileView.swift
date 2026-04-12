@@ -10,6 +10,7 @@ struct ProfileView: View {
     @State private var showAccessibility: Bool = false
     @State private var showDisclaimer: Bool = false
     @State private var showResetAlert: Bool = false
+    @State private var showOnboarding: Bool = false
 
     private var readiness: ReadinessCalculator.ReadinessScore {
         ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
@@ -180,6 +181,13 @@ struct ProfileView: View {
                 }
 
                 Section {
+                    Button {
+                        showOnboarding = true
+                    } label: {
+                        Label("Retake Setup", systemImage: "arrow.counterclockwise.circle.fill")
+                            .font(.body.weight(.semibold))
+                    }
+
                     Button("Reset All Data", role: .destructive) {
                         showResetAlert = true
                     }
@@ -221,6 +229,9 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showDisclaimer) {
                 DisclaimerRisksView()
+            }
+            .fullScreenCover(isPresented: $showOnboarding) {
+                OnboardingView(storage: storage)
             }
             .alert("Reset All Data?", isPresented: $showResetAlert) {
                 Button("Reset", role: .destructive) {

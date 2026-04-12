@@ -6,6 +6,7 @@ struct TodayView: View {
     @State private var celebrationTitle: String = ""
     @State private var celebrationSubtitle: String = ""
     @State private var appeared: Bool = false
+    @State private var showOnboarding: Bool = false
 
     private var readiness: ReadinessCalculator.ReadinessScore {
         ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
@@ -136,6 +137,9 @@ struct TodayView: View {
                 title: celebrationTitle,
                 subtitle: celebrationSubtitle
             )
+        }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView(storage: storage)
         }
         .onChange(of: readiness.overallPercent) { oldValue, newValue in
             checkMilestone(old: oldValue, new: newValue)
@@ -613,41 +617,70 @@ struct TodayView: View {
 
     private var firstRunCards: some View {
         Group {
-            let showSepDate = storage.profile.separationDate == nil
-            let showTools = completedTaskCount == 0
-            let showBenefits = storage.benefitCategories.filter(\.isStarted).isEmpty
+            let needsSetup = storage.profile.separationDate == nil || completedTaskCount == 0
 
-            if showSepDate || showTools || showBenefits {
+            if needsSetup {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader("Get Started", icon: "arrow.right.circle.fill")
 
-                    if showSepDate {
-                        FirstRunCard(
-                            icon: "calendar.badge.plus",
-                            title: "Set your separation date",
-                            subtitle: "Go to Profile to set your date and unlock your timeline",
-                            color: .blue
-                        )
-                    }
-                    if showTools {
-                        NavigationLink(value: PlanningRoute.selfAssessment) {
-                            FirstRunCard(
-                                icon: "checklist.checked",
-                                title: "Take the Readiness Check-In",
-                                subtitle: "A quick self-assessment to see where you stand",
-                                color: .teal
-                            )
+                    Button {
+                        showOnboarding = true
+                    } label: {
+                        HStack(spacing: 14) {
+                            Image(systemName: "sparkles")
+                                .font(.title3.weight(.semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .background(AppTheme.forestGreen.gradient)
+                                .clipShape(.rect(cornerRadius: 12))
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Build Your Separation Plan")
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.primary)
+                                Text("Answer a few questions to personalize your timeline, goals, and checklist")
+                                    .font(.caption.weight(.medium))
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.tertiary)
                         }
-                        .buttonStyle(.plain)
-                    }
-                    if showBenefits {
-                        FirstRunCard(
-                            icon: "star.fill",
-                            title: "Explore your benefits",
-                            subtitle: "Tap Learn to see what you've earned and start a benefit",
-                            color: AppTheme.gold
+                        .padding(14)
+                        .background(AppTheme.forestGreen.opacity(0.06))
+                        .clipShape(.rect(cornerRadius: 14))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .strokeBorder(AppTheme.forestGreen.opacity(0.15), lineWidth: 1)
                         )
                     }
+                    .sensoryFeedback(.impact(weight: .medium), trigger: showOnboarding)
+                }
+            } else {
+                Button {
+                    showOnboarding = true
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "arrow.counterclockwise.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(AppTheme.forestGreen)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Retake Setup")
+                                .font(.subheadline.weight(.bold))
+                            Text("Update your branch, date, or goals")
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(14)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(.rect(cornerRadius: 12))
                 }
             }
         }
