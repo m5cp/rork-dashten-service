@@ -287,7 +287,6 @@ struct ProfileView: View {
         switch route {
         case .achievementBadges: AchievementBadgesView(storage: storage)
         case .firstYearGuide: FirstYearGuideView()
-        case .aiCoach: AICoachView()
         default: EmptyView()
         }
     }

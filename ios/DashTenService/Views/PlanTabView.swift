@@ -72,7 +72,6 @@ struct PlanTabView: View {
         case .benefitsCountdown: BenefitsEnrollmentCountdownView(storage: storage)
         case .achievementBadges: AchievementBadgesView(storage: storage)
         case .firstYearGuide: FirstYearGuideView()
-        case .aiCoach: AICoachView()
         }
     }
 
