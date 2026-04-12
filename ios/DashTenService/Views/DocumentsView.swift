@@ -30,37 +30,36 @@ struct DocumentsView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    documentWarningBanner
-                    progressHeader
-                    summaryBar
-                    categoryFilter
+        ScrollView {
+            VStack(spacing: 16) {
+                documentWarningBanner
+                progressHeader
+                summaryBar
+                categoryFilter
 
-                    ForEach(filteredGroups, id: \.0) { category, docs in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Label(category.rawValue, systemImage: category.icon)
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(AppTheme.forestGreen)
-                                .padding(.horizontal, 4)
+                ForEach(filteredGroups, id: \.0) { category, docs in
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label(category.rawValue, systemImage: category.icon)
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .padding(.horizontal, 4)
 
-                            VStack(spacing: 6) {
-                                ForEach(docs) { doc in
-                                    DocumentRow(document: doc, onStatusChange: { newStatus in
-                                        storage.updateDocumentStatus(doc.id, status: newStatus)
-                                    })
-                                }
+                        VStack(spacing: 6) {
+                            ForEach(docs) { doc in
+                                DocumentRow(document: doc, onStatusChange: { newStatus in
+                                    storage.updateDocumentStatus(doc.id, status: newStatus)
+                                })
                             }
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Documents")
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
         }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Documents")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var documentWarningBanner: some View {
