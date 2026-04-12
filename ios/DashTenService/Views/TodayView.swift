@@ -438,26 +438,31 @@ struct TodayView: View {
         .animation(.spring(response: 0.6).delay(0.2), value: appeared)
     }
 
+    private var documentsCollectedCount: Int {
+        storage.documents.filter { $0.status == .received || $0.status == .verified }.count
+    }
+
     private var quickStatsBar: some View {
         HStack(spacing: 10) {
-            CompactStatCard(
-                icon: "checkmark.circle.fill",
-                value: "\(completedTaskCount)/\(storage.checklistItems.count)",
-                label: "Tasks",
-                color: AppTheme.forestGreen
-            )
-            CompactStatCard(
-                icon: "doc.text.fill",
-                value: "\(storage.documents.filter { $0.status == .missing }.count)",
-                label: "Docs Missing",
-                color: storage.documents.filter({ $0.status == .missing }).count > 0 ? .orange : AppTheme.forestGreen
-            )
-            CompactStatCard(
-                icon: "star.fill",
-                value: "\(storage.benefitCategories.filter(\.isStarted).count)",
-                label: "Benefits",
-                color: .blue
-            )
+            NavigationLink(value: PlanningRoute.finalGearCheck) {
+                CompactStatCard(
+                    icon: "checkmark.circle.fill",
+                    value: "\(completedTaskCount)/\(storage.checklistItems.count)",
+                    label: "Tasks",
+                    color: AppTheme.forestGreen
+                )
+            }
+            .buttonStyle(.plain)
+
+            NavigationLink(value: PlanningRoute.documents) {
+                CompactStatCard(
+                    icon: "doc.text.fill",
+                    value: "\(documentsCollectedCount)/\(storage.documents.count)",
+                    label: "Collected",
+                    color: documentsCollectedCount == storage.documents.count ? AppTheme.forestGreen : .orange
+                )
+            }
+            .buttonStyle(.plain)
         }
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 12)
