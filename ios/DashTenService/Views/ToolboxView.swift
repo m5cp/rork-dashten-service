@@ -139,7 +139,6 @@ struct ToolboxView: View {
                     if isSearching {
                         searchResultsSection
                     } else {
-                        recommendedSection
                         heroCategoriesSection
                     }
                 }
