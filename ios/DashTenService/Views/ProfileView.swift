@@ -2,7 +2,9 @@ import SwiftUI
 
 struct ProfileView: View {
     @Bindable var storage: StorageService
+    var store: StoreViewModel
     @State private var showAbout: Bool = false
+    @State private var showPaywall: Bool = false
     @State private var showTransparency: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPrivacy: Bool = false
@@ -112,6 +114,39 @@ struct ProfileView: View {
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.primary.opacity(0.7))
                     }
+                }
+
+                Section {
+                    Button {
+                        showPaywall = true
+                    } label: {
+                        HStack(spacing: 14) {
+                            Image(systemName: store.isPremium ? "checkmark.seal.fill" : "arrow.up.forward.circle.fill")
+                                .font(.title3.weight(.semibold))
+                                .foregroundStyle(store.isPremium ? AppTheme.forestGreen : AppTheme.gold)
+                                .frame(width: 40, height: 40)
+                                .background((store.isPremium ? AppTheme.forestGreen : AppTheme.gold).opacity(0.12))
+                                .clipShape(.rect(cornerRadius: 10))
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(store.isPremium ? "DashTen Pro" : "Upgrade to Pro")
+                                    .font(.subheadline.weight(.bold))
+                                Text(store.isPremium ? "All Pro features unlocked" : "Unlock 11 tools & 2 guides — $19.99 lifetime")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            if !store.isPremium {
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Subscription")
                 }
 
                 Section("App") {
@@ -232,6 +267,9 @@ struct ProfileView: View {
             }
             .fullScreenCover(isPresented: $showOnboarding) {
                 OnboardingView(storage: storage)
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView(store: store)
             }
             .alert("Reset All Data?", isPresented: $showResetAlert) {
                 Button("Reset", role: .destructive) {

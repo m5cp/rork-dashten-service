@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TodayView: View {
     let storage: StorageService
+    var store: StoreViewModel
     @State private var showCelebration: Bool = false
     @State private var celebrationTitle: String = ""
     @State private var celebrationSubtitle: String = ""

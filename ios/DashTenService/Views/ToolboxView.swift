@@ -2,9 +2,11 @@ import SwiftUI
 
 struct ToolboxView: View {
     let storage: StorageService
+    var store: StoreViewModel
     @State private var activeSheet: ToolboxSheet?
     @State private var searchText: String = ""
     @State private var navPath: [PlanningRoute] = []
+    @State private var showPaywall: Bool = false
 
     private var isSearching: Bool { !searchText.isEmpty }
 
@@ -152,7 +154,10 @@ struct ToolboxView: View {
                 routeDestination(route)
             }
             .navigationDestination(for: ToolCategory.self) { category in
-                CategoryToolsView(storage: storage, category: category, tools: toolsFor(category), onAction: handleAction)
+                CategoryToolsView(storage: storage, store: store, category: category, tools: toolsFor(category), onAction: { action in handleAction(action) })
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView(store: store)
             }
             .sheet(item: $activeSheet) { sheet in
                 sheetContent(sheet)
@@ -233,7 +238,11 @@ struct ToolboxView: View {
         }
     }
 
-    private func handleAction(_ action: ToolAction) {
+    private func handleAction(_ action: ToolAction, toolTitle: String = "") {
+        if store.isToolLocked(toolTitle) {
+            showPaywall = true
+            return
+        }
         switch action {
         case .sheet(let sheet):
             activeSheet = sheet
@@ -285,9 +294,9 @@ struct ToolboxView: View {
                 VStack(spacing: 2) {
                     ForEach(searchResults) { tool in
                         Button {
-                            handleAction(tool.action)
+                            handleAction(tool.action, toolTitle: tool.title)
                         } label: {
-                            ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color)
+                            ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color, isLocked: store.isToolLocked(tool.title))
                         }
                         .buttonStyle(.plain)
                     }
@@ -444,10 +453,12 @@ private struct RecommendedToolCard: View {
 
 struct CategoryToolsView: View {
     let storage: StorageService
+    var store: StoreViewModel
     let category: ToolCategory
     let tools: [ToolboxView.ToolEntry]
     let onAction: (ToolAction) -> Void
     @State private var activeSheet: ToolboxSheet?
+    @State private var showPaywall: Bool = false
 
     var body: some View {
         ScrollView {
@@ -481,6 +492,9 @@ struct CategoryToolsView: View {
             case .emergencyFund: EmergencyFundCalculatorView()
             }
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(store: store)
+        }
     }
 
     private var headerSection: some View {
@@ -511,19 +525,29 @@ struct CategoryToolsView: View {
 
     @ViewBuilder
     private func toolRow(_ tool: ToolboxView.ToolEntry) -> some View {
-        switch tool.action {
-        case .sheet(let sheet):
+        let locked = store.isToolLocked(tool.title)
+        if locked {
             Button {
-                activeSheet = sheet
+                showPaywall = true
             } label: {
-                ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color)
+                ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color, isLocked: true)
             }
             .buttonStyle(.plain)
-        case .nav(let route):
-            NavigationLink(value: route) {
-                ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color)
+        } else {
+            switch tool.action {
+            case .sheet(let sheet):
+                Button {
+                    activeSheet = sheet
+                } label: {
+                    ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color)
+                }
+                .buttonStyle(.plain)
+            case .nav(let route):
+                NavigationLink(value: route) {
+                    ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
     }
 }
@@ -624,20 +648,32 @@ struct ToolboxRowContent: View {
     let subtitle: String
     let icon: String
     let color: Color
+    var isLocked: Bool = false
 
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.body.weight(.semibold))
-                .foregroundStyle(color)
+                .foregroundStyle(isLocked ? .secondary : color)
                 .frame(width: 32, height: 32)
-                .background(color.opacity(0.12))
+                .background((isLocked ? Color.secondary : color).opacity(0.12))
                 .clipShape(.rect(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.primary)
+                HStack(spacing: 6) {
+                    Text(title)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(isLocked ? .secondary : .primary)
+                    if isLocked {
+                        Text("PRO")
+                            .font(.system(size: 9, weight: .heavy))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(AppTheme.gold)
+                            .clipShape(Capsule())
+                    }
+                }
                 Text(subtitle)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
@@ -645,9 +681,15 @@ struct ToolboxRowContent: View {
 
             Spacer()
 
-            Image(systemName: "chevron.right")
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.tertiary)
+            if isLocked {
+                Image(systemName: "lock.fill")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(AppTheme.gold)
+            } else {
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)

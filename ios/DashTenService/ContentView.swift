@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var storage = StorageService()
+    @State private var store = StoreViewModel()
     @State private var selectedTab: Int = 0
     @State private var showCrisisSheet: Bool = false
 
@@ -17,19 +18,19 @@ struct ContentView: View {
     private var mainTabView: some View {
         TabView(selection: $selectedTab) {
             Tab("Today", systemImage: "sun.max.fill", value: 0) {
-                TodayView(storage: storage)
+                TodayView(storage: storage, store: store)
             }
             Tab("Plan", systemImage: "map.fill", value: 1) {
                 PlanView(storage: storage)
             }
             Tab("Tools", systemImage: "wrench.and.screwdriver.fill", value: 2) {
-                ToolboxView(storage: storage)
+                ToolboxView(storage: storage, store: store)
             }
             Tab("Learn", systemImage: "book.fill", value: 3) {
-                LearnView(storage: storage)
+                LearnView(storage: storage, store: store)
             }
             Tab("Profile", systemImage: "person.fill", value: 4) {
-                ProfileView(storage: storage)
+                ProfileView(storage: storage, store: store)
             }
         }
         .overlay(alignment: .bottom) {
