@@ -7,12 +7,8 @@ struct PlanView: View {
     @State private var newItemPhase: TimelinePhase = .eighteenToTwentyFour
     @State private var newItemCategory: ReadinessCategory = .admin
 
-    private var readiness: ReadinessCalculator.ReadinessScore {
-        ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
-    }
-
-    private var currentPhase: TimelinePhase? {
-        guard let sepDate = storage.profile.separationDate else { return nil }
+    private var currentPhase: TimelinePhase {
+        guard let sepDate = storage.profile.separationDate else { return .eighteenToTwentyFour }
         let months = Calendar.current.dateComponents([.month], from: Date(), to: sepDate).month ?? 0
         if months > 18 { return .eighteenToTwentyFour }
         if months > 12 { return .twelveMonths }
@@ -24,27 +20,56 @@ struct PlanView: View {
         return .firstYear
     }
 
-    private func itemsForPhase(_ phase: TimelinePhase) -> [ChecklistItem] {
-        storage.checklistItems.filter { $0.phase == phase }
+    private var currentPhaseTasks: [ChecklistItem] {
+        storage.checklistItems.filter { $0.phase == currentPhase }
     }
 
-    private func completionForPhase(_ phase: TimelinePhase) -> Double {
-        let items = itemsForPhase(phase)
-        guard !items.isEmpty else { return 0 }
-        return Double(items.filter(\.isCompleted).count) / Double(items.count)
+    private var incompleteTasks: [ChecklistItem] {
+        currentPhaseTasks.filter { !$0.isCompleted }
+    }
+
+    private var completedTasks: [ChecklistItem] {
+        currentPhaseTasks.filter(\.isCompleted)
+    }
+
+    private var overallCompleted: Int {
+        storage.checklistItems.filter(\.isCompleted).count
+    }
+
+    private var overallTotal: Int {
+        storage.checklistItems.count
+    }
+
+    private var overallProgress: Double {
+        guard overallTotal > 0 else { return 0 }
+        return Double(overallCompleted) / Double(overallTotal)
+    }
+
+    private var missingDocs: Int {
+        storage.documents.filter { $0.status == .missing }.count
+    }
+
+    private var verifiedDocs: Int {
+        storage.documents.filter { $0.status == .verified || $0.status == .received }.count
     }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    readinessOverview
+                VStack(spacing: 20) {
+                    phaseHeader
 
-                    categoryRingsSection
+                    if !incompleteTasks.isEmpty {
+                        todoSection
+                    }
+
+                    if !completedTasks.isEmpty {
+                        doneSection
+                    }
 
                     documentsCard
 
-                    roadmapSection
+                    timelineOverview
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)
@@ -117,121 +142,132 @@ struct PlanView: View {
         }
     }
 
-    private var readinessOverview: some View {
-        NavigationLink(value: PlanningRoute.readiness) {
-            HStack(spacing: 20) {
-                ProgressRing(progress: readiness.overall, size: 72, lineWidth: 7)
-                    .overlay {
-                        VStack(spacing: 0) {
-                            Text("\(readiness.overallPercent)")
-                                .font(.title3.bold())
-                                .foregroundStyle(AppTheme.forestGreen)
-                            Text("%")
-                                .font(.caption2.bold())
-                                .foregroundStyle(AppTheme.forestGreen.opacity(0.7))
-                        }
-                    }
+    private var phaseHeader: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 14) {
+                Image(systemName: currentPhase.icon)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 48, height: 48)
+                    .background(AppTheme.forestGreen)
+                    .clipShape(.rect(cornerRadius: 14))
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Transition Readiness")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("You are here")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppTheme.forestGreen)
+                        .textCase(.uppercase)
+                    Text(currentPhase.rawValue)
                         .font(.title3.weight(.bold))
-                    Text(readinessMessage)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
-
-                    HStack(spacing: 16) {
-                        MiniStat(value: "\(storage.checklistItems.filter(\.isCompleted).count)", label: "Done", color: AppTheme.forestGreen)
-                        MiniStat(value: "\(storage.checklistItems.count - storage.checklistItems.filter(\.isCompleted).count)", label: "Left", color: .orange)
-                    }
-                    .padding(.top, 2)
                 }
 
                 Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.tertiary)
             }
-            .padding(20)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(.secondarySystemGroupedBackground))
-            )
-        }
-        .buttonStyle(.plain)
-    }
 
-    private var readinessMessage: String {
-        let pct = readiness.overallPercent
-        if pct >= 75 { return "Excellent progress. Almost there." }
-        if pct >= 50 { return "Halfway there. Stay consistent." }
-        if pct >= 25 { return "Good start. Focus on key areas." }
-        return "Every step counts. Let's go."
-    }
+            VStack(spacing: 8) {
+                HStack {
+                    Text("\(overallCompleted) of \(overallTotal) tasks done")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text("\(Int(overallProgress * 100))%")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(AppTheme.forestGreen)
+                }
 
-    private var categoryRingsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("By Category")
-                .font(.title3.weight(.bold))
-
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 14) {
-                ForEach(ReadinessCategory.allCases) { category in
-                    let pct = readiness.percent(for: category)
-                    VStack(spacing: 8) {
-                        ProgressRing(progress: Double(pct) / 100.0, size: 44, lineWidth: 4, color: colorForCategory(category))
-                            .overlay {
-                                Image(systemName: category.icon)
-                                    .font(.caption2.weight(.bold))
-                                    .foregroundStyle(colorForCategory(category))
-                            }
-                        Text(category.shortLabel)
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                GeometryReader { proxy in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AppTheme.forestGreen.opacity(0.12))
+                            .frame(height: 8)
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AppTheme.forestGreen)
+                            .frame(width: proxy.size.width * overallProgress, height: 8)
+                            .animation(.spring(response: 0.5), value: overallProgress)
                     }
                 }
+                .frame(height: 8)
             }
-            .padding(16)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 16))
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 20))
+    }
+
+    private var todoSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("To Do")
+                    .font(.title3.weight(.bold))
+                Text("\(incompleteTasks.count)")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(.orange)
+                    .clipShape(Capsule())
+                Spacer()
+            }
+
+            VStack(spacing: 6) {
+                ForEach(incompleteTasks) { item in
+                    PlanTaskRow(item: item, storage: storage)
+                }
+            }
+        }
+    }
+
+    private var doneSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Done")
+                    .font(.title3.weight(.bold))
+                Text("\(completedTasks.count)")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(AppTheme.forestGreen)
+                    .clipShape(Capsule())
+                Spacer()
+            }
+
+            VStack(spacing: 6) {
+                ForEach(completedTasks) { item in
+                    PlanTaskRow(item: item, storage: storage)
+                }
+            }
         }
     }
 
     private var documentsCard: some View {
         NavigationLink(value: PlanningRoute.documents) {
-            let missingCount = storage.documents.filter { $0.status == .missing }.count
-            let verifiedCount = storage.documents.filter { $0.status == .verified || $0.status == .received }.count
-            let total = storage.documents.count
-            let progress = total > 0 ? Double(verifiedCount) / Double(total) : 0
+            HStack(spacing: 14) {
+                Image(systemName: "doc.text.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.orange)
+                    .frame(width: 44, height: 44)
+                    .background(.orange.opacity(0.12))
+                    .clipShape(.rect(cornerRadius: 12))
 
-            HStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(.orange.opacity(0.12))
-                        .frame(width: 48, height: 48)
-                    Image(systemName: "doc.text.fill")
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(.orange)
-                }
-
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text("Documents")
                         .font(.headline.weight(.bold))
+                    Text("\(verifiedDocs) of \(storage.documents.count) secured")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
 
-                    ProgressView(value: progress)
-                        .tint(.orange)
+                Spacer()
 
-                    HStack {
-                        Text("\(verifiedCount)/\(total) secured")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        if missingCount > 0 {
-                            Text("\(missingCount) missing")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(.orange)
-                        }
-                    }
+                if missingDocs > 0 {
+                    Text("\(missingDocs) missing")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.orange)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(.orange.opacity(0.12))
+                        .clipShape(Capsule())
                 }
 
                 Image(systemName: "chevron.right")
@@ -245,51 +281,31 @@ struct PlanView: View {
         .buttonStyle(.plain)
     }
 
-    private var roadmapSection: some View {
+    private var timelineOverview: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Timeline")
+            Text("Full Timeline")
                 .font(.title3.weight(.bold))
 
             VStack(spacing: 0) {
                 ForEach(Array(TimelinePhase.allCases.enumerated()), id: \.element.id) { index, phase in
+                    let items = storage.checklistItems.filter { $0.phase == phase }
+                    let completed = items.filter(\.isCompleted).count
+                    let total = items.count
                     let isCurrent = phase == currentPhase
-                    let isPast = isPhaseCompleted(phase)
                     let isLast = index == TimelinePhase.allCases.count - 1
 
                     NavigationLink(value: phase) {
-                        TimelineRow(
+                        SimpleTimelineRow(
                             phase: phase,
-                            completion: completionForPhase(phase),
-                            itemCount: itemsForPhase(phase).count,
-                            completedCount: itemsForPhase(phase).filter(\.isCompleted).count,
+                            completed: completed,
+                            total: total,
                             isCurrent: isCurrent,
-                            isPast: isPast,
                             isLast: isLast
                         )
                     }
                     .buttonStyle(.plain)
                 }
             }
-        }
-    }
-
-    private func isPhaseCompleted(_ phase: TimelinePhase) -> Bool {
-        guard let current = currentPhase else { return false }
-        let allPhases = TimelinePhase.allCases
-        guard let currentIdx = allPhases.firstIndex(of: current),
-              let phaseIdx = allPhases.firstIndex(of: phase) else { return false }
-        return phaseIdx < currentIdx
-    }
-
-    private func colorForCategory(_ category: ReadinessCategory) -> Color {
-        switch category {
-        case .admin: .gray
-        case .health: .red
-        case .education: .blue
-        case .employment: .teal
-        case .family: .pink
-        case .finance: AppTheme.gold
-        case .housing: AppTheme.forestGreen
         }
     }
 
@@ -339,6 +355,161 @@ struct PlanView: View {
             }
         }
         .presentationDetents([.medium])
+    }
+}
+
+struct PlanTaskRow: View {
+    let item: ChecklistItem
+    let storage: StorageService
+
+    private var categoryColor: Color {
+        switch item.readinessCategory {
+        case .admin: .gray
+        case .health: .red
+        case .education: .blue
+        case .employment: .teal
+        case .family: .pink
+        case .finance: Color(red: 0.788, green: 0.659, blue: 0.298)
+        case .housing: Color(red: 0.176, green: 0.373, blue: 0.176)
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button {
+                withAnimation(.spring(response: 0.3)) {
+                    storage.toggleChecklistItem(item.id)
+                }
+            } label: {
+                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : Color(.tertiaryLabel))
+                    .symbolEffect(.bounce, value: item.isCompleted)
+            }
+            .sensoryFeedback(.success, trigger: item.isCompleted)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(item.title)
+                    .font(.subheadline.weight(.semibold))
+                    .strikethrough(item.isCompleted)
+                    .foregroundStyle(item.isCompleted ? .secondary : .primary)
+
+                if !item.subtitle.isEmpty {
+                    Text(item.subtitle)
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+
+            Text(item.readinessCategory.shortLabel)
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(categoryColor)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(categoryColor.opacity(0.1))
+                .clipShape(Capsule())
+        }
+        .padding(12)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 12))
+        .contextMenu {
+            Button {
+                withAnimation { storage.toggleChecklistItem(item.id) }
+            } label: {
+                Label(item.isCompleted ? "Mark Incomplete" : "Mark Complete",
+                      systemImage: item.isCompleted ? "circle" : "checkmark.circle.fill")
+            }
+            if item.isCustom {
+                Button(role: .destructive) {
+                    storage.removeChecklistItem(item.id)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+        }
+    }
+}
+
+struct SimpleTimelineRow: View {
+    let phase: TimelinePhase
+    let completed: Int
+    let total: Int
+    let isCurrent: Bool
+    let isLast: Bool
+
+    private var progress: Double {
+        guard total > 0 else { return 0 }
+        return Double(completed) / Double(total)
+    }
+
+    private var isDone: Bool {
+        total > 0 && completed == total
+    }
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 14) {
+            VStack(spacing: 0) {
+                ZStack {
+                    if isCurrent {
+                        Circle()
+                            .fill(AppTheme.forestGreen)
+                            .frame(width: 28, height: 28)
+                        Image(systemName: "location.fill")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.white)
+                    } else if isDone {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(AppTheme.forestGreen)
+                    } else {
+                        Circle()
+                            .stroke(Color(.quaternaryLabel), lineWidth: 2)
+                            .frame(width: 18, height: 18)
+                    }
+                }
+                .frame(width: 28, height: 28)
+
+                if !isLast {
+                    Rectangle()
+                        .fill(isDone ? AppTheme.forestGreen.opacity(0.3) : Color(.quaternaryLabel))
+                        .frame(width: 2, height: 32)
+                }
+            }
+            .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 8) {
+                    Text(phase.rawValue)
+                        .font(.subheadline.weight(isCurrent ? .bold : .semibold))
+                        .foregroundStyle(isCurrent ? .primary : .secondary)
+
+                    if isCurrent {
+                        Text("NOW")
+                            .font(.caption2.weight(.heavy))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(AppTheme.forestGreen)
+                            .clipShape(Capsule())
+                    }
+                }
+
+                Text("\(completed)/\(total) tasks")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.quaternary)
+        }
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 }
 

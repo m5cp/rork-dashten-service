@@ -1,44 +1,21 @@
 import SwiftUI
 
 struct MindsetShiftsView: View {
-    @State private var selectedCategory: MindsetCategory?
     private let shifts = TransitionDataService.mindsetShifts()
-
-    private var filteredShifts: [MindsetShift] {
-        guard let category = selectedCategory else { return shifts }
-        return shifts.filter { $0.category == category }
-    }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Transition isn't just logistical — it's mental. These shifts help you navigate the biggest changes between military and civilian life.")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.8))
-                }
-                .padding(14)
-                .background(AppTheme.forestGreen.opacity(0.06))
-                .clipShape(.rect(cornerRadius: 12))
+            VStack(alignment: .leading, spacing: 20) {
+                GuideIntroBanner(
+                    text: "Transition isn't just logistical — it's mental. These shifts help you navigate the biggest changes between military and civilian life.",
+                    color: .indigo
+                )
 
-                ScrollView(.horizontal) {
-                    HStack(spacing: 8) {
-                        FilterChip(title: "All", isSelected: selectedCategory == nil) {
-                            withAnimation(.spring(response: 0.3)) { selectedCategory = nil }
-                        }
-                        ForEach(MindsetCategory.allCases, id: \.rawValue) { category in
-                            FilterChip(title: category.rawValue, isSelected: selectedCategory == category) {
-                                withAnimation(.spring(response: 0.3)) { selectedCategory = category }
-                            }
-                        }
-                    }
-                }
-                .contentMargins(.horizontal, 0)
-                .scrollIndicators(.hidden)
-
-                ForEach(filteredShifts) { shift in
+                ForEach(shifts) { shift in
                     MindsetShiftCard(shift: shift)
                 }
+
+                GuideDisclaimer(text: "Give yourself time. These shifts don't happen overnight, and that's okay.")
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
@@ -53,6 +30,26 @@ struct MindsetShiftCard: View {
     let shift: MindsetShift
     @State private var isExpanded: Bool = false
 
+    private var color: Color {
+        switch shift.category {
+        case .identity: .purple
+        case .culture: .teal
+        case .communication: .blue
+        case .dailyLife: .orange
+        case .relationships: .pink
+        }
+    }
+
+    private var icon: String {
+        switch shift.category {
+        case .identity: "person.fill"
+        case .culture: "building.2.fill"
+        case .communication: "bubble.left.and.bubble.right.fill"
+        case .dailyLife: "clock.fill"
+        case .relationships: "person.2.fill"
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button {
@@ -61,12 +58,12 @@ struct MindsetShiftCard: View {
                 }
             } label: {
                 HStack(spacing: 12) {
-                    Image(systemName: iconForCategory(shift.category))
+                    Image(systemName: icon)
                         .font(.body.weight(.bold))
-                        .foregroundStyle(colorForCategory(shift.category))
-                        .frame(width: 36, height: 36)
-                        .background(colorForCategory(shift.category).opacity(0.12))
-                        .clipShape(Circle())
+                        .foregroundStyle(color)
+                        .frame(width: 32, height: 32)
+                        .background(color.opacity(0.12))
+                        .clipShape(.rect(cornerRadius: 8))
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(shift.title)
@@ -74,14 +71,14 @@ struct MindsetShiftCard: View {
                             .foregroundStyle(.primary)
                         Text(shift.category.rawValue)
                             .font(.caption2.weight(.bold))
-                            .foregroundStyle(colorForCategory(shift.category))
+                            .foregroundStyle(color)
                     }
 
                     Spacer()
 
                     Image(systemName: "chevron.right")
                         .font(.caption.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.4))
+                        .foregroundStyle(.tertiary)
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
                 }
                 .contentShape(Rectangle())
@@ -92,36 +89,16 @@ struct MindsetShiftCard: View {
             if isExpanded {
                 VStack(alignment: .leading, spacing: 14) {
                     Divider()
+                        .padding(.horizontal, 16)
 
-                    VStack(alignment: .leading, spacing: 6) {
-                        Label("In the Military", systemImage: "chevron.left.2")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.orange)
-                        Text(shift.militaryMindset)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.primary.opacity(0.8))
+                    VStack(alignment: .leading, spacing: 12) {
+                        ShiftDetail(label: "In the Military", icon: "chevron.left.2", color: .orange, text: shift.militaryMindset)
+                        ShiftDetail(label: "As a Civilian", icon: "chevron.right.2", color: AppTheme.forestGreen, text: shift.civilianMindset)
+                        ShiftDetail(label: "The Insight", icon: "lightbulb.fill", color: AppTheme.gold, text: shift.insight)
                     }
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Label("As a Civilian", systemImage: "chevron.right.2")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(AppTheme.forestGreen)
-                        Text(shift.civilianMindset)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.primary.opacity(0.8))
-                    }
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Label("The Insight", systemImage: "lightbulb.fill")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(AppTheme.gold)
-                        Text(shift.insight)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.primary.opacity(0.8))
-                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
@@ -129,25 +106,22 @@ struct MindsetShiftCard: View {
         .clipShape(.rect(cornerRadius: 14))
         .sensoryFeedback(.selection, trigger: isExpanded)
     }
+}
 
-    private func iconForCategory(_ category: MindsetCategory) -> String {
-        switch category {
-        case .identity: "person.fill"
-        case .culture: "building.2.fill"
-        case .communication: "bubble.left.and.bubble.right.fill"
-        case .dailyLife: "clock.fill"
-        case .relationships: "person.2.fill"
-        }
-    }
+private struct ShiftDetail: View {
+    let label: String
+    let icon: String
+    let color: Color
+    let text: String
 
-    private func colorForCategory(_ category: MindsetCategory) -> Color {
-        switch category {
-        case .identity: .purple
-        case .culture: .teal
-        case .communication: .blue
-        case .dailyLife: .orange
-        case .relationships: .pink
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label(label, systemImage: icon)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(color)
+            Text(text)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.primary.opacity(0.85))
         }
     }
 }
-
