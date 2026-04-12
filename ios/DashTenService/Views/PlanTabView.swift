@@ -71,6 +71,7 @@ struct PlanTabView: View {
         case .personalBrandAudit: PersonalBrandAuditView(storage: storage)
         case .benefitsCountdown: BenefitsEnrollmentCountdownView(storage: storage)
         case .achievementBadges: AchievementBadgesView(storage: storage)
+        case .firstYearGuide: FirstYearGuideView()
         }
     }
 

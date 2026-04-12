@@ -61,6 +61,7 @@ struct PlanView: View {
                     priorityActions
                     planningAreas
                     documentsSection
+                    firstYearGuideCard
                     timelineRoadmap
                 }
                 .padding(.horizontal, 16)
@@ -131,6 +132,7 @@ struct PlanView: View {
         case .personalBrandAudit: PersonalBrandAuditView(storage: storage)
         case .benefitsCountdown: BenefitsEnrollmentCountdownView(storage: storage)
         case .achievementBadges: AchievementBadgesView(storage: storage)
+        case .firstYearGuide: FirstYearGuideView()
         }
     }
 
@@ -385,6 +387,55 @@ struct PlanView: View {
     }
 
     // MARK: - Timeline Roadmap
+
+    private var firstYearGuideCard: some View {
+        NavigationLink(value: PlanningRoute.firstYearGuide) {
+            HStack(spacing: 14) {
+                Image(systemName: "star.circle.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(
+                        LinearGradient(
+                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(.rect(cornerRadius: 12))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("First Year Guide")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text("Quarter-by-quarter roadmap for your first 12 months")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(16)
+            .background(
+                LinearGradient(
+                    colors: [AppTheme.forestGreen.opacity(0.08), AppTheme.forestGreen.opacity(0.02)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(.rect(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(AppTheme.forestGreen.opacity(0.12), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
 
     private var timelineRoadmap: some View {
         VStack(alignment: .leading, spacing: 14) {

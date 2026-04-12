@@ -172,6 +172,7 @@ enum PlanningRoute: Hashable {
     case personalBrandAudit
     case benefitsCountdown
     case achievementBadges
+    case firstYearGuide
 }
 
 struct PlanningCard: View {

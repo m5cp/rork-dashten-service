@@ -286,6 +286,7 @@ struct ProfileView: View {
     private func profileRouteDestination(_ route: PlanningRoute) -> some View {
         switch route {
         case .achievementBadges: AchievementBadgesView(storage: storage)
+        case .firstYearGuide: FirstYearGuideView()
         default: EmptyView()
         }
     }

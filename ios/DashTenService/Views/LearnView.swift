@@ -11,7 +11,7 @@ struct LearnView: View {
         return cards[dayOfYear % cards.count]
     }
 
-    private var guidesCount: Int { 7 }
+    private var guidesCount: Int { 8 }
 
     private var benefitsCount: Int {
         storage.benefitCategories.count
@@ -132,6 +132,7 @@ struct LearnView: View {
         case .personalBrandAudit: PersonalBrandAuditView(storage: storage)
         case .benefitsCountdown: BenefitsEnrollmentCountdownView(storage: storage)
         case .achievementBadges: AchievementBadgesView(storage: storage)
+        case .firstYearGuide: FirstYearGuideView()
         }
     }
 
@@ -259,6 +260,7 @@ struct GuidesListView: View {
 
     private let guides: [(title: String, subtitle: String, description: String, icon: String, color: Color, route: PlanningRoute)] = [
         ("First 30 Days", "Week-by-week", "A structured week-by-week plan for your first month after separation.", "flag.fill", .purple, .firstThirtyDays),
+        ("First Year Guide", "Quarter-by-quarter", "Your complete roadmap for the first 12 months after separation.", "star.circle.fill", Color(red: 0.176, green: 0.373, blue: 0.176), .firstYearGuide),
         ("Mindset Shifts", "Mental prep", "Reframe your thinking from military to civilian mindset.", "brain.fill", .indigo, .mindsetShifts),
         ("Civilian Playbook", "Unwritten rules", "Navigate the unspoken norms of civilian workplaces and life.", "book.closed.fill", .blue, .civilianPlaybook),
         ("Career Planning", "Resume & interview", "Build your civilian career strategy from scratch.", "briefcase.fill", .teal, .career),
