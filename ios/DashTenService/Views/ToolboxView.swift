@@ -173,11 +173,20 @@ struct ToolboxView: View {
         }
     }
 
+    private var isRetiredOrSeparated: Bool {
+        storage.profile.timeline == .separated
+    }
+
     private var heroCategoriesSection: some View {
         VStack(spacing: 14) {
             ForEach(ToolCategory.allCases) { category in
                 NavigationLink(value: category) {
-                    ToolCategoryHeroCard(category: category, toolCount: toolsFor(category).count)
+                    ToolCategoryHeroCard(
+                        category: category,
+                        toolCount: toolsFor(category).count,
+                        titleOverride: isRetiredOrSeparated && category == .planning ? "Your Post Military Career" : nil,
+                        subtitleOverride: isRetiredOrSeparated && category == .planning ? "Career tools, goals, wellness & post-service planning" : nil
+                    )
                 }
                 .buttonStyle(.plain)
             }
@@ -356,6 +365,8 @@ enum ToolCategory: String, CaseIterable, Identifiable, Hashable {
 private struct ToolCategoryHeroCard: View {
     let category: ToolCategory
     let toolCount: Int
+    var titleOverride: String? = nil
+    var subtitleOverride: String? = nil
 
     var body: some View {
         HStack(spacing: 0) {
@@ -370,10 +381,10 @@ private struct ToolCategoryHeroCard: View {
                 Spacer(minLength: 0)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(category.rawValue)
+                    Text(titleOverride ?? category.rawValue)
                         .font(.title3.weight(.bold))
                         .foregroundStyle(.white)
-                    Text(category.subtitle)
+                    Text(subtitleOverride ?? category.subtitle)
                         .font(.caption.weight(.medium))
                         .foregroundStyle(.white.opacity(0.7))
                         .lineLimit(2)

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Bindable var storage: StorageService
+    @Environment(\.dismiss) private var dismiss
     @State private var currentPage: Int = 0
     @State private var selectedBranch: MilitaryBranch?
     @State private var selectedTimeline: TransitionTimeline?
@@ -501,11 +502,13 @@ struct OnboardingView: View {
         storage.profile.goals = Array(selectedGoals)
         storage.profile.hasAcceptedDisclaimer = true
         storage.profile.hasCompletedOnboarding = true
+        dismiss()
     }
 
     private func skipOnboarding() {
         storage.profile.hasAcceptedDisclaimer = true
         storage.profile.hasCompletedOnboarding = true
+        dismiss()
     }
 }
 

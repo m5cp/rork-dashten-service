@@ -8,6 +8,11 @@ struct TodayView: View {
     @State private var celebrationSubtitle: String = ""
     @State private var appeared: Bool = false
     @State private var showOnboarding: Bool = false
+    @State private var searchText: String = ""
+
+    private var isRetiredOrSeparated: Bool {
+        storage.profile.timeline == .separated
+    }
 
     private var readiness: ReadinessCalculator.ReadinessScore {
         ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
@@ -114,6 +119,9 @@ struct TodayView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     heroSection
+                    if isRetiredOrSeparated {
+                        firstYearGuidePromo
+                    }
                     focusCardSection
                     weeklyActivitySection
                     quickStatsBar
@@ -128,6 +136,24 @@ struct TodayView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Today")
+            .searchable(text: $searchText, prompt: "Search topics, tools, benefits...")
+            .searchSuggestions {
+                if !searchText.isEmpty {
+                    ForEach(filteredSearchSuggestions, id: \.title) { suggestion in
+                        NavigationLink(value: suggestion.route) {
+                            Label(suggestion.title, systemImage: suggestion.icon)
+                        }
+                        .searchCompletion(suggestion.title)
+                    }
+                } else {
+                    ForEach(topSearchSuggestions, id: \.title) { suggestion in
+                        NavigationLink(value: suggestion.route) {
+                            Label(suggestion.title, systemImage: suggestion.icon)
+                        }
+                        .searchCompletion(suggestion.title)
+                    }
+                }
+            }
             .navigationDestination(for: PlanningRoute.self) { route in
                 routeDestination(route)
             }
@@ -230,7 +256,9 @@ struct TodayView: View {
             .padding(.top, 20)
             .padding(.bottom, 16)
 
-            if let date = storage.profile.separationDate {
+            if isRetiredOrSeparated {
+                postServiceHeroContent
+            } else if let date = storage.profile.separationDate {
                 countdownSection(date: date)
             } else {
                 noDatePrompt
@@ -240,6 +268,91 @@ struct TodayView: View {
         .clipShape(.rect(cornerRadius: 20))
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 12)
+    }
+
+    private var postServiceHeroContent: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "star.circle.fill")
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(AppTheme.gold)
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Welcome to civilian life")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+                Text("Your first year roadmap is ready")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
+    }
+
+    private var firstYearGuidePromo: some View {
+        NavigationLink(value: PlanningRoute.firstYearGuide) {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 12) {
+                    Image(systemName: "star.circle.fill")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                        .background(
+                            LinearGradient(
+                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .clipShape(.rect(cornerRadius: 12))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Your First Year Guide")
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(.primary)
+                        Text("Quarter-by-quarter roadmap for your first 12 months")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.tertiary)
+                }
+
+                HStack(spacing: 8) {
+                    ForEach(["Health", "Career", "Benefits", "Finance"], id: \.self) { tag in
+                        Text(tag)
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(AppTheme.forestGreen.opacity(0.1))
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+            .padding(16)
+            .background(
+                LinearGradient(
+                    colors: [AppTheme.forestGreen.opacity(0.1), AppTheme.forestGreen.opacity(0.03)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(.rect(cornerRadius: 18))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .strokeBorder(AppTheme.forestGreen.opacity(0.2), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .opacity(appeared ? 1 : 0)
+        .offset(y: appeared ? 0 : 12)
+        .animation(.spring(response: 0.6).delay(0.1), value: appeared)
     }
 
     private var personalGreeting: String {
@@ -625,7 +738,7 @@ struct TodayView: View {
 
     private var firstRunCards: some View {
         Group {
-            let needsSetup = storage.profile.separationDate == nil || completedTaskCount == 0
+            let needsSetup = (storage.profile.separationDate == nil && !isRetiredOrSeparated) || completedTaskCount == 0
 
             if needsSetup {
                 VStack(alignment: .leading, spacing: 12) {
@@ -643,10 +756,10 @@ struct TodayView: View {
                                 .clipShape(.rect(cornerRadius: 12))
 
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Build Your Separation Plan")
+                                Text(isRetiredOrSeparated ? "Build Your Post-Service Plan" : "Build Your Separation Plan")
                                     .font(.subheadline.weight(.bold))
                                     .foregroundStyle(.primary)
-                                Text("Answer a few questions to personalize your timeline, goals, and checklist")
+                                Text(isRetiredOrSeparated ? "Personalize your first-year roadmap, goals, and checklist" : "Answer a few questions to personalize your timeline, goals, and checklist")
                                     .font(.caption.weight(.medium))
                                     .foregroundStyle(.secondary)
                                     .lineLimit(2)
@@ -717,6 +830,62 @@ struct TodayView: View {
             .clipShape(.rect(cornerRadius: 14))
         }
         .buttonStyle(.plain)
+    }
+
+    private struct SearchSuggestion {
+        let title: String
+        let icon: String
+        let route: PlanningRoute
+        let keywords: [String]
+    }
+
+    private var allSearchSuggestions: [SearchSuggestion] {
+        [
+            SearchSuggestion(title: "First Year Guide", icon: "star.circle.fill", route: .firstYearGuide, keywords: ["first year", "roadmap", "quarter", "post service"]),
+            SearchSuggestion(title: "Career Planning", icon: "briefcase.fill", route: .career, keywords: ["career", "job", "employment", "work"]),
+            SearchSuggestion(title: "Education Planning", icon: "graduationcap.fill", route: .education, keywords: ["education", "school", "gi bill", "degree", "college"]),
+            SearchSuggestion(title: "Financial Planning", icon: "dollarsign.circle.fill", route: .financial, keywords: ["finance", "money", "budget", "savings", "tsp"]),
+            SearchSuggestion(title: "Family Planning", icon: "figure.2.and.child.holdinghands", route: .family, keywords: ["family", "spouse", "kids", "dependents"]),
+            SearchSuggestion(title: "Documents", icon: "doc.text.fill", route: .documents, keywords: ["documents", "dd214", "records", "paperwork"]),
+            SearchSuggestion(title: "Benefits", icon: "building.columns.fill", route: .finalGearCheck, keywords: ["benefits", "va", "health care", "disability"]),
+            SearchSuggestion(title: "Resume Translator", icon: "doc.text.fill", route: .resumeTranslator, keywords: ["resume", "cv", "translate", "civilian"]),
+            SearchSuggestion(title: "Interview Prep", icon: "person.fill.questionmark", route: .interviewPrep, keywords: ["interview", "practice", "questions"]),
+            SearchSuggestion(title: "Skills Inventory", icon: "list.clipboard.fill", route: .skillsInventory, keywords: ["skills", "inventory", "mos"]),
+            SearchSuggestion(title: "TSP & Retirement", icon: "arrow.triangle.swap", route: .tspRollover, keywords: ["tsp", "retirement", "401k", "rollover"]),
+            SearchSuggestion(title: "Salary Negotiation", icon: "hand.raised.fill", route: .salaryNegotiation, keywords: ["salary", "negotiate", "pay"]),
+            SearchSuggestion(title: "Cost of Living", icon: "building.2.fill", route: .costOfLiving, keywords: ["cost", "living", "city", "compare"]),
+            SearchSuggestion(title: "GI Bill BAH Calculator", icon: "house.fill", route: .giBillBAH, keywords: ["gi bill", "bah", "housing allowance"]),
+            SearchSuggestion(title: "State Benefits Finder", icon: "flag.fill", route: .stateBenefits, keywords: ["state", "benefits", "veteran"]),
+            SearchSuggestion(title: "Mindset Shifts", icon: "brain.fill", route: .mindsetShifts, keywords: ["mindset", "mental", "identity", "adjustment"]),
+            SearchSuggestion(title: "Crisis Resources", icon: "heart.fill", route: .crisis, keywords: ["crisis", "988", "emergency", "support", "help"]),
+            SearchSuggestion(title: "First 30 Days", icon: "flag.fill", route: .firstThirtyDays, keywords: ["first 30", "30 days", "survival"]),
+            SearchSuggestion(title: "Civilian Playbook", icon: "book.closed.fill", route: .civilianPlaybook, keywords: ["civilian", "playbook", "rules"]),
+            SearchSuggestion(title: "Readiness Dashboard", icon: "gauge.with.dots.needle.33percent", route: .readiness, keywords: ["readiness", "progress", "dashboard"]),
+            SearchSuggestion(title: "Transition Journal", icon: "book.fill", route: .transitionJournal, keywords: ["journal", "write", "reflect"]),
+            SearchSuggestion(title: "Goal Tracker", icon: "target", route: .goalTracker, keywords: ["goals", "track", "progress"]),
+            SearchSuggestion(title: "Wellness Check-In", icon: "chart.xyaxis.line", route: .weeklyCheckIn, keywords: ["wellness", "check-in", "stress", "mental health"]),
+            SearchSuggestion(title: "Networking Hub", icon: "person.3.fill", route: .networkingScorecard, keywords: ["networking", "contacts", "connections"]),
+            SearchSuggestion(title: "Elevator Pitch", icon: "mic.fill", route: .elevatorPitch, keywords: ["pitch", "intro", "elevator"]),
+            SearchSuggestion(title: "Relocation Cost", icon: "shippingbox.fill", route: .relocationCost, keywords: ["relocation", "moving", "pcs"]),
+            SearchSuggestion(title: "Education Benefits", icon: "chart.bar.doc.horizontal.fill", route: .educationComparison, keywords: ["education", "benefits", "comparison"]),
+            SearchSuggestion(title: "Mentor Tracker", icon: "person.2.fill", route: .mentorTracker, keywords: ["mentor", "network", "advisor"]),
+            SearchSuggestion(title: "Decision Matrix", icon: "square.grid.3x3.fill", route: .decisionMatrix, keywords: ["decision", "compare", "matrix"]),
+            SearchSuggestion(title: "90-Day Planner", icon: "calendar.badge.clock", route: .ninetyDayPlanner, keywords: ["90 day", "planner", "first job"]),
+        ]
+    }
+
+    private var filteredSearchSuggestions: [SearchSuggestion] {
+        allSearchSuggestions.filter { suggestion in
+            suggestion.title.localizedStandardContains(searchText) ||
+            suggestion.keywords.contains(where: { $0.localizedStandardContains(searchText) })
+        }
+    }
+
+    private var topSearchSuggestions: [SearchSuggestion] {
+        if isRetiredOrSeparated {
+            return allSearchSuggestions.filter { ["First Year Guide", "Career Planning", "Benefits", "Wellness Check-In", "Documents"].contains($0.title) }
+        }
+        return Array(allSearchSuggestions.prefix(5))
     }
 
     private func checkMilestone(old: Int, new: Int) {
