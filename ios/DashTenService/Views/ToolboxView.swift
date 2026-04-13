@@ -5,7 +5,7 @@ struct ToolboxView: View {
     var store: StoreViewModel
     @State private var activeSheet: ToolboxSheet?
     @State private var searchText: String = ""
-    @State private var navPath: [PlanningRoute] = []
+    @State private var navPath = NavigationPath()
     @State private var showPaywall: Bool = false
 
     private var isSearching: Bool { !searchText.isEmpty }
