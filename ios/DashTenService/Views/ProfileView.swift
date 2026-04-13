@@ -53,30 +53,74 @@ struct ProfileView: View {
                     Text("Level & Achievements")
                 }
 
-                Section("Goals") {
-                    if storage.profile.goals.isEmpty {
-                        Text("No goals selected")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary.opacity(0.6))
-                    } else {
-                        ForEach(storage.profile.goals) { goal in
-                            Label(goal.rawValue, systemImage: goal.icon)
-                                .font(.subheadline.weight(.semibold))
+                Section {
+                    ForEach(TransitionGoal.allCases) { goal in
+                        Button {
+                            if storage.profile.goals.contains(goal) {
+                                storage.profile.goals.removeAll { $0 == goal }
+                            } else {
+                                storage.profile.goals.append(goal)
+                            }
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: goal.icon)
+                                    .font(.subheadline)
+                                    .foregroundStyle(storage.profile.goals.contains(goal) ? AppTheme.forestGreen : .secondary)
+                                    .frame(width: 24)
+                                Text(goal.rawValue)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if storage.profile.goals.contains(goal) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(AppTheme.forestGreen)
+                                }
+                            }
                         }
                     }
+                } header: {
+                    Text("Goals")
+                } footer: {
+                    Text("Select all that apply to your transition")
                 }
 
-                Section("Personal Info") {
-                    TextField("Display Name", text: $storage.profile.displayName)
-                        .font(.body.weight(.semibold))
+                Section("Service Info") {
+                    Picker("Branch", selection: $storage.profile.branch) {
+                        Text("Select Branch").tag(MilitaryBranch?.none)
+                        ForEach(MilitaryBranch.allCases) { branch in
+                            Label(branch.rawValue, systemImage: branch.icon).tag(MilitaryBranch?.some(branch))
+                        }
+                    }
+                    .font(.body.weight(.semibold))
 
-                    if storage.profile.separationDate != nil {
+                    Picker("Status", selection: Binding(
+                        get: { storage.profile.timeline },
+                        set: { newValue in
+                            storage.profile.timeline = newValue
+                            if newValue == .separated {
+                                storage.profile.separationDate = nil
+                            }
+                        }
+                    )) {
+                        Text("Select Status").tag(TransitionTimeline?.none)
+                        ForEach(TransitionTimeline.allCases) { timeline in
+                            Label(timeline.rawValue, systemImage: timeline.icon).tag(TransitionTimeline?.some(timeline))
+                        }
+                    }
+                    .font(.body.weight(.semibold))
+
+                    if storage.profile.timeline != nil && storage.profile.timeline != .separated {
                         DatePicker("Separation Date", selection: Binding(
                             get: { storage.profile.separationDate ?? Date() },
                             set: { storage.profile.separationDate = $0 }
                         ), displayedComponents: .date)
                         .font(.body.weight(.semibold))
                     }
+                }
+
+                Section("Personal Info") {
+                    TextField("Display Name", text: $storage.profile.displayName)
+                        .font(.body.weight(.semibold))
 
                     Stepper("Household Size: \(storage.profile.householdSize)", value: $storage.profile.householdSize, in: 1...20)
                         .font(.body.weight(.semibold))
