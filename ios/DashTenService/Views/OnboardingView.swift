@@ -58,8 +58,7 @@ struct OnboardingView: View {
     }
 
     @State private var welcomeAnimated: Bool = false
-    @State private var counterValue: Int = 0
-    private let targetCounter = 200000
+
 
     private var welcomePage: some View {
         ZStack {
@@ -109,24 +108,18 @@ struct OnboardingView: View {
                     }
 
                     VStack(spacing: 8) {
-                        Text("\(counterValue.formatted(.number))+")
-                            .font(.system(size: 36, weight: .bold, design: .rounded))
-                            .foregroundStyle(AppTheme.gold)
-                            .contentTransition(.numericText())
+                        Text("Your transition. Your terms.")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.white.opacity(0.9))
                             .opacity(welcomeAnimated ? 1 : 0)
                             .animation(.spring(response: 0.8).delay(1.2), value: welcomeAnimated)
 
-                        Text("service members transition every year.")
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(.white.opacity(0.9))
-                            .opacity(welcomeAnimated ? 1 : 0)
-                            .animation(.spring(response: 0.8).delay(1.4), value: welcomeAnimated)
-
-                        Text("Most wish they started planning sooner.")
+                        Text("Plan, track, and take action — all in one place.")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.white.opacity(0.7))
+                            .multilineTextAlignment(.center)
                             .opacity(welcomeAnimated ? 1 : 0)
-                            .animation(.spring(response: 0.8).delay(1.6), value: welcomeAnimated)
+                            .animation(.spring(response: 0.8).delay(1.4), value: welcomeAnimated)
                     }
                 }
 
@@ -164,19 +157,6 @@ struct OnboardingView: View {
         }
         .onAppear {
             welcomeAnimated = true
-            animateCounter()
-        }
-    }
-
-    private func animateCounter() {
-        let steps = 30
-        let increment = targetCounter / steps
-        for i in 1...steps {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2 + Double(i) * 0.03) {
-                withAnimation(.easeOut(duration: 0.05)) {
-                    counterValue = min(i * increment, targetCounter)
-                }
-            }
         }
     }
 

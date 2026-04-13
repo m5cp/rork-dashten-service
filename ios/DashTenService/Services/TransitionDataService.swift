@@ -553,7 +553,7 @@ enum TransitionDataService {
 
     static func insightCards() -> [InsightCard] {
         [
-            InsightCard(title: "Start Earlier Than You Think", body: "Most people say they wish they had started transition planning at least 12 months out. The earlier you begin, the less stressful the final months become.", category: .wishIKnew),
+            InsightCard(title: "Start Earlier Than You Think", body: "Transition planning works best when you start at least 12 months out. The earlier you begin, the less stressful the final months become.", category: .wishIKnew),
             InsightCard(title: "Your DD214 Is Everything", body: "This single document unlocks nearly every veteran benefit. Get multiple certified copies and verify every line before signing. Errors can take months to fix.", category: .wishIKnew),
             InsightCard(title: "Civilian Time Moves Differently", body: "In the military, things happen on schedule. In the civilian world, job searches, claims, and applications can take much longer than expected. Build in buffer time.", category: .wishIKnew),
             InsightCard(title: "Your Network Is Your Lifeline", body: "Start building civilian connections before you separate. LinkedIn, veteran organizations, and informational interviews are more powerful than cold applications.", category: .wishIKnew),
