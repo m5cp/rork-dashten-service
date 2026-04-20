@@ -141,7 +141,6 @@ struct PlanView: View {
         case .family: FamilyPlanningView()
         case .financial: FinancialPlanningView()
         case .readiness: ReadinessDashboardView(storage: storage)
-        case .crisis: CrisisResourcesView()
         case .firstThirtyDays: FirstThirtyDaysView()
         case .mindsetShifts: MindsetShiftsView()
         case .civilianPlaybook: CivilianPlaybookView()

@@ -255,13 +255,6 @@ struct ProfileView: View {
                             .font(.body.weight(.semibold))
                     }
 
-                    NavigationLink {
-                        CrisisResourcesView()
-                    } label: {
-                        Label("Crisis Resources", systemImage: "heart.fill")
-                            .font(.body.weight(.semibold))
-                            .foregroundStyle(.red)
-                    }
                 }
 
                 Section("Legal") {

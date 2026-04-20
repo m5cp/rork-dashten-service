@@ -137,7 +137,6 @@ struct TodayView: View {
                     insightSpotlight
                     mindsetSpotlight
                     firstRunCards
-                    crisisQuickAccess
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)
@@ -242,7 +241,6 @@ struct TodayView: View {
         case .family: FamilyPlanningView()
         case .financial: FinancialPlanningView()
         case .readiness: ReadinessDashboardView(storage: storage)
-        case .crisis: CrisisResourcesView()
         case .firstThirtyDays: FirstThirtyDaysView()
         case .mindsetShifts: MindsetShiftsView()
         case .civilianPlaybook: CivilianPlaybookView()
@@ -953,31 +951,6 @@ struct TodayView: View {
         .buttonStyle(.plain)
     }
 
-    private var crisisQuickAccess: some View {
-        NavigationLink(value: PlanningRoute.crisis) {
-            HStack(spacing: 12) {
-                Image(systemName: "heart.fill")
-                    .font(.title3)
-                    .foregroundStyle(.red)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Need support?")
-                        .font(.subheadline.weight(.bold))
-                    Text("Crisis Lifeline: call or text 988")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(16)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 14))
-        }
-        .buttonStyle(.plain)
-    }
-
     private struct SearchSuggestion {
         let title: String
         let icon: String
@@ -1003,7 +976,6 @@ struct TodayView: View {
             SearchSuggestion(title: "GI Bill BAH Calculator", icon: "house.fill", route: .giBillBAH, keywords: ["gi bill", "bah", "housing allowance"]),
             SearchSuggestion(title: "State Benefits Finder", icon: "flag.fill", route: .stateBenefits, keywords: ["state", "benefits", "veteran"]),
             SearchSuggestion(title: "Mindset Shifts", icon: "brain.fill", route: .mindsetShifts, keywords: ["mindset", "mental", "identity", "adjustment"]),
-            SearchSuggestion(title: "Crisis Resources", icon: "heart.fill", route: .crisis, keywords: ["crisis", "988", "emergency", "support", "help"]),
             SearchSuggestion(title: "First 30 Days", icon: "flag.fill", route: .firstThirtyDays, keywords: ["first 30", "30 days", "survival"]),
             SearchSuggestion(title: "Civilian Playbook", icon: "book.closed.fill", route: .civilianPlaybook, keywords: ["civilian", "playbook", "rules"]),
             SearchSuggestion(title: "Readiness Dashboard", icon: "gauge.with.dots.needle.33percent", route: .readiness, keywords: ["readiness", "progress", "dashboard"]),

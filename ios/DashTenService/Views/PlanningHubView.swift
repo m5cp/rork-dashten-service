@@ -116,15 +116,6 @@ struct PlanningHubView: View {
                 }
                 .buttonStyle(.plain)
 
-                NavigationLink(value: PlanningRoute.crisis) {
-                    PlanningCard(
-                        title: "Crisis & Support Resources",
-                        subtitle: "24/7 help lines and support",
-                        icon: "heart.fill",
-                        color: .red
-                    )
-                }
-                .buttonStyle(.plain)
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
@@ -139,7 +130,6 @@ enum PlanningRoute: Hashable {
     case family
     case financial
     case readiness
-    case crisis
     case firstThirtyDays
     case mindsetShifts
     case civilianPlaybook
