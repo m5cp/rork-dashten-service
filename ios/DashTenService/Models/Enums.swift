@@ -170,7 +170,7 @@ nonisolated enum ReadinessCategory: String, Codable, CaseIterable, Identifiable,
         switch self {
         case .admin: "Admin"
         case .health: "Health"
-        case .education: "Edu"
+        case .education: "Education"
         case .employment: "Jobs"
         case .family: "Family"
         case .finance: "Finance"

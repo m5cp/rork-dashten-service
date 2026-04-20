@@ -305,7 +305,7 @@ struct GuidesListView: View {
                 .padding(.bottom, 6)
 
                 ForEach(Array(guides.enumerated()), id: \.offset) { _, guide in
-                    ExpandableGuideCard(
+                    GuideHeroCardLink(
                         title: guide.title,
                         subtitle: guide.subtitle,
                         description: guide.description,
@@ -313,16 +313,7 @@ struct GuidesListView: View {
                         color: guide.color,
                         route: guide.route,
                         locked: store.isGuideLocked(guide.route),
-                        isExpanded: expandedRoute == guide.route,
-                        onToggle: {
-                            if store.isGuideLocked(guide.route) {
-                                showPaywall = true
-                                return
-                            }
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-                                expandedRoute = (expandedRoute == guide.route) ? nil : guide.route
-                            }
-                        }
+                        onTapLocked: { showPaywall = true }
                     )
                 }
             }
@@ -335,6 +326,78 @@ struct GuidesListView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView(store: store)
         }
+    }
+}
+
+struct GuideHeroCardLink: View {
+    let title: String
+    let subtitle: String
+    let description: String
+    let icon: String
+    let color: Color
+    let route: PlanningRoute
+    let locked: Bool
+    let onTapLocked: () -> Void
+
+    var body: some View {
+        if locked {
+            Button(action: onTapLocked) { content }
+                .buttonStyle(.plain)
+        } else {
+            NavigationLink(value: route) { content }
+                .buttonStyle(.plain)
+        }
+    }
+
+    private var content: some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.title2.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 56, height: 56)
+                .background(
+                    LinearGradient(
+                        colors: [color, color.opacity(0.75)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .clipShape(.rect(cornerRadius: 14))
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(title)
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    if locked {
+                        Text("PRO")
+                            .font(.system(size: 9, weight: .heavy))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(AppTheme.gold)
+                            .clipShape(Capsule())
+                    }
+                }
+                Text(subtitle)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(color)
+                Text(description)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+            }
+
+            Spacer()
+
+            Image(systemName: locked ? "lock.fill" : "chevron.right")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(locked ? AnyShapeStyle(AppTheme.gold) : AnyShapeStyle(.tertiary))
+        }
+        .padding(16)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 16))
     }
 }
 

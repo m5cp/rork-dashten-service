@@ -220,42 +220,75 @@ struct GuideSection: View {
     let color: Color
     let items: [String]
     var description: String? = nil
+    @State private var isExpanded: Bool = true
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 10) {
-                Image(systemName: icon)
-                    .font(.body.weight(.bold))
-                    .foregroundStyle(color)
-                    .frame(width: 32, height: 32)
-                    .background(color.opacity(0.12))
-                    .clipShape(.rect(cornerRadius: 8))
-                Text(title)
-                    .font(.headline.weight(.bold))
-            }
-
-            VStack(alignment: .leading, spacing: 10) {
-                if let description {
-                    Text(description)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    isExpanded.toggle()
                 }
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: icon)
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(color)
+                        .frame(width: 32, height: 32)
+                        .background(color.opacity(0.12))
+                        .clipShape(.rect(cornerRadius: 8))
+                    Text(title)
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Text("\(items.count)")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Color(.tertiarySystemGroupedBackground))
+                        .clipShape(Capsule())
+                    Image(systemName: "chevron.down")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .rotationEffect(.degrees(isExpanded ? 0 : -90))
+                }
+                .padding(14)
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(.rect(cornerRadius: 14))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .sensoryFeedback(.selection, trigger: isExpanded)
 
-                ForEach(items, id: \.self) { item in
-                    HStack(alignment: .top, spacing: 10) {
-                        Image(systemName: "circle.fill")
-                            .font(.system(size: 5))
-                            .foregroundStyle(color)
-                            .padding(.top, 7)
-                        Text(item)
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 10) {
+                    if let description {
+                        Text(description)
                             .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.primary.opacity(0.85))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    ForEach(items, id: \.self) { item in
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 5))
+                                .foregroundStyle(color)
+                                .padding(.top, 7)
+                            Text(item)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.primary.opacity(0.85))
+                        }
                     }
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(.rect(cornerRadius: 14))
+                .padding(.top, 6)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
-            .padding(16)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 14))
         }
     }
 }

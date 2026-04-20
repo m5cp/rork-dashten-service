@@ -6,6 +6,8 @@ struct PlanView: View {
     @State private var newItemTitle: String = ""
     @State private var newItemPhase: TimelinePhase = .eighteenToTwentyFour
     @State private var newItemCategory: ReadinessCategory = .admin
+    @State private var exportedPDFURL: URL?
+    @State private var isExporting: Bool = false
 
     private var readiness: ReadinessCalculator.ReadinessScore {
         ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
@@ -58,6 +60,7 @@ struct PlanView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     missionBriefing
+                    AICoachCard(storage: storage)
                     priorityActions
                     planningAreas
                     documentsSection
@@ -71,13 +74,25 @@ struct PlanView: View {
             .navigationTitle("Plan")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showAddItem = true
+                    Menu {
+                        Button {
+                            showAddItem = true
+                        } label: {
+                            Label("Add Custom Task", systemImage: "plus.circle")
+                        }
+                        Button {
+                            exportPDF()
+                        } label: {
+                            Label("Export Roadmap to PDF", systemImage: "square.and.arrow.up")
+                        }
                     } label: {
-                        Image(systemName: "plus.circle.fill")
+                        Image(systemName: "ellipsis.circle.fill")
                             .foregroundStyle(AppTheme.forestGreen)
                     }
                 }
+            }
+            .sheet(item: Binding(get: { exportedPDFURL.map { PDFURL(url: $0) } }, set: { exportedPDFURL = $0?.url })) { wrapper in
+                ShareSheet(items: [wrapper.url])
             }
             .sheet(isPresented: $showAddItem) {
                 addItemSheet
@@ -384,6 +399,12 @@ struct PlanView: View {
             .clipShape(.rect(cornerRadius: 16))
         }
         .buttonStyle(.plain)
+    }
+
+    private func exportPDF() {
+        isExporting = true
+        exportedPDFURL = RoadmapPDFService.generate(storage: storage)
+        isExporting = false
     }
 
     // MARK: - Timeline Roadmap

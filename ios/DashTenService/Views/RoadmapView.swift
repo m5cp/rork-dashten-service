@@ -284,27 +284,7 @@ struct PhaseDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: phase.icon)
-                            .font(.title2)
-                            .foregroundStyle(AppTheme.forestGreen)
-                        Text(phase.rawValue)
-                            .font(.title2.bold())
-                    }
-                    Text(phase.subtitle)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.7))
-
-                    let completed = items.filter(\.isCompleted).count
-                    HStack(spacing: 8) {
-                        ProgressView(value: items.isEmpty ? 0 : Double(completed) / Double(items.count))
-                            .tint(AppTheme.forestGreen)
-                        Text("\(completed) of \(items.count) complete")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.7))
-                    }
-                }
+                phaseHero
 
                 ForEach(groupedByCategory, id: \.0) { category, categoryItems in
                     VStack(alignment: .leading, spacing: 10) {
@@ -312,77 +292,198 @@ struct PhaseDetailView: View {
                             .font(.subheadline.weight(.bold))
                             .foregroundStyle(AppTheme.forestGreen)
 
-                        VStack(spacing: 6) {
+                        VStack(spacing: 10) {
                             ForEach(categoryItems) { item in
-                                HStack(spacing: 12) {
-                                    Button {
-                                        withAnimation(.spring(response: 0.3)) {
-                                            storage.toggleChecklistItem(item.id)
-                                        }
-                                    } label: {
-                                        Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                                            .font(.title3)
-                                            .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : Color.primary.opacity(0.5))
-                                            .symbolEffect(.bounce, value: item.isCompleted)
-                                    }
-                                    .sensoryFeedback(.success, trigger: item.isCompleted)
-
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        HStack(spacing: 6) {
-                                            Text(item.title)
-                                                .font(.subheadline.weight(.semibold))
-                                                .strikethrough(item.isCompleted)
-                                                .foregroundStyle(item.isCompleted ? Color.primary.opacity(0.5) : Color.primary)
-                                            if item.isCustom {
-                                                Image(systemName: "person.fill")
-                                                    .font(.caption2)
-                                                    .foregroundStyle(Color.primary.opacity(0.5))
-                                            }
-                                        }
-                                        if !item.subtitle.isEmpty {
-                                            Text(item.subtitle)
-                                                .font(.caption.weight(.medium))
-                                                .foregroundStyle(.primary.opacity(0.6))
-                                        }
-                                    }
-                                    Spacer()
-                                    if item.isCustom {
-                                        Button {
-                                            storage.removeChecklistItem(item.id)
-                                        } label: {
-                                            Image(systemName: "trash")
-                                                .font(.caption)
-                                                .foregroundStyle(.red.opacity(0.8))
-                                        }
-                                    }
-                                }
-                                .padding(12)
-                                .background(Color(.secondarySystemGroupedBackground))
-                                .clipShape(.rect(cornerRadius: 10))
-                                .contextMenu {
-                                    Button {
-                                        withAnimation { storage.toggleChecklistItem(item.id) }
-                                    } label: {
-                                        Label(item.isCompleted ? "Mark Incomplete" : "Mark Complete",
-                                              systemImage: item.isCompleted ? "circle" : "checkmark.circle.fill")
-                                    }
-                                    if item.isCustom {
-                                        Button(role: .destructive) {
-                                            storage.removeChecklistItem(item.id)
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                        }
-                                    }
-                                }
+                                TaskHowToCard(item: item, storage: storage)
                             }
                         }
                     }
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 24)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var phaseHero: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 14) {
+                Image(systemName: phase.icon)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 52, height: 52)
+                    .background(
+                        LinearGradient(
+                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(.rect(cornerRadius: 14))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(phase.rawValue)
+                        .font(.title3.weight(.bold))
+                    Text(phase.subtitle)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppTheme.forestGreen)
+                }
+                Spacer()
+            }
+
+            let completed = items.filter(\.isCompleted).count
+            HStack(spacing: 8) {
+                ProgressView(value: items.isEmpty ? 0 : Double(completed) / Double(items.count))
+                    .tint(AppTheme.forestGreen)
+                Text("\(completed)/\(items.count)")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(16)
+        .background(AppTheme.forestGreen.opacity(0.06))
+        .clipShape(.rect(cornerRadius: 16))
+    }
+}
+
+struct TaskHowToCard: View {
+    let item: ChecklistItem
+    let storage: StorageService
+    @State private var isExpanded: Bool = false
+
+    private var howTo: TaskHowTo? { TaskHowToData.howTo(for: item.id) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .top, spacing: 12) {
+                Button {
+                    withAnimation(.spring(response: 0.3)) {
+                        storage.toggleChecklistItem(item.id)
+                    }
+                } label: {
+                    Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
+                        .font(.title3)
+                        .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : Color.primary.opacity(0.35))
+                        .symbolEffect(.bounce, value: item.isCompleted)
+                }
+                .sensoryFeedback(.success, trigger: item.isCompleted)
+                .buttonStyle(.plain)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.title)
+                        .font(.subheadline.weight(.bold))
+                        .strikethrough(item.isCompleted)
+                        .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                    if !item.subtitle.isEmpty {
+                        Text(item.subtitle)
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                if howTo != nil {
+                    Button {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        Image(systemName: "chevron.down")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.secondary)
+                            .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                            .frame(width: 28, height: 28)
+                            .background(Color(.tertiarySystemGroupedBackground))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(14)
+
+            if isExpanded, let howTo {
+                VStack(alignment: .leading, spacing: 10) {
+                    Divider()
+                    HStack(spacing: 6) {
+                        Image(systemName: "list.number")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(AppTheme.forestGreen)
+                        Text("How to do this")
+                            .font(.caption.weight(.heavy))
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .textCase(.uppercase)
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(Array(howTo.steps.enumerated()), id: \.offset) { idx, step in
+                            HStack(alignment: .top, spacing: 10) {
+                                Text("\(idx + 1)")
+                                    .font(.caption.weight(.heavy))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 20, height: 20)
+                                    .background(AppTheme.forestGreen)
+                                    .clipShape(Circle())
+                                Text(step)
+                                    .font(.caption.weight(.medium))
+                                    .foregroundStyle(.primary.opacity(0.85))
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                    if let tip = howTo.tip {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "lightbulb.fill")
+                                .font(.caption2)
+                                .foregroundStyle(AppTheme.gold)
+                                .padding(.top, 2)
+                            Text(tip)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.85))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(AppTheme.gold.opacity(0.08))
+                        .clipShape(.rect(cornerRadius: 10))
+                    }
+                    if let link = howTo.link, let url = URL(string: link.url) {
+                        Link(destination: url) {
+                            HStack {
+                                Image(systemName: "arrow.up.right.square")
+                                Text(link.title)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption2.weight(.bold))
+                            }
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .padding(10)
+                            .background(AppTheme.forestGreen.opacity(0.08))
+                            .clipShape(.rect(cornerRadius: 10))
+                        }
+                    }
+                }
+                .padding(14)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 12))
+        .contextMenu {
+            Button {
+                withAnimation { storage.toggleChecklistItem(item.id) }
+            } label: {
+                Label(item.isCompleted ? "Mark Incomplete" : "Mark Complete",
+                      systemImage: item.isCompleted ? "circle" : "checkmark.circle.fill")
+            }
+            if item.isCustom {
+                Button(role: .destructive) {
+                    storage.removeChecklistItem(item.id)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+        }
     }
 }
