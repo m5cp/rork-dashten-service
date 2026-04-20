@@ -96,7 +96,7 @@ struct FinalGearCheckView: View {
                     Text("\(missingDocs)")
                         .font(.title3.bold())
                         .foregroundStyle(missingDocs > 0 ? .orange : AppTheme.forestGreen)
-                    Text("Missing Docs")
+                    Text("Needed Docs")
                         .font(.caption2.weight(.bold))
                         .foregroundStyle(.primary.opacity(0.6))
                 }
@@ -171,7 +171,7 @@ struct FinalGearCheckView: View {
         Group {
             if missingDocs > 0 {
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("\(missingDocs) documents still missing", systemImage: "exclamationmark.triangle.fill")
+                    Label("\(missingDocs) documents still needed", systemImage: "exclamationmark.triangle.fill")
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(.orange)
                     Text("Check the Documents tab to track and update the status of your records.")

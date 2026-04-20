@@ -91,7 +91,7 @@ final class AICoachService {
 
         let focus: String
         if docsMissing > 3 {
-            focus = "Your biggest leverage right now is documents — you have \(docsMissing) still missing."
+            focus = "Your biggest leverage right now is documents — you have \(docsMissing) still needed."
         } else if pct < 25 {
             focus = "Start with one task today. Small wins compound fast."
         } else if pct < 60 {

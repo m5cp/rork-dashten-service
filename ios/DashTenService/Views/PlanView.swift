@@ -30,8 +30,26 @@ struct PlanView: View {
         storage.checklistItems.filter { $0.phase == currentPhase }
     }
 
+    private var overdueTasks: [ChecklistItem] {
+        let allPhases = TimelinePhase.allCases
+        guard let currentIdx = allPhases.firstIndex(of: currentPhase) else { return [] }
+        let earlierPhases = Set(allPhases.prefix(currentIdx))
+        return storage.checklistItems.filter { !$0.isCompleted && earlierPhases.contains($0.phase) }
+    }
+
+    private var recommendedTasks: [ChecklistItem] {
+        let overdue = overdueTasks.prefix(2)
+        let current = currentPhaseTasks.filter { !$0.isCompleted }
+        let remaining = 3 - overdue.count
+        return Array(overdue) + Array(current.prefix(max(0, remaining)))
+    }
+
+    private var totalRecommendedCount: Int {
+        overdueTasks.count + currentPhaseTasks.filter { !$0.isCompleted }.count
+    }
+
     private var urgentTasks: [ChecklistItem] {
-        Array(currentPhaseTasks.filter { !$0.isCompleted }.prefix(3))
+        recommendedTasks
     }
 
     private var overallCompleted: Int {
@@ -51,16 +69,20 @@ struct PlanView: View {
         storage.documents.filter { $0.status == .missing }.count
     }
 
+    @Namespace private var roadmapAnchor
+
     private var securedDocs: Int {
         storage.documents.filter { $0.status == .verified || $0.status == .received }.count
     }
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { proxy in
             ScrollView {
                 VStack(spacing: 20) {
                     missionBriefing
                     timelineRoadmap
+                        .id("roadmap")
                     AICoachCard(storage: storage)
                     priorityActions
                     planningAreas
@@ -68,6 +90,11 @@ struct PlanView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .scrollToRoadmap)) { _ in
+                withAnimation(.spring(response: 0.5)) {
+                    proxy.scrollTo("roadmap", anchor: .top)
+                }
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Plan")
@@ -101,6 +128,7 @@ struct PlanView: View {
             }
             .navigationDestination(for: PlanningRoute.self) { route in
                 routeDestination(route)
+            }
             }
         }
     }
@@ -250,7 +278,7 @@ struct PlanView: View {
                 Image(systemName: "scope")
                     .font(.subheadline.weight(.bold))
                     .foregroundStyle(AppTheme.forestGreen)
-                Text("Do Now")
+                Text("Recommended Tasks")
                     .font(.headline.weight(.bold))
                 Spacer()
                 if !urgentTasks.isEmpty {
@@ -280,16 +308,17 @@ struct PlanView: View {
                 .background(AppTheme.forestGreen.opacity(0.06))
                 .clipShape(.rect(cornerRadius: 14))
             } else {
+                let overdueIds = Set(overdueTasks.map(\.id))
                 VStack(spacing: 8) {
                     ForEach(urgentTasks) { item in
-                        PlanTaskRow(item: item, storage: storage)
+                        PlanTaskRow(item: item, storage: storage, isOverdue: overdueIds.contains(item.id))
                     }
                 }
 
-                if currentPhaseTasks.filter({ !$0.isCompleted }).count > 3 {
+                if totalRecommendedCount > urgentTasks.count {
                     NavigationLink(value: currentPhase) {
                         HStack {
-                            Text("See all \(currentPhaseTasks.filter { !$0.isCompleted }.count) tasks")
+                            Text("See all \(totalRecommendedCount) tasks")
                                 .font(.subheadline.weight(.semibold))
                             Image(systemName: "arrow.right")
                                 .font(.caption.weight(.bold))
@@ -380,7 +409,7 @@ struct PlanView: View {
                 Spacer()
 
                 if missingDocs > 0 {
-                    Text("\(missingDocs) missing")
+                    Text("\(missingDocs) needed")
                         .font(.caption.weight(.bold))
                         .foregroundStyle(.orange)
                         .padding(.horizontal, 10)
@@ -673,6 +702,7 @@ struct RoadmapRow: View {
 struct PlanTaskRow: View {
     let item: ChecklistItem
     let storage: StorageService
+    var isOverdue: Bool = false
 
     private var categoryColor: Color {
         switch item.readinessCategory {
@@ -715,6 +745,16 @@ struct PlanTaskRow: View {
             }
 
             Spacer()
+
+            if isOverdue {
+                Text("Overdue")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.orange)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(.orange.opacity(0.12))
+                    .clipShape(Capsule())
+            }
 
             Text(item.readinessCategory.shortLabel)
                 .font(.caption2.weight(.bold))

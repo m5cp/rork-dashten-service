@@ -3,6 +3,7 @@ import SwiftUI
 struct TodayView: View {
     let storage: StorageService
     var store: StoreViewModel
+    @Binding var selectedTab: Int
     @State private var showCelebration: Bool = false
     @State private var celebrationTitle: String = ""
     @State private var celebrationSubtitle: String = ""
@@ -479,59 +480,67 @@ struct TodayView: View {
     private var focusCardSection: some View {
         Group {
             if let focus = focusAction {
-                VStack(alignment: .leading, spacing: 14) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "scope")
-                            .font(.subheadline.weight(.heavy))
-                            .foregroundStyle(AppTheme.forestGreen)
-                        Text("YOUR ROADMAP")
-                            .font(.caption.weight(.heavy))
-                            .foregroundStyle(AppTheme.forestGreen)
-                        Spacer()
-                        if let phase = currentPhase {
-                            StatusBadge(text: phase.shortLabel, color: AppTheme.forestGreen)
-                        }
+                Button {
+                    selectedTab = 1
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        NotificationCenter.default.post(name: .scrollToRoadmap, object: nil)
                     }
-
-                    HStack(spacing: 14) {
-                        Button {
-                            withAnimation(.spring(response: 0.3)) {
-                                storage.toggleChecklistItem(focus.id)
+                } label: {
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "scope")
+                                .font(.subheadline.weight(.heavy))
+                                .foregroundStyle(AppTheme.forestGreen)
+                            Text("YOUR ROADMAP")
+                                .font(.caption.weight(.heavy))
+                                .foregroundStyle(AppTheme.forestGreen)
+                            Spacer()
+                            if let phase = currentPhase {
+                                StatusBadge(text: phase.shortLabel, color: AppTheme.forestGreen)
                             }
-                        } label: {
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(AppTheme.forestGreen.opacity(0.6))
+                        }
+
+                        HStack(spacing: 14) {
                             Image(systemName: focus.isCompleted ? "checkmark.circle.fill" : "circle")
                                 .font(.title2)
                                 .foregroundStyle(focus.isCompleted ? AppTheme.forestGreen : .primary.opacity(0.3))
-                                .symbolEffect(.bounce, value: focus.isCompleted)
-                        }
-                        .sensoryFeedback(.success, trigger: focus.isCompleted)
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(focus.title)
-                                .font(.headline.weight(.bold))
-                                .strikethrough(focus.isCompleted)
-                            if !focus.subtitle.isEmpty {
-                                Text(focus.subtitle)
-                                    .font(.subheadline.weight(.medium))
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(2)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(focus.title)
+                                    .font(.headline.weight(.bold))
+                                    .foregroundStyle(.primary)
+                                    .strikethrough(focus.isCompleted)
+                                    .multilineTextAlignment(.leading)
+                                if !focus.subtitle.isEmpty {
+                                    Text(focus.subtitle)
+                                        .font(.subheadline.weight(.medium))
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(2)
+                                        .multilineTextAlignment(.leading)
+                                }
+                                Text(focusReason)
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(AppTheme.forestGreen)
+                                    .padding(.top, 2)
                             }
-                            Text(focusReason)
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(AppTheme.forestGreen)
-                                .padding(.top, 2)
+                            Spacer(minLength: 0)
                         }
                     }
+                    .padding(18)
+                    .background(
+                        RoundedRectangle(cornerRadius: 18)
+                            .fill(AppTheme.forestGreen.opacity(0.06))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 18)
+                                    .strokeBorder(AppTheme.forestGreen.opacity(0.15), lineWidth: 1)
+                            )
+                    )
                 }
-                .padding(18)
-                .background(
-                    RoundedRectangle(cornerRadius: 18)
-                        .fill(AppTheme.forestGreen.opacity(0.06))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 18)
-                                .strokeBorder(AppTheme.forestGreen.opacity(0.15), lineWidth: 1)
-                        )
-                )
+                .buttonStyle(.plain)
+                .sensoryFeedback(.selection, trigger: selectedTab)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 12)
                 .animation(.spring(response: 0.6).delay(0.15), value: appeared)

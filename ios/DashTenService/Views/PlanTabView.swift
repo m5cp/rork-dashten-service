@@ -155,7 +155,7 @@ struct PlanTabView: View {
                     Spacer()
 
                     if missingCount > 0 {
-                        Text("\(missingCount) missing")
+                        Text("\(missingCount) needed")
                             .font(.caption.weight(.bold))
                             .foregroundStyle(.orange)
                             .padding(.horizontal, 10)

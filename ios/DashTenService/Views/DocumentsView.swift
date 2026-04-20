@@ -2,7 +2,7 @@ import SwiftUI
 
 struct DocumentsView: View {
     let storage: StorageService
-    @State private var selectedCategory: DocumentCategory?
+    @State private var expandedCategories: Set<DocumentCategory> = []
 
     private var groupedDocuments: [(DocumentCategory, [DocumentItem])] {
         let grouped = Dictionary(grouping: storage.documents, by: \.category)
@@ -35,23 +35,25 @@ struct DocumentsView: View {
                 documentWarningBanner
                 progressHeader
                 summaryBar
-                categoryFilter
 
-                ForEach(filteredGroups, id: \.0) { category, docs in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label(category.rawValue, systemImage: category.icon)
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(AppTheme.forestGreen)
-                            .padding(.horizontal, 4)
-
-                        VStack(spacing: 6) {
-                            ForEach(docs) { doc in
-                                DocumentRow(document: doc, onStatusChange: { newStatus in
-                                    storage.updateDocumentStatus(doc.id, status: newStatus)
-                                })
+                ForEach(groupedDocuments, id: \.0) { category, docs in
+                    CategoryHeroCard(
+                        category: category,
+                        documents: docs,
+                        isExpanded: expandedCategories.contains(category),
+                        onToggle: {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                                if expandedCategories.contains(category) {
+                                    expandedCategories.remove(category)
+                                } else {
+                                    expandedCategories.insert(category)
+                                }
                             }
+                        },
+                        onStatusChange: { doc, newStatus in
+                            storage.updateDocumentStatus(doc.id, status: newStatus)
                         }
-                    }
+                    )
                 }
             }
             .padding(.horizontal, 16)
@@ -117,34 +119,98 @@ struct DocumentsView: View {
         .clipShape(.rect(cornerRadius: 14))
     }
 
-    private var filteredGroups: [(DocumentCategory, [DocumentItem])] {
-        guard let selected = selectedCategory else { return groupedDocuments }
-        return groupedDocuments.filter { $0.0 == selected }
-    }
-
     private var summaryBar: some View {
         HStack(spacing: 12) {
             StatCard(value: "\(totalCount)", label: "Total", color: .primary)
-            StatCard(value: "\(missingCount)", label: "Missing", color: .red)
+            StatCard(value: "\(missingCount)", label: "Needed", color: .red)
             StatCard(value: "\(verifiedCount)", label: "Verified", color: AppTheme.forestGreen)
         }
     }
+}
 
-    private var categoryFilter: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 8) {
-                FilterChip(title: "All", isSelected: selectedCategory == nil) {
-                    selectedCategory = nil
+private struct CategoryHeroCard: View {
+    let category: DocumentCategory
+    let documents: [DocumentItem]
+    let isExpanded: Bool
+    let onToggle: () -> Void
+    let onStatusChange: (DocumentItem, DocumentStatus) -> Void
+
+    private var securedCount: Int {
+        documents.filter { $0.status == .received || $0.status == .verified }.count
+    }
+
+    private var neededCount: Int {
+        documents.filter { $0.status == .missing }.count
+    }
+
+    private var progress: Double {
+        guard !documents.isEmpty else { return 0 }
+        return Double(securedCount) / Double(documents.count)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button(action: onToggle) {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 12) {
+                        Image(systemName: category.icon)
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .frame(width: 40, height: 40)
+                            .background(AppTheme.forestGreen.opacity(0.12))
+                            .clipShape(.rect(cornerRadius: 10))
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(category.rawValue)
+                                .font(.headline.weight(.bold))
+                                .foregroundStyle(.primary)
+                            Text("\(securedCount) of \(documents.count) secured")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        if neededCount > 0 {
+                            Text("\(neededCount) needed")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.orange)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(.orange.opacity(0.12))
+                                .clipShape(Capsule())
+                        }
+
+                        Image(systemName: "chevron.down")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.secondary)
+                            .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                    }
+
+                    ProgressView(value: progress)
+                        .tint(AppTheme.forestGreen)
                 }
-                ForEach(DocumentCategory.allCases) { cat in
-                    FilterChip(title: cat.rawValue, isSelected: selectedCategory == cat) {
-                        selectedCategory = selectedCategory == cat ? nil : cat
+                .padding(16)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .sensoryFeedback(.selection, trigger: isExpanded)
+
+            if isExpanded {
+                VStack(spacing: 6) {
+                    ForEach(documents) { doc in
+                        DocumentRow(document: doc, onStatusChange: { newStatus in
+                            onStatusChange(doc, newStatus)
+                        })
                     }
                 }
+                .padding(.horizontal, 12)
+                .padding(.bottom, 12)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .contentMargins(.horizontal, 0)
-        .scrollIndicators(.hidden)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 14))
     }
 }
 
@@ -169,8 +235,6 @@ struct StatCard: View {
     }
 }
 
-
-
 struct DocumentRow: View {
     let document: DocumentItem
     let onStatusChange: (DocumentStatus) -> Void
@@ -181,6 +245,15 @@ struct DocumentRow: View {
         case .requested: .orange
         case .received: .blue
         case .verified: AppTheme.forestGreen
+        }
+    }
+
+    private func statusLabel(_ status: DocumentStatus) -> String {
+        switch status {
+        case .missing: "Needed"
+        case .requested: "Requested"
+        case .received: "Received"
+        case .verified: "Verified"
         }
     }
 
@@ -217,7 +290,7 @@ struct DocumentRow: View {
                         HStack(spacing: 4) {
                             Image(systemName: status.icon)
                                 .font(.caption2.weight(.semibold))
-                            Text(status.rawValue)
+                            Text(statusLabel(status))
                                 .font(.caption2.weight(.bold))
                         }
                         .padding(.horizontal, 10)
@@ -235,7 +308,7 @@ struct DocumentRow: View {
             }
         }
         .padding(12)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(.tertiarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 10))
     }
 
