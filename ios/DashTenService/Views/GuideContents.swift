@@ -106,13 +106,6 @@ struct FirstYearGuideContent: View {
             case .q4: q4
             }
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Official Resources")
-                    .font(.headline.weight(.bold))
-                OfficialLinkButton(title: "VA.gov — Manage Your Benefits", url: "https://www.va.gov/")
-                OfficialLinkButton(title: "CareerOneStop — Veterans", url: "https://www.careeronestop.org/Veterans/default.aspx")
-            }
-
             GuideDisclaimer(text: "Adapt this guide to your situation and consult professionals for legal, medical, or financial decisions.")
         }
     }
@@ -242,9 +235,6 @@ struct CareerPlanningContent: View {
                 "Request informational interviews with industry professionals",
             ])
 
-            OfficialLinkButton(title: "O*NET Military Crosswalk Search", url: "https://www.onetonline.org/crosswalk/MOC/")
-            OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
-
             GuideDisclaimer(text: "Always verify employment programs and eligibility with official sources.")
         }
     }
@@ -276,8 +266,6 @@ struct EducationPlanningContent: View {
                 "Community College — 2-year programs, transfer options",
                 "Apprenticeship — Earn while you learn",
             ])
-
-            OfficialLinkButton(title: "Education Benefits Info", url: "https://www.benefits.gov/benefit/4769")
 
             GuideDisclaimer(text: "Verify all education benefit details with official sources before enrollment decisions.")
         }
@@ -312,8 +300,6 @@ struct FamilyPlanningContent: View {
                 "Plan for school enrollment timelines",
             ])
 
-            OfficialLinkButton(title: "USA.gov Moving Checklist", url: "https://www.usa.gov/moving")
-
             GuideDisclaimer(text: "Research state-specific requirements for licensing, registration, and enrollment.")
         }
     }
@@ -345,9 +331,6 @@ struct FinancialPlanningContent: View {
                 "Know that disability compensation is tax-free",
                 "Consider TSP rollover options (IRA, 401k)",
             ])
-
-            OfficialLinkButton(title: "Consumer Financial Protection Bureau", url: "https://www.consumerfinance.gov/consumer-tools/educator-tools/servicemembers/")
-            OfficialLinkButton(title: "TSP.gov (Thrift Savings Plan)", url: "https://www.tsp.gov/")
 
             GuideDisclaimer(text: "This is not financial advice. Consult qualified professionals.")
         }

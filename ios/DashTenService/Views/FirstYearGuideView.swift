@@ -402,15 +402,7 @@ struct FirstYearGuideView: View {
     }
 
     private var officialLinks: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Official Resources")
-                .font(.headline.weight(.bold))
-
-            OfficialLinkButton(title: "VA.gov — Manage Your Benefits", url: "https://www.va.gov/")
-            OfficialLinkButton(title: "eBenefits Portal", url: "https://www.ebenefits.va.gov/")
-            OfficialLinkButton(title: "CareerOneStop — Veterans", url: "https://www.careeronestop.org/Veterans/default.aspx")
-            OfficialLinkButton(title: "National Resource Directory", url: "https://nrd.gov/")
-        }
+        EmptyView()
     }
 }
 

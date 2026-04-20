@@ -393,9 +393,6 @@ struct CareerPlanningView: View {
                     description: "Most positions are filled through connections, not cold applications."
                 )
 
-                OfficialLinkButton(title: "O*NET Military Crosswalk Search", url: "https://www.onetonline.org/crosswalk/MOC/")
-                OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
-
                 GuideDisclaimer(text: "Always verify employment programs and eligibility with official sources.")
             }
             .padding(.horizontal, 16)
@@ -462,8 +459,6 @@ struct EducationPlanningView: View {
                     ]
                 )
 
-                OfficialLinkButton(title: "Education Benefits Info", url: "https://www.benefits.gov/benefit/4769")
-
                 GuideDisclaimer(text: "Verify all education benefit details with official sources before making enrollment decisions.")
             }
             .padding(.horizontal, 16)
@@ -527,8 +522,6 @@ struct FamilyPlanningView: View {
                         "Look into after-school programs and activities",
                     ]
                 )
-
-                OfficialLinkButton(title: "USA.gov Moving Checklist", url: "https://www.usa.gov/moving")
 
                 GuideDisclaimer(text: "Research state-specific requirements for licensing, registration, and enrollment in your target area.")
             }
@@ -664,9 +657,6 @@ struct FinancialPlanningView: View {
                         "Consult a tax professional about your specific situation",
                     ]
                 )
-
-                OfficialLinkButton(title: "Consumer Financial Protection Bureau", url: "https://www.consumerfinance.gov/consumer-tools/educator-tools/servicemembers/")
-                OfficialLinkButton(title: "TSP.gov (Thrift Savings Plan)", url: "https://www.tsp.gov/")
 
                 GuideDisclaimer(text: "This is not financial advice. Consult qualified professionals for decisions about investments, taxes, and insurance.")
             }

@@ -447,21 +447,23 @@ struct TaskHowToCard: View {
                         .background(AppTheme.gold.opacity(0.08))
                         .clipShape(.rect(cornerRadius: 10))
                     }
-                    if let link = howTo.link, let url = URL(string: link.url) {
-                        Link(destination: url) {
+                    if let tool = howTo.tool {
+                        NavigationLink(value: tool.route) {
                             HStack {
-                                Image(systemName: "arrow.up.right.square")
-                                Text(link.title)
+                                Image(systemName: "wrench.and.screwdriver.fill")
+                                Text(tool.title)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .font(.caption2.weight(.bold))
                             }
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(AppTheme.forestGreen)
-                            .padding(10)
-                            .background(AppTheme.forestGreen.opacity(0.08))
+                            .foregroundStyle(.white)
+                            .padding(12)
+                            .frame(maxWidth: .infinity)
+                            .background(AppTheme.forestGreen)
                             .clipShape(.rect(cornerRadius: 10))
                         }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(14)

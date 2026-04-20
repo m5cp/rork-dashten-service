@@ -54,7 +54,7 @@ nonisolated enum TransitionTimeline: String, Codable, CaseIterable, Identifiable
         case .twentyFourPlus: "calendar.badge.clock"
         case .twelveMonths: "calendar"
         case .sixMonths: "clock.fill"
-        case .ninetyDays: "exclamationmark.clock.fill"
+        case .ninetyDays: "hourglass"
         case .separated: "checkmark.circle.fill"
         }
     }

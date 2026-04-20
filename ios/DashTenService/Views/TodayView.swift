@@ -484,7 +484,7 @@ struct TodayView: View {
                         Image(systemName: "scope")
                             .font(.subheadline.weight(.heavy))
                             .foregroundStyle(AppTheme.forestGreen)
-                        Text("YOUR FOCUS")
+                        Text("YOUR ROADMAP")
                             .font(.caption.weight(.heavy))
                             .foregroundStyle(AppTheme.forestGreen)
                         Spacer()

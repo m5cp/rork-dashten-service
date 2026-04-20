@@ -549,13 +549,6 @@ struct SourceTransparencyView: View {
                     PolicyBlock(icon: "doc.text", accent: .blue, title: "Summaries Only", body: "Benefit details are summaries, not official determinations.")
                     PolicyBlock(icon: "link", accent: AppTheme.forestGreen, title: "External Links", body: "External links go to official or established organization websites.")
 
-                    Text("Official Resources")
-                        .font(.headline.weight(.bold))
-                        .padding(.top, 6)
-                    OfficialLinkButton(title: "Benefits.gov", url: "https://www.benefits.gov/")
-                    OfficialLinkButton(title: "National Archives (Records)", url: "https://www.archives.gov/veterans")
-                    OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
-
                     NonAffiliationBanner()
                 }
                 .padding(20)
