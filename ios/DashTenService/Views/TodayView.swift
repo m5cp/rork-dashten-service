@@ -123,7 +123,6 @@ struct TodayView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     heroSection
-                    upgradeCardSection
                     if isRetiredOrSeparated {
                         firstYearGuidePromo
                     }
@@ -144,6 +143,34 @@ struct TodayView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Today")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if store.isPremium {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .accessibilityLabel("DashTen Pro unlocked")
+                    } else {
+                        Button {
+                            showPaywall = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "sparkles")
+                                    .font(.caption2.weight(.heavy))
+                                Text("Upgrade")
+                                    .font(.caption.weight(.heavy))
+                            }
+                            .foregroundStyle(AppTheme.darkGreen)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(AppTheme.gold)
+                            .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Upgrade to DashTen Pro")
+                    }
+                }
+            }
             .searchable(text: $searchText, prompt: "Search topics, tools, benefits...")
             .searchSuggestions {
                 if !searchText.isEmpty {

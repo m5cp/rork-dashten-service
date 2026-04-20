@@ -257,6 +257,7 @@ struct GuidesListView: View {
     let storage: StorageService
     var store: StoreViewModel
     @State private var showPaywall: Bool = false
+    @State private var expandedRoute: PlanningRoute?
 
     private let guides: [(title: String, subtitle: String, description: String, icon: String, color: Color, route: PlanningRoute)] = [
         ("First 30 Days", "Week-by-week", "A structured week-by-week plan for your first month after separation.", "flag.fill", .purple, .firstThirtyDays),
@@ -271,7 +272,7 @@ struct GuidesListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 0) {
+            VStack(spacing: 14) {
                 VStack(spacing: 12) {
                     Image(systemName: "book.fill")
                         .font(.largeTitle.weight(.semibold))
@@ -286,7 +287,7 @@ struct GuidesListView: View {
                         )
                         .clipShape(.rect(cornerRadius: 18))
 
-                    Text("Step-by-step playbooks to guide your transition")
+                    Text("Tap a guide to expand it — your full transition playbook, in one place.")
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -301,36 +302,32 @@ struct GuidesListView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 8)
+                .padding(.bottom, 6)
 
-                VStack(spacing: 2) {
-                    ForEach(Array(guides.enumerated()), id: \.offset) { index, guide in
-                        let locked = store.isGuideLocked(guide.route)
-                        if locked {
-                            Button {
+                ForEach(Array(guides.enumerated()), id: \.offset) { _, guide in
+                    ExpandableGuideCard(
+                        title: guide.title,
+                        subtitle: guide.subtitle,
+                        description: guide.description,
+                        icon: guide.icon,
+                        color: guide.color,
+                        route: guide.route,
+                        locked: store.isGuideLocked(guide.route),
+                        isExpanded: expandedRoute == guide.route,
+                        onToggle: {
+                            if store.isGuideLocked(guide.route) {
                                 showPaywall = true
-                            } label: {
-                                guideRow(guide: guide, locked: true)
+                                return
                             }
-                            .buttonStyle(.plain)
-                        } else {
-                            NavigationLink(value: guide.route) {
-                                guideRow(guide: guide, locked: false)
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                                expandedRoute = (expandedRoute == guide.route) ? nil : guide.route
                             }
-                            .buttonStyle(.plain)
                         }
-
-                        if index < guides.count - 1 {
-                            Divider()
-                                .padding(.leading, 58)
-                        }
-                    }
+                    )
                 }
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(.rect(cornerRadius: 14))
-                .padding(.horizontal, 16)
-                .padding(.top, 20)
-                .padding(.bottom, 100)
             }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 100)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Guides")
@@ -339,53 +336,98 @@ struct GuidesListView: View {
             PaywallView(store: store)
         }
     }
+}
 
-    private func guideRow(guide: (title: String, subtitle: String, description: String, icon: String, color: Color, route: PlanningRoute), locked: Bool) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: guide.icon)
-                .font(.body.weight(.semibold))
-                .foregroundStyle(locked ? .secondary : guide.color)
-                .frame(width: 32, height: 32)
-                .background((locked ? Color.secondary : guide.color).opacity(0.12))
-                .clipShape(.rect(cornerRadius: 8))
+struct ExpandableGuideCard: View {
+    let title: String
+    let subtitle: String
+    let description: String
+    let icon: String
+    let color: Color
+    let route: PlanningRoute
+    let locked: Bool
+    let isExpanded: Bool
+    let onToggle: () -> Void
 
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(guide.title)
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(locked ? .secondary : .primary)
-                    if locked {
-                        Text("PRO")
-                            .font(.system(size: 9, weight: .heavy))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
-                            .background(AppTheme.gold)
-                            .clipShape(Capsule())
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button(action: onToggle) {
+                HStack(spacing: 14) {
+                    Image(systemName: icon)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 48, height: 48)
+                        .background(
+                            LinearGradient(
+                                colors: [color, color.opacity(0.75)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .clipShape(.rect(cornerRadius: 12))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 6) {
+                            Text(title)
+                                .font(.headline.weight(.bold))
+                                .foregroundStyle(.primary)
+                            if locked {
+                                Text("PRO")
+                                    .font(.system(size: 9, weight: .heavy))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(AppTheme.gold)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                        Text(description)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
                     }
+
+                    Spacer()
+
+                    Image(systemName: locked ? "lock.fill" : "chevron.down")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(locked ? AppTheme.gold : .secondary)
+                        .rotationEffect(.degrees(isExpanded && !locked ? 180 : 0))
                 }
-                Text(guide.description)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
+                .padding(16)
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .sensoryFeedback(.selection, trigger: isExpanded)
 
-            Spacer()
-
-            if locked {
-                Image(systemName: "lock.fill")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(AppTheme.gold)
-            } else {
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.tertiary)
+            if isExpanded && !locked {
+                VStack(alignment: .leading, spacing: 14) {
+                    Divider()
+                    GuideContentView(route: route)
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .contentShape(Rectangle())
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 16))
+    }
+}
+
+@ViewBuilder
+func GuideContentView(route: PlanningRoute) -> some View {
+    switch route {
+    case .firstThirtyDays: FirstThirtyDaysContent()
+    case .firstYearGuide: FirstYearGuideContent()
+    case .mindsetShifts: MindsetShiftsContent()
+    case .civilianPlaybook: CivilianPlaybookContent()
+    case .career: CareerPlanningContent()
+    case .education: EducationPlanningContent()
+    case .family: FamilyPlanningContent()
+    case .financial: FinancialPlanningContent()
+    default: EmptyView()
     }
 }
 

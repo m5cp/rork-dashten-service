@@ -104,17 +104,16 @@ struct ProfileView: View {
                     )) {
                         Text("Select Status").tag(TransitionTimeline?.none)
                         ForEach(TransitionTimeline.allCases) { timeline in
-                            Label(timeline.rawValue, systemImage: timeline.icon).tag(TransitionTimeline?.some(timeline))
+                            Text(timeline.rawValue).tag(TransitionTimeline?.some(timeline))
                         }
                     }
                     .font(.body.weight(.semibold))
 
                     if storage.profile.timeline != nil && storage.profile.timeline != .separated {
-                        DatePicker("Separation Date", selection: Binding(
+                        SeparationDateRow(date: Binding(
                             get: { storage.profile.separationDate ?? Date() },
                             set: { storage.profile.separationDate = $0 }
-                        ), displayedComponents: .date)
-                        .font(.body.weight(.semibold))
+                        ))
                     }
                 }
 
@@ -521,48 +520,41 @@ struct SourceTransparencyView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label("How We Source Information", systemImage: "doc.text.magnifyingglass")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(AppTheme.forestGreen)
+                VStack(alignment: .leading, spacing: 14) {
+                    PolicyBlock(
+                        icon: "doc.text.magnifyingglass",
+                        accent: AppTheme.forestGreen,
+                        title: "How We Source Information",
+                        body: "DashTen summarizes publicly available information about military transition, veteran benefits, and post-service planning."
+                    )
+                    PolicyBlock(
+                        icon: "globe",
+                        accent: .blue,
+                        title: "Public Sources Only",
+                        body: "All content is based on publicly accessible resources from official websites, publicly available guides, and common transition knowledge."
+                    )
+                    PolicyBlock(
+                        icon: "checkmark.shield.fill",
+                        accent: .purple,
+                        title: "No Insider Claims",
+                        body: "This app does not claim to have insider, proprietary, or classified information. All information should be verified with official sources before making decisions."
+                    )
 
-                        Group {
-                            Text("DashTen summarizes publicly available information about military transition, veteran benefits, and post-service planning.")
-                            Text("All content in this app is based on publicly accessible resources from official websites, publicly available guides, and common transition knowledge.")
-                            Text("This app does not claim to have insider, proprietary, or classified information. All information should be verified with official sources before making decisions.")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
+                    Text("Important Reminders")
+                        .font(.headline.weight(.bold))
+                        .padding(.top, 6)
 
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Important Reminders")
-                            .font(.headline.weight(.bold))
+                    PolicyBlock(icon: "exclamationmark.triangle", accent: .orange, title: "Eligibility Changes", body: "Eligibility requirements can change. Always verify with official sources.")
+                    PolicyBlock(icon: "clock", accent: .teal, title: "Timelines Vary", body: "Deadlines and timelines may vary by branch, location, and individual situation.")
+                    PolicyBlock(icon: "doc.text", accent: .blue, title: "Summaries Only", body: "Benefit details are summaries, not official determinations.")
+                    PolicyBlock(icon: "link", accent: AppTheme.forestGreen, title: "External Links", body: "External links go to official or established organization websites.")
 
-                        Group {
-                            Label("Eligibility requirements can change. Always verify with official sources.", systemImage: "exclamationmark.triangle")
-                            Label("Deadlines and timelines may vary by branch, location, and individual situation.", systemImage: "clock")
-                            Label("Benefit details are summaries, not official determinations.", systemImage: "doc.text")
-                            Label("External links go to official or established organization websites.", systemImage: "link")
-                        }
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Official Resources")
-                            .font(.headline.weight(.bold))
-                        OfficialLinkButton(title: "Benefits.gov", url: "https://www.benefits.gov/")
-                        OfficialLinkButton(title: "National Archives (Records)", url: "https://www.archives.gov/veterans")
-                        OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
-                    }
+                    Text("Official Resources")
+                        .font(.headline.weight(.bold))
+                        .padding(.top, 6)
+                    OfficialLinkButton(title: "Benefits.gov", url: "https://www.benefits.gov/")
+                    OfficialLinkButton(title: "National Archives (Records)", url: "https://www.archives.gov/veterans")
+                    OfficialLinkButton(title: "USAJobs.gov (Federal Jobs)", url: "https://www.usajobs.gov/")
 
                     NonAffiliationBanner()
                 }
@@ -584,33 +576,28 @@ struct SourceTransparencyView: View {
 struct TermsOfUseView: View {
     @Environment(\.dismiss) private var dismiss
 
+    private let terms: [String] = [
+        "DashTen is an informational and organizational tool designed to help users plan their transition from military to civilian life.",
+        "You accept full responsibility for verifying all information with official sources before making any decisions based on content in this app.",
+        "The app creator is not liable for any decisions made, actions taken, or outcomes resulting from information presented in this app.",
+        "This app does not provide legal, medical, financial, career counseling, or claims assistance of any kind.",
+        "You agree not to rely solely on this app for transition planning and will consult qualified professionals and official agencies as needed.",
+        "All data is stored locally on your device. You are responsible for backing up your own data.",
+        "The app creator reserves the right to update these terms at any time."
+    ]
+
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Terms of Use")
-                            .font(.title3.bold())
-
-                        Text("By using DashTen, you acknowledge and agree to the following:")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary.opacity(0.8))
-
-                        Group {
-                            Text("1. DashTen is an informational and organizational tool designed to help users plan their transition from military to civilian life.")
-                            Text("2. You accept full responsibility for verifying all information with official sources before making any decisions based on content in this app.")
-                            Text("3. The app creator is not liable for any decisions made, actions taken, or outcomes resulting from information presented in this app.")
-                            Text("4. This app does not provide legal, medical, financial, career counseling, or claims assistance of any kind.")
-                            Text("5. You agree not to rely solely on this app for transition planning and will consult qualified professionals and official agencies as needed.")
-                            Text("6. All data is stored locally on your device. You are responsible for backing up your own data.")
-                            Text("7. The app creator reserves the right to update these terms at any time.")
-                        }
-                        .font(.subheadline.weight(.medium))
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("By using DashTen, you acknowledge and agree to the following:")
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.primary.opacity(0.8))
+                        .padding(.bottom, 4)
+
+                    ForEach(Array(terms.enumerated()), id: \.offset) { idx, text in
+                        PolicyBlock(number: idx + 1, accent: AppTheme.forestGreen, body: text)
                     }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
                 }
                 .padding(20)
             }
@@ -630,30 +617,25 @@ struct TermsOfUseView: View {
 struct PrivacyPolicyView: View {
     @Environment(\.dismiss) private var dismiss
 
+    private let items: [(icon: String, color: Color, title: String, body: String)] = [
+        ("iphone", .blue, "Local-only storage", "DashTen stores all data locally on your device. No personal information is transmitted to external servers."),
+        ("lock.shield.fill", AppTheme.forestGreen, "Private by design", "Your transition plan, documents checklist, and progress are private and under your complete control."),
+        ("person.crop.circle.badge.xmark", .purple, "No PII collection", "We do not collect, store, or share any personally identifiable information."),
+        ("chart.bar.xaxis", .orange, "No analytics or ads", "No analytics, tracking, or advertising SDKs are included in this app."),
+        ("trash.fill", .red, "Delete = gone", "If you delete the app, all local data is permanently removed from your device."),
+        ("link", .teal, "External links", "External links in the app will open in your browser. Those websites have their own privacy policies.")
+    ]
+
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Privacy Policy")
-                            .font(.title3.bold())
-
-                        Group {
-                            Text("DashTen stores all data locally on your device. No personal information is transmitted to external servers.")
-                            Text("Your transition plan, documents checklist, and progress are private and under your complete control.")
-                            Text("We do not collect, store, or share any personally identifiable information.")
-                            Text("No analytics, tracking, or advertising SDKs are included in this app.")
-                            Text("If you delete the app, all local data is permanently removed from your device.")
-                            Text("External links in the app will open in your browser. Those websites have their own privacy policies.")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.primary.opacity(0.8))
+                VStack(alignment: .leading, spacing: 14) {
+                    ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                        PolicyBlock(icon: item.icon, accent: item.color, title: item.title, body: item.body)
                     }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
 
                     NonAffiliationBanner()
+                        .padding(.top, 4)
                 }
                 .padding(20)
             }
@@ -676,31 +658,36 @@ struct EULAView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("End User License Agreement")
-                            .font(.title3.bold())
+                VStack(alignment: .leading, spacing: 14) {
+                    PolicyBlock(
+                        icon: "doc.text.fill",
+                        accent: .blue,
+                        title: "Licensed, not sold",
+                        body: "This application is licensed, not sold, to you under the terms of Apple's Standard End User License Agreement (EULA). By downloading, installing, or using DashTen, you agree to Apple's Licensed Application End User License Agreement."
+                    )
 
-                        Group {
-                            Text("This application is licensed, not sold, to you under the terms of Apple's Standard End User License Agreement (EULA).")
-                            Text("By downloading, installing, or using DashTen, you agree to Apple's Licensed Application End User License Agreement, available at:")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.primary.opacity(0.8))
+                    OfficialLinkButton(title: "Apple Standard EULA", url: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
 
-                        OfficialLinkButton(title: "Apple Standard EULA", url: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
+                    PolicyBlock(
+                        icon: "building.2.fill",
+                        accent: .purple,
+                        title: "Licensor",
+                        body: "The licensor of DashTen is the app developer, not Apple Inc. Apple has no obligation to furnish maintenance and support services for this app."
+                    )
 
-                        Group {
-                            Text("The licensor of DashTen is the app developer, not Apple Inc. Apple has no obligation to furnish maintenance and support services for this app.")
-                            Text("In the event of any failure of DashTen to conform to any applicable warranty, you may notify Apple for a refund of the purchase price (if any). Apple has no other warranty obligation.")
-                            Text("Any claims relating to DashTen, including product liability claims, are the responsibility of the app developer, not Apple.")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
+                    PolicyBlock(
+                        icon: "arrow.uturn.backward.circle.fill",
+                        accent: .orange,
+                        title: "Refunds & warranty",
+                        body: "In the event of any failure of DashTen to conform to any applicable warranty, you may notify Apple for a refund of the purchase price (if any). Apple has no other warranty obligation."
+                    )
+
+                    PolicyBlock(
+                        icon: "exclamationmark.shield.fill",
+                        accent: .red,
+                        title: "Claims",
+                        body: "Any claims relating to DashTen, including product liability claims, are the responsibility of the app developer, not Apple."
+                    )
                 }
                 .padding(20)
             }
@@ -720,35 +707,31 @@ struct EULAView: View {
 struct AccessibilityStatementView: View {
     @Environment(\.dismiss) private var dismiss
 
+    private let items: [(icon: String, color: Color, title: String, body: String)] = [
+        ("textformat.size", .blue, "Dynamic Type", "Text scales with your system font size settings."),
+        ("speaker.wave.2.fill", .purple, "VoiceOver", "All interactive elements include descriptive labels."),
+        ("circle.lefthalf.filled", .orange, "Color Contrast", "Designed to meet accessibility contrast standards."),
+        ("figure.walk", .teal, "Reduced Motion", "Respects system reduced motion preferences."),
+        ("hand.tap.fill", AppTheme.forestGreen, "Touch Targets", "All buttons meet the minimum 44×44pt touch target.")
+    ]
+
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Accessibility")
-                            .font(.title3.bold())
-
-                        Text("DashTen is committed to being accessible to all users. We strive to follow Apple's accessibility guidelines and support the following features:")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary.opacity(0.8))
-
-                        Group {
-                            Label("Dynamic Type — text scales with your system font size settings", systemImage: "textformat.size")
-                            Label("VoiceOver — all interactive elements include descriptive labels", systemImage: "speaker.wave.2.fill")
-                            Label("Color Contrast — designed to meet accessibility contrast standards", systemImage: "circle.lefthalf.filled")
-                            Label("Reduced Motion — respects system reduced motion preferences", systemImage: "figure.walk")
-                            Label("Touch Targets — all buttons meet the minimum 44×44pt touch target", systemImage: "hand.tap.fill")
-                        }
-                        .font(.subheadline.weight(.medium))
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("DashTen is committed to being accessible to all users. We strive to follow Apple's accessibility guidelines:")
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.primary.opacity(0.8))
+                        .padding(.bottom, 4)
 
-                        Text("If you experience any accessibility issues, please contact us through the App Store.")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.primary.opacity(0.6))
+                    ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                        PolicyBlock(icon: item.icon, accent: item.color, title: item.title, body: item.body)
                     }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
+
+                    Text("If you experience any accessibility issues, please contact us through the App Store.")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 4)
                 }
                 .padding(20)
             }
@@ -765,6 +748,112 @@ struct AccessibilityStatementView: View {
     }
 }
 
+struct SeparationDateRow: View {
+    @Binding var date: Date
+    @State private var showPicker: Bool = false
+
+    private static let formatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .medium
+        return f
+    }()
+
+    var body: some View {
+        HStack {
+            Text("Separation Date")
+                .font(.body.weight(.semibold))
+            Spacer()
+            Button {
+                showPicker = true
+            } label: {
+                Text(Self.formatter.string(from: date))
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(AppTheme.forestGreen)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(AppTheme.forestGreen.opacity(0.1))
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+        }
+        .sheet(isPresented: $showPicker) {
+            NavigationStack {
+                DatePicker(
+                    "Separation Date",
+                    selection: $date,
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.graphical)
+                .padding()
+                .navigationTitle("Separation Date")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") { showPicker = false }
+                            .font(.body.weight(.bold))
+                    }
+                }
+            }
+            .presentationDetents([.medium, .large])
+        }
+    }
+}
+
+struct PolicyBlock: View {
+    let number: Int?
+    let icon: String?
+    let accent: Color
+    let title: String?
+    let text: String
+
+    init(number: Int? = nil, icon: String? = nil, accent: Color = AppTheme.forestGreen, title: String? = nil, body: String) {
+        self.number = number
+        self.icon = icon
+        self.accent = accent
+        self.title = title
+        self.text = body
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Group {
+                if let number {
+                    Text("\(number)")
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(accent)
+                        .frame(width: 30, height: 30)
+                        .background(accent.opacity(0.12))
+                        .clipShape(.rect(cornerRadius: 8))
+                } else if let icon {
+                    Image(systemName: icon)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(accent)
+                        .frame(width: 30, height: 30)
+                        .background(accent.opacity(0.12))
+                        .clipShape(.rect(cornerRadius: 8))
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                if let title {
+                    Text(title)
+                        .font(.subheadline.weight(.bold))
+                }
+                Text(text)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.primary.opacity(0.8))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 14))
+    }
+}
+
 struct DisclaimerRisksView: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -772,52 +861,36 @@ struct DisclaimerRisksView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label("Disclaimer", systemImage: "exclamationmark.triangle.fill")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.orange)
-
-                        Group {
-                            Text("DashTen is a planning and organization tool only. It does not provide legal, medical, financial, or career advice of any kind.")
-                            Text("Users should consult qualified professionals and official agencies for specific guidance about benefits, eligibility, claims, and any other matters discussed in this app.")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label("Risk Acknowledgment", systemImage: "shield.lefthalf.filled")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.red)
-
-                        Group {
-                            Text("Transition planning involves complex decisions with significant consequences.")
-                            Text("DashTen helps organize your approach but cannot replace official counseling, legal review, or professional guidance.")
-                            Text("Eligibility requirements, deadlines, and benefit details can change at any time. Always verify with official sources.")
-                            Text("The app creator assumes no liability for any actions taken or decisions made based on information in this app.")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label("Crisis Support", systemImage: "heart.fill")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.red)
-
-                        Text("If you are experiencing a crisis, please contact the 988 Suicide & Crisis Lifeline by calling or texting 988. This app is not an emergency service.")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
+                    PolicyBlock(
+                        icon: "exclamationmark.triangle.fill",
+                        accent: .orange,
+                        title: "Disclaimer",
+                        body: "DashTen is a planning and organization tool only. It does not provide legal, medical, financial, or career advice of any kind."
+                    )
+                    PolicyBlock(
+                        icon: "checkmark.seal.fill",
+                        accent: .blue,
+                        title: "Consult Professionals",
+                        body: "Users should consult qualified professionals and official agencies for specific guidance about benefits, eligibility, claims, and any other matters discussed in this app."
+                    )
+                    PolicyBlock(
+                        icon: "shield.lefthalf.filled",
+                        accent: .red,
+                        title: "Risk Acknowledgment",
+                        body: "Transition planning involves complex decisions with significant consequences. DashTen helps organize your approach but cannot replace official counseling, legal review, or professional guidance."
+                    )
+                    PolicyBlock(
+                        icon: "arrow.clockwise.circle.fill",
+                        accent: .purple,
+                        title: "Information Can Change",
+                        body: "Eligibility requirements, deadlines, and benefit details can change at any time. Always verify with official sources. The app creator assumes no liability for any actions taken or decisions made based on information in this app."
+                    )
+                    PolicyBlock(
+                        icon: "heart.fill",
+                        accent: .red,
+                        title: "Crisis Support",
+                        body: "If you are experiencing a crisis, please contact the 988 Suicide & Crisis Lifeline by calling or texting 988. This app is not an emergency service."
+                    )
 
                     NonAffiliationBanner()
                 }
