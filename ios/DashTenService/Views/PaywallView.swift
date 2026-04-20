@@ -7,6 +7,8 @@ struct PaywallView: View {
     @State private var appeared: Bool = false
     @State private var showSecondChance: Bool = false
     @State private var hasAttemptedPurchase: Bool = false
+    @State private var showTerms: Bool = false
+    @State private var showPrivacy: Bool = false
 
     private let transformations: [(before: String, after: String, icon: String)] = [
         ("Overwhelm and scattered notes", "One clear roadmap you trust", "map.fill"),
@@ -58,6 +60,12 @@ struct PaywallView: View {
             }
             .onAppear {
                 withAnimation(.spring(response: 0.7)) { appeared = true }
+            }
+            .sheet(isPresented: $showTerms) {
+                TermsOfUseView()
+            }
+            .sheet(isPresented: $showPrivacy) {
+                PrivacyPolicyView()
             }
             .sheet(isPresented: $showSecondChance) {
                 SecondChanceSheet(
@@ -401,14 +409,14 @@ struct PaywallView: View {
 
     private var legalSection: some View {
         VStack(spacing: 8) {
-            Text("Payment is charged at time of purchase. This is a one-time, non-recurring purchase. No subscription required.")
+            Text("Payment is charged at time of purchase. This is a one-time, non-recurring purchase. No subscription required. Purchases are tied to your Apple ID — restore is available anytime.")
                 .font(.caption2.weight(.medium))
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
 
             HStack(spacing: 16) {
-                Link("Terms of Use", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
-                Link("Privacy Policy", destination: URL(string: "https://www.apple.com/legal/privacy/")!)
+                Button("Terms of Use") { showTerms = true }
+                Button("Privacy Policy") { showPrivacy = true }
             }
             .font(.caption2.weight(.semibold))
             .foregroundStyle(.secondary)

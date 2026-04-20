@@ -1,4 +1,5 @@
 import SwiftUI
+import RevenueCat
 
 struct ProfileView: View {
     @Bindable var storage: StorageService
@@ -213,7 +214,7 @@ struct ProfileView: View {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(store.isPremium ? "DashTen Pro" : "Upgrade to Pro")
                                     .font(.subheadline.weight(.bold))
-                                Text(store.isPremium ? "All Pro features unlocked" : "Unlock 11 tools & 2 guides — $19.99 lifetime")
+                                Text(store.isPremium ? "All Pro features unlocked" : proUpsellSubtitle)
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(.secondary)
                             }
@@ -364,14 +365,22 @@ struct ProfileView: View {
                 PaywallView(store: store)
             }
             .alert("Delete All My Data?", isPresented: $showResetAlert) {
-                Button("Delete", role: .destructive) {
+                Button("Delete Everything", role: .destructive) {
                     storage.resetOnboarding()
+                    showOnboarding = true
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This will permanently erase your profile, progress, documents, journal, and all other data stored on this device. This cannot be undone.")
+                Text("This permanently erases your profile, roadmap, documents, journal, tool entries, streaks, and progress from this device. This cannot be undone. You'll be returned to setup.")
             }
         }
+    }
+
+    private var proUpsellSubtitle: String {
+        if let price = store.offerings?.current?.availablePackages.first?.storeProduct.localizedPriceString {
+            return "Unlock 11 tools & 2 guides — \(price) lifetime"
+        }
+        return "Unlock 11 tools & 2 guides — one-time purchase"
     }
 
     @ViewBuilder

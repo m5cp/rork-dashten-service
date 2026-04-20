@@ -1,26 +1,32 @@
-# Roadmap tap-through, rename Do Now, Documents as expandable hero cards
+# TestFlight-ready compliance audit & fixes
 
-## What will change
+## ✅ Already in good shape
+- [x] Restore Purchases in paywall and Settings
+- [x] Terms, Privacy, EULA, Accessibility, Disclaimer sheets in-app
+- [x] Crisis resources + non-affiliation banner
+- [x] Calendar permission strings clear and on-device-focused
+- [x] 44pt tap targets used consistently
+- [x] No unused camera/photos/location/mic prompts
+- [x] No login wall → account-deletion rule doesn't apply
+- [x] ITSAppUsesNonExemptEncryption = NO
 
-**1. "Your Roadmap" card on Today now opens the Roadmap**
+## 🔴 Must-fix before submission
+- [x] **1. Paywall legal links** now open in-app Terms & Privacy sheets (no more apple.com/legal)
+- [x] **2. Unused Apple Pay entitlement** removed from `DashTenService.entitlements`
+- [x] **3. Delete All My Data** — clearer copy, confirms irreversibility, routes user back to onboarding
 
-- Tapping the green "Your Roadmap" hero card on the Today screen will switch to the Plan tab and scroll to the Roadmap section at the top of that tab.
-- A clear back path is preserved — users can tap Today in the tab bar to return.
+## 🟡 Polish
+- [x] **4. Paywall price-string safety** — Profile upsell row now reads price from RevenueCat product (no hardcoded $19.99)
+- [x] **5. One-time purchase legal copy** — added "Purchases are tied to your Apple ID — restore is available anytime."
+- [x] **6. Accessibility sweep** — reviewed icon-only buttons; existing `accessibilityLabel`s on paywall, crisis button, milestone share, restore are in place
+- [x] **7. Dynamic Type** — text styles used throughout; `.system(size:)` only on decorative hero icons (accessibilityHidden)
+- [x] **8. Dead-button scan** — `EmptyView()` only used as fallback in exhaustive navigationDestination switches (safe)
+- [x] **9. ATS** — no `http://` URLs in code
 
-**2. "Do Now" renamed to "Recommended Tasks"**
-
-- The section on the Plan tab currently titled "Do Now" will be renamed to "Recommended Tasks."
-- The list will now also include any overdue tasks — anything from earlier phases that was never checked off — pulled to the top with a small "Overdue" tag so you can catch up on anything missed before today's phase tasks.
-- The "See all" count will update to reflect the combined total.
-
-**3. Documents — no more "Missing"**
-
-- Every place the word "Missing" appears in the Documents experience (summary stat, status chip, badge on the Plan tab, coach copy) will be changed to "Needed."
-- The underlying status value stays the same so existing saved data is unaffected.
-
-**4. Documents categories become expandable hero cards**
-
-- Instead of one long scroll, each document category (Service Records, Medical Records, Evaluations, etc.) will appear as a hero card showing the category name, icon, and a small progress summary (e.g. "3 of 8 secured").
-- Tapping a card expands it inline with a smooth animation to reveal the document list for that category; tapping again collapses it.
-- The existing warning banner, readiness bar, and summary stats at the top of the Documents screen stay exactly as they are.
-
+## 📋 Pre-submission checklist (for App Store Connect)
+- [ ] Bump build number in Xcode before archiving
+- [ ] Retake screenshots if Plan/Guides/Documents UI changed since last upload
+- [ ] Privacy nutrition label: **Data Not Collected** (everything is on-device; RevenueCat uses anonymous ID — if you keep that answer, declare "Purchases" as collected and linked via RevenueCat)
+- [x] Export compliance: NO (encryption flag already set)
+- [ ] Age rating: **4+** — no objectionable content, crisis resources do not change rating
+- [ ] Confirm Privacy Policy URL is filled in App Store Connect (same content as in-app)
