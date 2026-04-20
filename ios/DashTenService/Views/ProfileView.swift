@@ -354,6 +354,9 @@ struct ProfileView: View {
             .fullScreenCover(isPresented: $showOnboarding) {
                 OnboardingView(storage: storage)
             }
+            .onReceive(NotificationCenter.default.publisher(for: .openProfileSetup)) { _ in
+                showOnboarding = true
+            }
             .sheet(isPresented: $showPaywall) {
                 PaywallView(store: store)
             }

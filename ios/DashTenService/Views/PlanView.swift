@@ -8,6 +8,7 @@ struct PlanView: View {
     @State private var newItemCategory: ReadinessCategory = .admin
     @State private var exportedPDFURL: URL?
     @State private var isExporting: Bool = false
+    @State private var showGettingStarted: Bool = false
 
     private var readiness: ReadinessCalculator.ReadinessScore {
         ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
@@ -83,6 +84,7 @@ struct PlanView: View {
                     missionBriefing
                     timelineRoadmap
                         .id("roadmap")
+                    gettingStartedCard
                     AICoachCard(storage: storage)
                     priorityActions
                     planningAreas
@@ -122,6 +124,9 @@ struct PlanView: View {
             }
             .sheet(isPresented: $showAddItem) {
                 addItemSheet
+            }
+            .sheet(isPresented: $showGettingStarted) {
+                GettingStartedWalkthroughView()
             }
             .navigationDestination(for: TimelinePhase.self) { phase in
                 PhaseDetailView(storage: storage, phase: phase)
@@ -480,6 +485,45 @@ struct PlanView: View {
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(.rect(cornerRadius: 16))
         }
+    }
+
+    private var gettingStartedCard: some View {
+        Button {
+            showGettingStarted = true
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "sparkles")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(AppTheme.forestGreen)
+                    .frame(width: 36, height: 36)
+                    .background(AppTheme.forestGreen.opacity(0.12))
+                    .clipShape(.rect(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Not sure where to start planning?")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.leading)
+                    Text("Tap here for a quick walkthrough")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(AppTheme.forestGreen.opacity(0.15), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     private func isPhaseCompleted(_ phase: TimelinePhase) -> Bool {

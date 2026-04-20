@@ -826,6 +826,12 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader("Complete Your Profile", icon: "person.crop.circle.badge.plus")
 
+                    Button {
+                        selectedTab = 4
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            NotificationCenter.default.post(name: .openProfileSetup, object: nil)
+                        }
+                    } label: {
                     HStack(spacing: 14) {
                         Image(systemName: "person.text.rectangle.fill")
                             .font(.title3.weight(.semibold))
@@ -855,6 +861,8 @@ struct TodayView: View {
                         RoundedRectangle(cornerRadius: 14)
                             .strokeBorder(AppTheme.forestGreen.opacity(0.15), lineWidth: 1)
                     )
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
