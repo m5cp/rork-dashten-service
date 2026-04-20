@@ -8,6 +8,8 @@ struct TodayView: View {
     @State private var celebrationSubtitle: String = ""
     @State private var appeared: Bool = false
     @State private var searchText: String = ""
+    @State private var shareItems: [Any] = []
+    @State private var showShareSheet: Bool = false
 
     private var isRetiredOrSeparated: Bool {
         storage.profile.timeline == .separated
@@ -121,6 +123,8 @@ struct TodayView: View {
                     if isRetiredOrSeparated {
                         firstYearGuidePromo
                     }
+                    milestoneSection
+                    weeklySummarySection
                     focusCardSection
                     weeklyActivitySection
                     quickStatsBar
@@ -163,6 +167,9 @@ struct TodayView: View {
                 title: celebrationTitle,
                 subtitle: celebrationSubtitle
             )
+        }
+        .sheet(isPresented: $showShareSheet) {
+            ShareSheetView(items: shareItems)
         }
         .onChange(of: readiness.overallPercent) { oldValue, newValue in
             checkMilestone(old: oldValue, new: newValue)
@@ -853,6 +860,61 @@ struct TodayView: View {
             return allSearchSuggestions.filter { ["First Year Guide", "Career Planning", "Benefits", "Wellness Check-In", "Documents"].contains($0.title) }
         }
         return Array(allSearchSuggestions.prefix(5))
+    }
+
+    private var daysUsingApp: Int {
+        let start = Calendar.current.startOfDay(for: storage.profile.createdAt)
+        let today = Calendar.current.startOfDay(for: Date())
+        return Calendar.current.dateComponents([.day], from: start, to: today).day ?? 0
+    }
+
+    private var currentMilestone: (days: Int, title: String, subtitle: String)? {
+        let d = daysUsingApp
+        if d >= 90 { return (90, "90 days in — you're in it", "Three months of consistent work. You've built real momentum. Share the win — someone else is about to start.") }
+        if d >= 30 { return (30, "One month strong", "30 days of showing up for your future. This is what steady progress looks like.") }
+        if d >= 7 { return (7, "One week done", "You stuck with it for a full week. That's already more than most people do on this journey.") }
+        return nil
+    }
+
+    private var shouldShowWeeklySummary: Bool {
+        Calendar.current.component(.weekday, from: Date()) == 1 && daysUsingApp >= 7
+    }
+
+    private var journalEntriesThisWeek: Int {
+        let calendar = Calendar.current
+        let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        return storage.journalEntries.filter { $0.date >= weekAgo }.count
+    }
+
+    @ViewBuilder
+    private var milestoneSection: some View {
+        if let m = currentMilestone {
+            MilestoneCelebrationCard(
+                days: m.days,
+                title: m.title,
+                subtitle: m.subtitle,
+                onShare: {
+                    shareItems = ["I've been \(m.days) days into my transition with DashTen. Small steps, real progress."]
+                    showShareSheet = true
+                }
+            )
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 12)
+        }
+    }
+
+    @ViewBuilder
+    private var weeklySummarySection: some View {
+        if shouldShowWeeklySummary {
+            WeeklySummaryCard(
+                tasksCompleted: completedTaskCount,
+                documentsVerified: storage.documents.filter { $0.status == .verified }.count,
+                journalEntries: journalEntriesThisWeek,
+                readinessPercent: readiness.overallPercent
+            )
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 12)
+        }
     }
 
     private func checkMilestone(old: Int, new: Int) {

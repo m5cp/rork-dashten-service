@@ -189,6 +189,14 @@ struct ProfileView: View {
                             }
                         }
                     }
+
+                    Button {
+                        Task { await store.restore() }
+                    } label: {
+                        Label("Restore Purchases", systemImage: "arrow.clockwise")
+                            .font(.body.weight(.semibold))
+                    }
+                    .accessibilityLabel("Restore previous purchases")
                 } header: {
                     Text("Subscription")
                 }
@@ -267,10 +275,12 @@ struct ProfileView: View {
                             .font(.body.weight(.semibold))
                     }
 
-                    Button("Reset All Data", role: .destructive) {
+                    Button(role: .destructive) {
                         showResetAlert = true
+                    } label: {
+                        Label("Delete All My Data", systemImage: "trash")
+                            .font(.body.weight(.bold))
                     }
-                    .font(.body.weight(.bold))
                 }
 
                 Section {} footer: {
@@ -315,13 +325,13 @@ struct ProfileView: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallView(store: store)
             }
-            .alert("Reset All Data?", isPresented: $showResetAlert) {
-                Button("Reset", role: .destructive) {
+            .alert("Delete All My Data?", isPresented: $showResetAlert) {
+                Button("Delete", role: .destructive) {
                     storage.resetOnboarding()
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This will erase all your progress, documents, and settings. This cannot be undone.")
+                Text("This will permanently erase your profile, progress, documents, journal, and all other data stored on this device. This cannot be undone.")
             }
         }
     }

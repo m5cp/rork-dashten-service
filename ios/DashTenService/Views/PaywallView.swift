@@ -5,19 +5,15 @@ struct PaywallView: View {
     var store: StoreViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var appeared: Bool = false
+    @State private var showSecondChance: Bool = false
+    @State private var hasAttemptedPurchase: Bool = false
 
-    private let proFeatures: [(icon: String, title: String, subtitle: String)] = [
-        ("doc.text.fill", "Resume Translator", "Convert military jargon to civilian language"),
-        ("person.fill.questionmark", "Interview Prep", "Practice with flashcards & coaching tips"),
-        ("mic.fill", "Elevator Pitch Builder", "Craft your 30/60/90-second intro"),
-        ("person.3.fill", "Networking Hub", "Track contacts, events, and follow-ups"),
-        ("scalemass.fill", "Job Offer Compare", "Side-by-side total compensation analysis"),
-        ("hand.raised.fill", "Salary Negotiation", "Know your worth and ask for it"),
-        ("calendar.badge.clock", "90-Day Planner", "Week-by-week post-hire plan"),
-        ("book.fill", "Transition Journal", "Daily guided prompts and reflections"),
-        ("chart.xyaxis.line", "Wellness Check-In", "Track well-being over time"),
-        ("book.closed.fill", "Civilian Playbook", "Navigate unspoken civilian norms"),
-        ("flag.fill", "First 30 Days Guide", "Week-by-week separation plan"),
+    private let transformations: [(before: String, after: String, icon: String)] = [
+        ("Overwhelm and scattered notes", "One clear roadmap you trust", "map.fill"),
+        ("Missed enrollment deadlines", "Countdowns for every benefit", "calendar.badge.exclamationmark"),
+        ("Military jargon on your resume", "Civilian-ready language", "doc.text.fill"),
+        ("Guessing what comes next", "Week-by-week plan to day 90", "calendar.badge.clock"),
+        ("Negotiating blind", "Know your number before you ask", "hand.raised.fill")
     ]
 
     var body: some View {
@@ -25,8 +21,11 @@ struct PaywallView: View {
             ScrollView {
                 VStack(spacing: 0) {
                     headerSection
+                    transformationSection
                     featuresSection
                     purchaseSection
+                    trustRow
+                    restoreButton
                     legalSection
                 }
             }
@@ -34,12 +33,16 @@ struct PaywallView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button { dismiss() } label: {
+                    Button {
+                        attemptDismiss()
+                    } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title3)
                             .symbolRenderingMode(.hierarchical)
                             .foregroundStyle(.secondary)
                     }
+                    .accessibilityLabel("Close paywall")
+                    .frame(minWidth: 44, minHeight: 44)
                 }
             }
             .alert("Error", isPresented: .init(
@@ -56,6 +59,25 @@ struct PaywallView: View {
             .onAppear {
                 withAnimation(.spring(response: 0.7)) { appeared = true }
             }
+            .sheet(isPresented: $showSecondChance) {
+                SecondChanceSheet(
+                    onContinue: { showSecondChance = false },
+                    onDismiss: {
+                        showSecondChance = false
+                        dismiss()
+                    }
+                )
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+            }
+        }
+    }
+
+    private func attemptDismiss() {
+        if !store.isPremium && !showSecondChance {
+            showSecondChance = true
+        } else {
+            dismiss()
         }
     }
 
@@ -81,14 +103,16 @@ struct PaywallView: View {
             }
             .opacity(appeared ? 1 : 0)
             .scaleEffect(appeared ? 1 : 0.8)
+            .accessibilityHidden(true)
 
             VStack(spacing: 8) {
                 Text("DashTen Pro")
                     .font(.largeTitle.bold())
 
-                Text("Unlock the full transition toolkit")
-                    .font(.subheadline.weight(.medium))
+                Text("Your entire transition, handled")
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
             }
             .opacity(appeared ? 1 : 0)
             .offset(y: appeared ? 0 : 10)
@@ -102,7 +126,60 @@ struct PaywallView: View {
             .offset(y: appeared ? 0 : 10)
         }
         .padding(.top, 20)
-        .padding(.bottom, 28)
+        .padding(.bottom, 24)
+        .padding(.horizontal, 16)
+    }
+
+    private var transformationSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.triangle.swap")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(AppTheme.forestGreen)
+                Text("What changes for you")
+                    .font(.headline.weight(.bold))
+            }
+            .padding(.horizontal, 20)
+
+            VStack(spacing: 10) {
+                ForEach(Array(transformations.enumerated()), id: \.offset) { _, item in
+                    HStack(alignment: .center, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.secondary)
+                                Text(item.before)
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .strikethrough()
+                            }
+                            HStack(spacing: 6) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(AppTheme.forestGreen)
+                                Text(item.after)
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.primary)
+                            }
+                        }
+                        Spacer(minLength: 0)
+                        Image(systemName: item.icon)
+                            .font(.title3)
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .frame(width: 36, height: 36)
+                            .background(AppTheme.forestGreen.opacity(0.1))
+                            .clipShape(.rect(cornerRadius: 10))
+                    }
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(.rect(cornerRadius: 14))
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+        .padding(.bottom, 24)
     }
 
     private var featuresSection: some View {
@@ -111,7 +188,7 @@ struct PaywallView: View {
                 Image(systemName: "star.fill")
                     .font(.subheadline.weight(.bold))
                     .foregroundStyle(AppTheme.gold)
-                Text("What You Get")
+                Text("Everything included")
                     .font(.headline.weight(.bold))
             }
             .padding(.horizontal, 20)
@@ -156,6 +233,20 @@ struct PaywallView: View {
         .padding(.bottom, 24)
     }
 
+    private let proFeatures: [(icon: String, title: String, subtitle: String)] = [
+        ("doc.text.fill", "Resume Translator", "Convert military jargon to civilian language"),
+        ("person.fill.questionmark", "Interview Prep", "Practice with flashcards & coaching tips"),
+        ("mic.fill", "Elevator Pitch Builder", "Craft your 30/60/90-second intro"),
+        ("person.3.fill", "Networking Hub", "Track contacts, events, and follow-ups"),
+        ("scalemass.fill", "Job Offer Compare", "Side-by-side total compensation analysis"),
+        ("hand.raised.fill", "Salary Negotiation", "Know your worth and ask for it"),
+        ("calendar.badge.clock", "90-Day Planner", "Week-by-week post-hire plan"),
+        ("book.fill", "Transition Journal", "Daily guided prompts and reflections"),
+        ("chart.xyaxis.line", "Wellness Check-In", "Track well-being over time"),
+        ("book.closed.fill", "Civilian Playbook", "Navigate unspoken civilian norms"),
+        ("flag.fill", "First 30 Days Guide", "Week-by-week separation plan")
+    ]
+
     private var purchaseSection: some View {
         VStack(spacing: 14) {
             if store.isLoading {
@@ -163,35 +254,7 @@ struct PaywallView: View {
                     .padding(.vertical, 20)
             } else if let current = store.offerings?.current {
                 ForEach(current.availablePackages, id: \.identifier) { package in
-                    Button {
-                        Task { await store.purchase(package: package) }
-                    } label: {
-                        VStack(spacing: 6) {
-                            Text(package.storeProduct.localizedPriceString)
-                                .font(.title.bold())
-                                .foregroundStyle(.white)
-                            Text("Lifetime Access — One-Time Purchase")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.white.opacity(0.9))
-                            Text("Includes all future updates")
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.white.opacity(0.7))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 20)
-                        .background(
-                            LinearGradient(
-                                colors: [AppTheme.forestGreen, Color(red: 0.15, green: 0.32, blue: 0.15)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .clipShape(.rect(cornerRadius: 16))
-                        .shadow(color: AppTheme.forestGreen.opacity(0.3), radius: 12, y: 6)
-                    }
-                    .disabled(store.isPurchasing)
-                    .opacity(store.isPurchasing ? 0.7 : 1)
-                    .sensoryFeedback(.impact(weight: .medium), trigger: store.isPurchasing)
+                    purchaseButton(package: package)
                 }
 
                 if store.isPurchasing {
@@ -210,20 +273,130 @@ struct PaywallView: View {
                         Task { await store.fetchOfferings() }
                     }
                     .font(.subheadline.weight(.bold))
+                    .frame(minHeight: 44)
                 }
                 .padding(.vertical, 16)
             }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 14)
+    }
 
-            Button {
-                Task { await store.restore() }
-            } label: {
-                Text("Restore Purchases")
-                    .font(.subheadline.weight(.semibold))
+    private func purchaseButton(package: Package) -> some View {
+        let price = package.storeProduct.localizedPriceString
+        let decimalPrice = package.storeProduct.price as NSDecimalNumber
+        let anchorPrice = anchorPriceString(from: decimalPrice)
+        let perDay = perDayString(from: decimalPrice)
+
+        return Button {
+            hasAttemptedPurchase = true
+            Task { await store.purchase(package: package) }
+        } label: {
+            VStack(spacing: 10) {
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    if let anchorPrice {
+                        Text(anchorPrice)
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.55))
+                            .strikethrough()
+                    }
+                    Text(price)
+                        .font(.system(size: 38, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                }
+
+                Text("Lifetime Access — One-Time Purchase")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+
+                if let perDay {
+                    Text("That's about \(perDay) a day for the next year — then free forever.")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                }
+
+                Text("BEST VALUE")
+                    .font(.caption2.weight(.heavy))
                     .foregroundStyle(AppTheme.forestGreen)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(AppTheme.gold)
+                    .clipShape(Capsule())
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 22)
+            .padding(.horizontal, 16)
+            .background(
+                LinearGradient(
+                    colors: [AppTheme.forestGreen, Color(red: 0.15, green: 0.32, blue: 0.15)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .clipShape(.rect(cornerRadius: 16))
+            .shadow(color: AppTheme.forestGreen.opacity(0.3), radius: 12, y: 6)
+        }
+        .disabled(store.isPurchasing)
+        .opacity(store.isPurchasing ? 0.7 : 1)
+        .sensoryFeedback(.impact(weight: .medium), trigger: store.isPurchasing)
+        .accessibilityLabel("Unlock DashTen Pro for \(price), one-time purchase")
+    }
+
+    private func anchorPriceString(from price: NSDecimalNumber) -> String? {
+        let value = price.doubleValue
+        guard value > 0 else { return nil }
+        let anchor = value * 4
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: anchor))
+    }
+
+    private func perDayString(from price: NSDecimalNumber) -> String? {
+        let value = price.doubleValue
+        guard value > 0 else { return nil }
+        let perDay = value / 365.0
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: perDay))
+    }
+
+    private var trustRow: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 14) {
+                TrustBadge(icon: "checkmark.shield.fill", label: "One-time")
+                TrustBadge(icon: "xmark.circle.fill", label: "No sub")
+                TrustBadge(icon: "arrow.down.circle.fill", label: "Free updates")
             }
         }
         .padding(.horizontal, 16)
-        .padding(.bottom, 20)
+        .padding(.bottom, 16)
+    }
+
+    private var restoreButton: some View {
+        Button {
+            Task { await store.restore() }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.clockwise")
+                    .font(.subheadline.weight(.bold))
+                Text("Restore Purchases")
+                    .font(.subheadline.weight(.bold))
+            }
+            .foregroundStyle(AppTheme.forestGreen)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 48)
+            .background(AppTheme.forestGreen.opacity(0.1))
+            .clipShape(.rect(cornerRadius: 12))
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
+        .accessibilityLabel("Restore previous purchases")
     }
 
     private var legalSection: some View {
@@ -245,6 +418,26 @@ struct PaywallView: View {
     }
 }
 
+private struct TrustBadge: View {
+    let icon: String
+    let label: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(AppTheme.forestGreen)
+            Text(label)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 10))
+    }
+}
+
 private struct PaywallStatBadge: View {
     let value: String
     let label: String
@@ -262,5 +455,78 @@ private struct PaywallStatBadge: View {
         .padding(.vertical, 10)
         .background(AppTheme.forestGreen.opacity(0.06))
         .clipShape(.rect(cornerRadius: 12))
+    }
+}
+
+private struct SecondChanceSheet: View {
+    let onContinue: () -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        VStack(spacing: 20) {
+            VStack(spacing: 12) {
+                Image(systemName: "hand.wave.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(AppTheme.gold)
+                    .symbolRenderingMode(.hierarchical)
+
+                Text("Before you go")
+                    .font(.title2.bold())
+
+                Text("You'd unlock 11 tools and 2 guides built for your transition — for one payment, no subscription.")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            VStack(spacing: 10) {
+                quickBenefit(icon: "doc.text.fill", text: "Translate your resume in minutes")
+                quickBenefit(icon: "hand.raised.fill", text: "Negotiate salary with confidence")
+                quickBenefit(icon: "calendar.badge.clock", text: "A week-by-week post-hire plan")
+            }
+
+            Spacer(minLength: 0)
+
+            VStack(spacing: 10) {
+                Button {
+                    onContinue()
+                } label: {
+                    Text("Keep looking at Pro")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 50)
+                        .background(AppTheme.forestGreen)
+                        .clipShape(.rect(cornerRadius: 14))
+                }
+
+                Button {
+                    onDismiss()
+                } label: {
+                    Text("No thanks, maybe later")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(minHeight: 44)
+                }
+            }
+        }
+        .padding(24)
+        .presentationBackground(Color(.systemBackground))
+    }
+
+    private func quickBenefit(icon: String, text: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(AppTheme.forestGreen)
+                .frame(width: 28, height: 28)
+                .background(AppTheme.forestGreen.opacity(0.12))
+                .clipShape(.rect(cornerRadius: 8))
+            Text(text)
+                .font(.subheadline.weight(.semibold))
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
     }
 }
