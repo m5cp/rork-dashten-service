@@ -10,6 +10,9 @@ struct TodayView: View {
     @State private var searchText: String = ""
     @State private var shareItems: [Any] = []
     @State private var showShareSheet: Bool = false
+    @State private var selectedWeekDay: Date?
+    @State private var showPaywall: Bool = false
+    @State private var showShareProgress: Bool = false
 
     private var isRetiredOrSeparated: Bool {
         storage.profile.timeline == .separated
@@ -120,6 +123,7 @@ struct TodayView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     heroSection
+                    upgradeCardSection
                     if isRetiredOrSeparated {
                         firstYearGuidePromo
                     }
@@ -128,6 +132,7 @@ struct TodayView: View {
                     focusCardSection
                     weeklyActivitySection
                     quickStatsBar
+                    shareProgressSection
                     nextActionsSection
                     insightSpotlight
                     mindsetSpotlight
@@ -171,11 +176,33 @@ struct TodayView: View {
         .sheet(isPresented: $showShareSheet) {
             ShareSheetView(items: shareItems)
         }
+        .sheet(item: Binding(
+            get: { selectedWeekDay.map { WeekDayWrapper(date: $0) } },
+            set: { selectedWeekDay = $0?.date }
+        )) { wrapper in
+            DayDetailSheet(date: wrapper.date, storage: storage)
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(store: store)
+        }
+        .sheet(isPresented: $showShareProgress) {
+            ShareProgressSheet(
+                storage: storage,
+                readinessPercent: readiness.overallPercent,
+                streakDays: streakDays,
+                tasksCompleted: completedTaskCount,
+                totalTasks: storage.checklistItems.count
+            )
+        }
         .onChange(of: readiness.overallPercent) { oldValue, newValue in
             checkMilestone(old: oldValue, new: newValue)
         }
         .onAppear {
             withAnimation(.spring(response: 0.6).delay(0.1)) { appeared = true }
+            AnalyticsService.shared.log(.screenView, properties: ["name": "today"])
+        }
+        .onChange(of: showPaywall) { _, isShown in
+            if isShown { AnalyticsService.shared.log(.paywallShown, properties: ["source": "home_upgrade_card"]) }
         }
     }
 
@@ -503,49 +530,46 @@ struct TodayView: View {
         }
     }
 
+    private var weekDays: [Date] {
+        CalendarService.shared.weekDays()
+    }
+
     private var weeklyActivitySection: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
                 Text("This Week")
                     .font(.caption.weight(.heavy))
                     .foregroundStyle(.secondary)
                     .textCase(.uppercase)
-
+                Spacer()
                 HStack(spacing: 6) {
-                    ForEach(Array(weeklyActivity.enumerated()), id: \.offset) { index, active in
-                        let dayLabels = ["M", "T", "W", "T", "F", "S", "S"]
-                        VStack(spacing: 4) {
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(active ? AppTheme.forestGreen : AppTheme.forestGreen.opacity(0.1))
-                                .frame(width: 28, height: 28)
-                                .overlay {
-                                    if active {
-                                        Image(systemName: "checkmark")
-                                            .font(.caption2.weight(.bold))
-                                            .foregroundStyle(.white)
-                                    }
-                                }
-                            Text(dayLabels[index % 7])
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
+                    Text("\(streakDays)")
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(AppTheme.gold)
+                    Text(streakDays == 1 ? "day streak" : "day streak")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "flame.fill")
+                        .font(.caption2)
+                        .foregroundStyle(AppTheme.gold)
                 }
             }
 
-            Spacer()
-
-            VStack(spacing: 4) {
-                Text("\(streakDays)")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(AppTheme.gold)
-                Text(streakDays == 1 ? "day" : "days")
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(.secondary)
-                Image(systemName: "flame.fill")
-                    .font(.caption)
-                    .foregroundStyle(AppTheme.gold)
+            HStack(spacing: 6) {
+                ForEach(weekDays, id: \.self) { day in
+                    WeekDayTile(
+                        date: day,
+                        isToday: Calendar.current.isDateInToday(day),
+                        hasActivity: hasActivity(on: day),
+                        activityCount: activityCount(on: day),
+                        action: { selectedWeekDay = day }
+                    )
+                }
             }
+
+            Text(weekHintText)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
         }
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground))
@@ -553,6 +577,27 @@ struct TodayView: View {
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 12)
         .animation(.spring(response: 0.6).delay(0.2), value: appeared)
+    }
+
+    private var weekHintText: String {
+        switch CalendarService.shared.accessState {
+        case .authorized: return "Tap a day to see tasks, journal entries, and your calendar."
+        case .notDetermined: return "Tap a day to see your plan — connect your calendar to see events too."
+        case .denied, .restricted: return "Tap a day to see your tasks and journal entries."
+        }
+    }
+
+    private func hasActivity(on date: Date) -> Bool {
+        activityCount(on: date) > 0
+    }
+
+    private func activityCount(on date: Date) -> Int {
+        let calendar = Calendar.current
+        var count = 0
+        count += storage.journalEntries.filter { calendar.isDate($0.date, inSameDayAs: date) }.count
+        count += storage.weeklyCheckIns.filter { calendar.isDate($0.date, inSameDayAs: date) }.count
+        if calendar.isDateInToday(date) && completedTaskCount > 0 { count += 1 }
+        return count
     }
 
     private var documentsCollectedCount: Int {
@@ -779,6 +824,97 @@ struct TodayView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var upgradeCardSection: some View {
+        if !store.isPremium {
+            Button {
+                showPaywall = true
+            } label: {
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(AppTheme.gold.opacity(0.18))
+                            .frame(width: 52, height: 52)
+                        Image(systemName: "arrow.up.forward.circle.fill")
+                            .font(.title2.weight(.bold))
+                            .foregroundStyle(AppTheme.gold)
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 6) {
+                            Text("Unlock DashTen Pro")
+                                .font(.headline.weight(.heavy))
+                                .foregroundStyle(.white)
+                            Image(systemName: "sparkles")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(AppTheme.gold)
+                        }
+                        Text("11 tools • 2 guides • one-time purchase")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.85))
+                            .lineLimit(1)
+                    }
+
+                    Spacer()
+
+                    Text("Upgrade")
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(AppTheme.darkGreen)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(AppTheme.gold)
+                        .clipShape(Capsule())
+                }
+                .padding(14)
+                .background(
+                    LinearGradient(
+                        colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .clipShape(.rect(cornerRadius: 18))
+                .shadow(color: AppTheme.forestGreen.opacity(0.25), radius: 10, y: 4)
+            }
+            .buttonStyle(.plain)
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 12)
+            .animation(.spring(response: 0.6).delay(0.05), value: appeared)
+        }
+    }
+
+    private var shareProgressSection: some View {
+        Button {
+            AnalyticsService.shared.log(.shareTapped, properties: ["source": "today"])
+            showShareProgress = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "square.and.arrow.up.fill")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(AppTheme.forestGreen)
+                    .frame(width: 32, height: 32)
+                    .background(AppTheme.forestGreen.opacity(0.12))
+                    .clipShape(.rect(cornerRadius: 8))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Share your progress")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text("A clean card you can send to anyone")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
     }
 
     private var crisisQuickAccess: some View {

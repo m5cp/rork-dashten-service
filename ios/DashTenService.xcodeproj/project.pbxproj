@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		XX298127CFBB2CF3FA631BXX /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = XXDCC169DE7B2F3C1C8B10XX /* RevenueCat */; };
+		XX5C3F67E4A5F3C0C94AA6XX /* DashTenWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = XX0F0F7C3C6EBFA3C3701EXX /* DashTenWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,13 +26,56 @@
 			remoteGlobalIDString = 105FC5792E9EAD3100EA8BCF;
 			remoteInfo = DashTenService;
 		};
+		XX8D5567BBF51C33693162XX /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 105FC5722E9EAD3100EA8BCF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = XX698E5C0E52BE80C01652XX;
+			remoteInfo = DashTenWidget;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		XXE28E1BF412B2B9E8476EXX /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				XX5C3F67E4A5F3C0C94AA6XX /* DashTenWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		105FC57A2E9EAD3100EA8BCF /* DashTenService.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DashTenService.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		105FC5892E9EAD3200EA8BCF /* DashTenServiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DashTenServiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		105FC5932E9EAD3200EA8BCF /* DashTenServiceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DashTenServiceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		XX0F0F7C3C6EBFA3C3701EXX /* DashTenWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DashTenWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		XX94CD1E3FB10C5A2EF395XX /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = XX698E5C0E52BE80C01652XX /* DashTenWidget */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		XXED813BB3F07059CFB50CXX /* DashTenWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DashTenWidget;
+			sourceTree = "<group>";
+			exceptions = (
+				XX94CD1E3FB10C5A2EF395XX /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		105FC5772E9EAD3100EA8BCF /* Frameworks */ = {
@@ -50,6 +94,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		105FC5902E9EAD3200EA8BCF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		XX75B8358D2242CEB782C5XX /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -84,6 +135,7 @@
 				105FC58C2E9EAD3200EA8BCF /* DashTenServiceTests */,
 				105FC5962E9EAD3200EA8BCF /* DashTenServiceUITests */,
 				105FC57B2E9EAD3100EA8BCF /* Products */,
+				XXED813BB3F07059CFB50CXX /* DashTenWidget */,
 			);
 			sourceTree = "<group>";
 		};
@@ -93,6 +145,7 @@
 				105FC57A2E9EAD3100EA8BCF /* DashTenService.app */,
 				105FC5892E9EAD3200EA8BCF /* DashTenServiceTests.xctest */,
 				105FC5932E9EAD3200EA8BCF /* DashTenServiceUITests.xctest */,
+				XX0F0F7C3C6EBFA3C3701EXX /* DashTenWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,10 +160,12 @@
 				105FC5762E9EAD3100EA8BCF /* Sources */,
 				105FC5772E9EAD3100EA8BCF /* Frameworks */,
 				105FC5782E9EAD3100EA8BCF /* Resources */,
+				XXE28E1BF412B2B9E8476EXX /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				XX6F2136E8E5DE1CF3E9D6XX /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				105FC57C2E9EAD3100EA8BCF /* DashTenService */,
@@ -169,6 +224,26 @@
 			productReference = 105FC5932E9EAD3200EA8BCF /* DashTenServiceUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		XX698E5C0E52BE80C01652XX /* DashTenWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = XX5FC127232ADC3BD48F2AXX /* Build configuration list for PBXNativeTarget "DashTenWidget" */;
+			buildPhases = (
+				XXE0FD6AFA7551401BFCEBXX /* Sources */,
+				XX75B8358D2242CEB782C5XX /* Frameworks */,
+				XX8DEE49FEB104205DDA8DXX /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DashTenWidget;
+			productName = DashTenWidget;
+			productReference = XX0F0F7C3C6EBFA3C3701EXX /* DashTenWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+			fileSystemSynchronizedGroups = (
+				XXED813BB3F07059CFB50CXX /* DashTenWidget */,
+			);
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -210,6 +285,7 @@
 				105FC5792E9EAD3100EA8BCF /* DashTenService */,
 				105FC5882E9EAD3200EA8BCF /* DashTenServiceTests */,
 				105FC5922E9EAD3200EA8BCF /* DashTenServiceUITests */,
+				XX698E5C0E52BE80C01652XX /* DashTenWidget */,
 			);
 			packageReferences = (
 				XX4AC81916604C4344ADC0XX /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
@@ -233,6 +309,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		105FC5912E9EAD3200EA8BCF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		XX8DEE49FEB104205DDA8DXX /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -263,6 +346,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		XXE0FD6AFA7551401BFCEBXX /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -275,6 +365,11 @@
 			isa = PBXTargetDependency;
 			target = 105FC5792E9EAD3100EA8BCF /* DashTenService */;
 			targetProxy = 105FC5942E9EAD3200EA8BCF /* PBXContainerItemProxy */;
+		};
+		XX6F2136E8E5DE1CF3E9D6XX /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = XX698E5C0E52BE80C01652XX /* DashTenWidget */;
+			targetProxy = XX8D5567BBF51C33693162XX /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -412,6 +507,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "DashTen shows what you have going on each day of your week alongside your transition tasks. Calendar access stays on your device.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "DashTen shows what you have going on each day of your week alongside your transition tasks. Calendar access stays on your device.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -446,6 +544,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "DashTen shows what you have going on each day of your week alongside your transition tasks. Calendar access stays on your device.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "DashTen shows what you have going on each day of your week alongside your transition tasks. Calendar access stays on your device.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -552,6 +653,50 @@
 			};
 			name = Release;
 		};
+		XX3FA5F93ECD19675FCCADXX /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = app.rork.sonllcwwmzc358vhs0bab.dashtenwidget;
+				PRODUCT_NAME = DashTenWidget;
+				SWIFT_VERSION = 5.0;
+				SDKROOT = iphoneos;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DashTenWidget/Info.plist;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(PRODUCT_NAME)";
+			};
+			name = Debug;
+		};
+		XX7F478D4B24A0573EF258XX /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = app.rork.sonllcwwmzc358vhs0bab.dashtenwidget;
+				PRODUCT_NAME = DashTenWidget;
+				SWIFT_VERSION = 5.0;
+				SDKROOT = iphoneos;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DashTenWidget/Info.plist;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(PRODUCT_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -587,6 +732,15 @@
 			buildConfigurations = (
 				105FC5A42E9EAD3200EA8BCF /* Debug */,
 				105FC5A52E9EAD3200EA8BCF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		XX5FC127232ADC3BD48F2AXX /* Build configuration list for PBXNativeTarget "DashTenWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				XX3FA5F93ECD19675FCCADXX /* Debug */,
+				XX7F478D4B24A0573EF258XX /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

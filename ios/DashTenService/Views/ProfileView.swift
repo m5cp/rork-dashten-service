@@ -130,7 +130,7 @@ struct ProfileView: View {
                 }
 
                 Section("Notifications") {
-                    Toggle("Weekly Check-In Reminder", isOn: Binding(
+                    Toggle("Reminders & milestones", isOn: Binding(
                         get: { storage.profile.notificationsEnabled },
                         set: { newValue in
                             Task {
@@ -139,6 +139,7 @@ struct ProfileView: View {
                                     storage.profile.notificationsEnabled = granted
                                     if granted {
                                         NotificationService.shared.scheduleWeeklyReminder()
+                                        NotificationService.shared.scheduleMilestoneReminders(accountCreated: storage.profile.createdAt)
                                         if let sepDate = storage.profile.separationDate {
                                             NotificationService.shared.scheduleSeparationCountdown(separationDate: sepDate)
                                         }
@@ -154,9 +155,47 @@ struct ProfileView: View {
                     .tint(AppTheme.forestGreen)
 
                     if storage.profile.notificationsEnabled {
-                        Label("You'll get weekly check-ins and separation countdown alerts", systemImage: "bell.badge.fill")
+                        Label("Weekly check-ins, 7/30/90-day milestones, and phase deadlines", systemImage: "bell.badge.fill")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.primary.opacity(0.7))
+                    }
+
+                    Toggle("Lock Screen countdown", isOn: Binding(
+                        get: { LiveActivityService.shared.isActive },
+                        set: { newValue in
+                            if newValue {
+                                if let sepDate = storage.profile.separationDate {
+                                    let focus = storage.checklistItems.first(where: { !$0.isCompleted })?.title ?? "All caught up"
+                                    let days = Calendar.current.dateComponents([.day], from: Date(), to: sepDate).day ?? 0
+                                    let phase: String = {
+                                        if days > 540 { return "18+ mo" }
+                                        if days > 365 { return "12 mo" }
+                                        if days > 180 { return "6 mo" }
+                                        if days > 90 { return "90 days" }
+                                        if days > 30 { return "30 days" }
+                                        if days > 0 { return "This week" }
+                                        return "Post-service"
+                                    }()
+                                    LiveActivityService.shared.start(
+                                        separationDate: sepDate,
+                                        branch: storage.profile.branch?.rawValue ?? "",
+                                        focusTitle: focus,
+                                        phaseLabel: phase
+                                    )
+                                }
+                            } else {
+                                LiveActivityService.shared.end()
+                            }
+                        }
+                    ))
+                    .font(.body.weight(.semibold))
+                    .tint(AppTheme.forestGreen)
+                    .disabled(storage.profile.separationDate == nil || !LiveActivityService.shared.isSupported)
+
+                    if storage.profile.separationDate == nil {
+                        Label("Set a separation date to enable", systemImage: "info.circle")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
                     }
                 }
 
