@@ -120,7 +120,6 @@ struct BenefitDetailView: View {
                 mistakesSection
                 questionsSection
                 actionChecklistSection
-                officialLinkSection
                 disclaimerSection
             }
             .padding(.horizontal, 16)
@@ -275,13 +274,9 @@ struct BenefitDetailView: View {
         }
     }
 
-    private var officialLinkSection: some View {
-        OfficialLinkButton(title: "Visit Official Source", url: category.officialLink)
-    }
-
     private var disclaimerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Always verify eligibility, deadlines, and benefit details through official government sources. Information in this app may change without notice.")
+            Text("This app is not affiliated with any government agency. Always verify eligibility, deadlines, and benefit details through official sources. Information in this app may change without notice.")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.primary.opacity(0.6))
         }

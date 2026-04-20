@@ -141,7 +141,7 @@ enum TransitionDataService {
                     "What happens to my health coverage during the transition gap?",
                     "Can my dependents receive health care through veteran programs?"
                 ],
-                officialLink: "https://www.healthcare.gov/",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba1", title: "Research post-service health care eligibility"),
                     BenefitAction(id: "ba2", title: "Gather required documents"),
@@ -182,7 +182,7 @@ enum TransitionDataService {
                     "What conditions should I document before separating?",
                     "How do I request my complete medical records?"
                 ],
-                officialLink: "https://www.benefits.gov/benefit/4868",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba6", title: "Review all medical conditions from service"),
                     BenefitAction(id: "ba7", title: "Request complete service medical records"),
@@ -222,7 +222,7 @@ enum TransitionDataService {
                     "Is my intended school/program approved for veteran education benefits?",
                     "What is the monthly housing allowance for my school's ZIP code?"
                 ],
-                officialLink: "https://www.benefits.gov/benefit/4769",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba11", title: "Determine which education benefit applies to you"),
                     BenefitAction(id: "ba12", title: "Request your Certificate of Eligibility"),
@@ -262,7 +262,7 @@ enum TransitionDataService {
                     "What support services are available beyond tuition?",
                     "How do career readiness programs interact with my education benefits?"
                 ],
-                officialLink: "https://www.benefits.gov/benefit/5886",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba16", title: "Check eligibility based on disability rating"),
                     BenefitAction(id: "ba17", title: "Complete career readiness application"),
@@ -303,7 +303,7 @@ enum TransitionDataService {
                     "Are there veteran-friendly employers in my target industry?",
                     "What career fairs are available for transitioning service members?"
                 ],
-                officialLink: "https://www.dol.gov/agencies/vets",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba20", title: "Create a civilian-ready resume"),
                     BenefitAction(id: "ba21", title: "Set up LinkedIn profile"),
@@ -343,7 +343,7 @@ enum TransitionDataService {
                     "Can I use a veteran home loan for a multi-family property?",
                     "What credit score do approved lenders require?"
                 ],
-                officialLink: "https://www.benefits.gov/benefit/5574",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba25", title: "Request Certificate of Eligibility"),
                     BenefitAction(id: "ba26", title: "Research approved lenders"),
@@ -382,7 +382,7 @@ enum TransitionDataService {
                     "Should I convert to VGLI or get private life insurance?",
                     "Am I eligible for TSGLI?"
                 ],
-                officialLink: "https://www.benefits.gov/benefit/4785",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba29", title: "Note your SGLI expiration date"),
                     BenefitAction(id: "ba30", title: "Research VGLI vs. private insurance costs"),
@@ -421,7 +421,7 @@ enum TransitionDataService {
                     "How do I update DEERS after separation?",
                     "What survivor benefits should I set up?"
                 ],
-                officialLink: "https://www.benefits.gov/benefit/4868",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba33", title: "Update DEERS records"),
                     BenefitAction(id: "ba34", title: "Research dependent health care options"),
@@ -460,7 +460,7 @@ enum TransitionDataService {
                     "What tax benefits are available to veterans in my state?",
                     "How do I calculate my total civilian compensation needs?"
                 ],
-                officialLink: "https://www.consumerfinance.gov/consumer-tools/educator-tools/servicemembers/",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba37", title: "Create post-separation budget"),
                     BenefitAction(id: "ba38", title: "Review TSP options and make a plan"),
@@ -500,7 +500,7 @@ enum TransitionDataService {
                     "Where will my records be stored after separation?",
                     "How do I request records after separation?"
                 ],
-                officialLink: "https://www.archives.gov/veterans",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba42", title: "Request multiple certified DD214 copies"),
                     BenefitAction(id: "ba43", title: "Review DD214 for accuracy"),
@@ -538,7 +538,7 @@ enum TransitionDataService {
                     "Are there peer support groups near me?",
                     "What crisis resources are available 24/7?"
                 ],
-                officialLink: "https://988lifeline.org/",
+                officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba46", title: "Save 988 Suicide & Crisis Lifeline number"),
                     BenefitAction(id: "ba47", title: "Locate nearest counseling or support center"),
@@ -566,17 +566,8 @@ enum TransitionDataService {
             InsightCard(title: "Security Clearance Verification", body: "If you have an active security clearance, get documentation. This can be extremely valuable for civilian employment.", category: .forgottenDoc),
             InsightCard(title: "Buddy Statements", body: "Written statements from fellow service members supporting disability claims. Get these while you're still in contact with your unit.", category: .forgottenDoc),
             InsightCard(title: "Veteran Health Care Enrollment", body: "Did you know combat veterans get 5 years of enhanced eligibility? Don't wait — enroll early and ensure continuity of care.", category: .benefitSpotlight),
-            InsightCard(title: "Veterans' Preference for Federal Jobs", body: "Your military service gives you hiring preference for federal positions. Learn how to claim it on USAJobs.gov.", category: .benefitSpotlight),
+            InsightCard(title: "Veterans' Preference for Federal Jobs", body: "Your military service gives you hiring preference for federal positions. Research how to claim it when applying to federal roles.", category: .benefitSpotlight),
             InsightCard(title: "Veteran Home Loan: No Down Payment", body: "The veteran home loan benefit lets you buy a home with no down payment and no PMI. It's one of the most valuable benefits you have.", category: .benefitSpotlight),
-        ]
-    }
-
-    static func crisisResources() -> [CrisisResource] {
-        [
-            CrisisResource(title: "988 Suicide & Crisis Lifeline", subtitle: "Free, confidential support 24/7 for veterans, service members, and their families", phoneNumber: "988", textLine: "838255", url: "https://www.veteranscrisisline.net/", icon: "phone.fill", isEmergency: true),
-            CrisisResource(title: "Crisis Text Line", subtitle: "Text HOME to 741741 for free crisis support", textLine: "741741", url: "https://www.crisistextline.org/", icon: "message.fill", isEmergency: true),
-            CrisisResource(title: "National Suicide Prevention Lifeline", subtitle: "Call or text 988 for immediate help", phoneNumber: "988", url: "https://988lifeline.org/", icon: "heart.fill", isEmergency: true),
-            CrisisResource(title: "SAMHSA National Helpline", subtitle: "Free referrals for substance abuse and mental health", phoneNumber: "1-800-662-4357", url: "https://www.samhsa.gov/find-help/national-helpline", icon: "cross.case.fill"),
         ]
     }
 
