@@ -1,14 +1,14 @@
-# Add "Not sure where to start" helper and fix profile button
+# Separate AI Coach from Pro upgrade and move walkthrough to Today
 
-## Changes
+**Changes**
 
-**Plan tab — under the Roadmap hero card**
+- **Floating AI Coach button**: Add a small floating sparkle icon just above the Profile tab on the bottom tab bar. Tapping it opens the on-device AI coach ("Where You Are" insights) in a sheet — fully separate from the Pro upgrade flow.
+- **Keep Pro upgrade separate**: The Upgrade to Pro paywall stays only in its current spots (Profile, Today upgrade card, locked tools). No AI content mixed in.
+- **Move walkthrough card to Today**: The "Not sure where to start planning?" card moves from the Plan tab to the Today tab, placed directly under the Your Roadmap hero card. Tapping it opens the existing getting-started walkthrough.
+- **Plan tab cleanup**: Remove the walkthrough card and the inline AI Coach card from the Plan tab so the roadmap stays the focus there.
 
-- Add a small, friendly card: "Not sure where to start planning? Tap here."
-- Tapping it opens a short walkthrough screen that explains how to use the app to plan your transition — what each tab does (Today, Plan, Tools, Learn, Profile), how the roadmap works, and suggested first steps.
-- Walkthrough has a clear "Got it" button to dismiss and a back button to return.
+**Design**
 
-**Today tab — "Complete Your Profile" card**
-
-- Currently does nothing when tapped. It will now jump to the Profile tab and open the onboarding/profile setup so the user can fill in status, branch, timeline, and goals.
+- Floating button: circular gold-tinted glass bubble with a sparkles symbol, sitting just above the Profile tab icon, with a soft shadow so it reads as a quick-access action.
+- Walkthrough card on Today: same styling as before (sparkle icon, green accent, chevron), positioned right under the roadmap card.
 

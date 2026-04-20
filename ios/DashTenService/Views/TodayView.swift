@@ -14,6 +14,7 @@ struct TodayView: View {
     @State private var selectedWeekDay: Date?
     @State private var showPaywall: Bool = false
     @State private var showShareProgress: Bool = false
+    @State private var showGettingStarted: Bool = false
 
     private var isRetiredOrSeparated: Bool {
         storage.profile.timeline == .separated
@@ -130,6 +131,7 @@ struct TodayView: View {
                     milestoneSection
                     weeklySummarySection
                     focusCardSection
+                    gettingStartedCard
                     weeklyActivitySection
                     quickStatsBar
                     shareProgressSection
@@ -211,6 +213,9 @@ struct TodayView: View {
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView(store: store)
+        }
+        .sheet(isPresented: $showGettingStarted) {
+            GettingStartedWalkthroughView()
         }
         .sheet(isPresented: $showShareProgress) {
             ShareProgressSheet(
@@ -544,6 +549,45 @@ struct TodayView: View {
                 .animation(.spring(response: 0.6).delay(0.15), value: appeared)
             }
         }
+    }
+
+    private var gettingStartedCard: some View {
+        Button {
+            showGettingStarted = true
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "sparkles")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(AppTheme.forestGreen)
+                    .frame(width: 36, height: 36)
+                    .background(AppTheme.forestGreen.opacity(0.12))
+                    .clipShape(.rect(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Not sure where to start planning?")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.leading)
+                    Text("Tap here for a quick walkthrough")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(AppTheme.forestGreen.opacity(0.15), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     private var focusReason: String {
