@@ -427,61 +427,71 @@ struct TodayView: View {
     private func countdownSection(date: Date) -> some View {
         let info = countdownInfo(for: date)
         let parts = countdownParts(for: date)
-        return HStack(alignment: .center, spacing: 12) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                if parts.useYMD {
-                    HStack(alignment: .firstTextBaseline, spacing: 6) {
-                        if parts.years > 0 {
-                            numberUnit(value: parts.years, unit: parts.years == 1 ? "yr" : "yrs")
+        return VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Group {
+                    if parts.useYMD {
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            if parts.years > 0 {
+                                numberUnit(value: parts.years, unit: parts.years == 1 ? "yr" : "yrs")
+                            }
+                            if parts.months > 0 {
+                                numberUnit(value: parts.months, unit: parts.months == 1 ? "mo" : "mos")
+                            }
+                            if parts.days > 0 || (parts.years == 0 && parts.months == 0) {
+                                numberUnit(value: parts.days, unit: parts.days == 1 ? "day" : "days")
+                            }
                         }
-                        if parts.months > 0 {
-                            numberUnit(value: parts.months, unit: parts.months == 1 ? "mo" : "mos")
+                    } else {
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text("\(info.days)")
+                                .font(.system(size: 44, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                                .contentTransition(.numericText())
+                            Text(info.days == 1 ? "day" : "days")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white.opacity(0.9))
                         }
-                        if parts.days > 0 || (parts.years == 0 && parts.months == 0) {
-                            numberUnit(value: parts.days, unit: parts.days == 1 ? "day" : "days")
-                        }
-                    }
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(info.label)
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.white.opacity(0.85))
-                    }
-                } else {
-                    Text("\(info.days)")
-                        .font(.system(size: 42, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                        .contentTransition(.numericText())
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.6)
-                        .fixedSize(horizontal: true, vertical: false)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(info.days == 1 ? "day" : "days")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.white.opacity(0.9))
-                        Text(info.label)
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.white.opacity(0.8))
                     }
                 }
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .fixedSize(horizontal: false, vertical: true)
+
+                Text(info.label)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .textCase(.uppercase)
+                    .tracking(0.5)
             }
 
-            Spacer(minLength: 8)
-
             if let phase = currentPhase {
-                VStack(alignment: .trailing, spacing: 3) {
+                Rectangle()
+                    .fill(Color.white.opacity(0.18))
+                    .frame(height: 1)
+
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(heroStyle == .urgent ? Color.white : AppTheme.gold)
+                        .frame(width: 6, height: 6)
                     Text(phase.rawValue)
                         .font(.caption.weight(.bold))
                         .foregroundStyle(heroStyle == .urgent ? .white : AppTheme.gold)
+                    Text("·")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.white.opacity(0.5))
                     Text(phase.subtitle)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.8))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    Spacer(minLength: 0)
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20)
-        .padding(.bottom, 20)
+        .padding(.bottom, 18)
     }
 
     private var noDatePrompt: some View {
@@ -515,15 +525,16 @@ struct TodayView: View {
 
     @ViewBuilder
     private func numberUnit(value: Int, unit: String) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 2) {
+        HStack(alignment: .firstTextBaseline, spacing: 3) {
             Text("\(value)")
-                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .font(.system(size: 38, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
                 .contentTransition(.numericText())
             Text(unit)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(.system(size: 15, weight: .bold, design: .rounded))
                 .foregroundStyle(.white.opacity(0.85))
         }
+        .fixedSize()
     }
 
 
