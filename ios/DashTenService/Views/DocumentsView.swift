@@ -292,8 +292,12 @@ struct DocumentRow: View {
                                 .font(.caption2.weight(.semibold))
                             Text(statusLabel(status))
                                 .font(.caption2.weight(.bold))
+                                .lineLimit(2)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
-                        .padding(.horizontal, 10)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 8)
                         .padding(.vertical, 6)
                         .background(document.status == status ? statusColorFor(status).opacity(0.15) : Color(.tertiarySystemGroupedBackground))
                         .foregroundStyle(document.status == status ? statusColorFor(status) : .primary.opacity(0.6))

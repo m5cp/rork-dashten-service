@@ -426,23 +426,48 @@ struct TodayView: View {
 
     private func countdownSection(date: Date) -> some View {
         let info = countdownInfo(for: date)
-        return HStack(spacing: 16) {
-            HStack(spacing: 10) {
-                Text("\(info.days)")
-                    .font(.system(size: 42, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-                    .contentTransition(.numericText())
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(info.days == 1 ? "day" : "days")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.white.opacity(0.9))
-                    Text(info.label)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.8))
+        let parts = countdownParts(for: date)
+        return HStack(alignment: .center, spacing: 12) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                if parts.useYMD {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        if parts.years > 0 {
+                            numberUnit(value: parts.years, unit: parts.years == 1 ? "yr" : "yrs")
+                        }
+                        if parts.months > 0 {
+                            numberUnit(value: parts.months, unit: parts.months == 1 ? "mo" : "mos")
+                        }
+                        if parts.days > 0 || (parts.years == 0 && parts.months == 0) {
+                            numberUnit(value: parts.days, unit: parts.days == 1 ? "day" : "days")
+                        }
+                    }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(info.label)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.85))
+                    }
+                } else {
+                    Text("\(info.days)")
+                        .font(.system(size: 42, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .contentTransition(.numericText())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                        .fixedSize(horizontal: true, vertical: false)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(info.days == 1 ? "day" : "days")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.white.opacity(0.9))
+                        Text(info.label)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.8))
+                    }
                 }
             }
 
-            Spacer()
+            Spacer(minLength: 8)
 
             if let phase = currentPhase {
                 VStack(alignment: .trailing, spacing: 3) {
@@ -477,6 +502,28 @@ struct TodayView: View {
         if days > 0 { return (days, "until separation") }
         if days == 0 { return (0, "separation day") }
         return (abs(days), "since separation")
+    }
+
+    private func countdownParts(for date: Date) -> (years: Int, months: Int, days: Int, useYMD: Bool) {
+        let now = Date()
+        let target = date >= now ? date : now
+        let start = date >= now ? now : date
+        let totalDays = Calendar.current.dateComponents([.day], from: start, to: target).day ?? 0
+        let comps = Calendar.current.dateComponents([.year, .month, .day], from: start, to: target)
+        return (comps.year ?? 0, comps.month ?? 0, comps.day ?? 0, totalDays > 365)
+    }
+
+    @ViewBuilder
+    private func numberUnit(value: Int, unit: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 2) {
+            Text("\(value)")
+                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .contentTransition(.numericText())
+            Text(unit)
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.85))
+        }
     }
 
 
