@@ -5,8 +5,6 @@ struct PaywallView: View {
     var store: StoreViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var appeared: Bool = false
-    @State private var showSecondChance: Bool = false
-    @State private var hasAttemptedPurchase: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPrivacy: Bool = false
 
@@ -36,7 +34,7 @@ struct PaywallView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        attemptDismiss()
+                        dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title3)
@@ -67,25 +65,6 @@ struct PaywallView: View {
             .sheet(isPresented: $showPrivacy) {
                 PrivacyPolicyView()
             }
-            .sheet(isPresented: $showSecondChance) {
-                SecondChanceSheet(
-                    onContinue: { showSecondChance = false },
-                    onDismiss: {
-                        showSecondChance = false
-                        dismiss()
-                    }
-                )
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
-            }
-        }
-    }
-
-    private func attemptDismiss() {
-        if !store.isPremium && !showSecondChance {
-            showSecondChance = true
-        } else {
-            dismiss()
         }
     }
 
@@ -297,7 +276,6 @@ struct PaywallView: View {
         let perDay = perDayString(from: decimalPrice)
 
         return Button {
-            hasAttemptedPurchase = true
             Task { await store.purchase(package: package) }
         } label: {
             VStack(spacing: 10) {
@@ -466,75 +444,3 @@ private struct PaywallStatBadge: View {
     }
 }
 
-private struct SecondChanceSheet: View {
-    let onContinue: () -> Void
-    let onDismiss: () -> Void
-
-    var body: some View {
-        VStack(spacing: 20) {
-            VStack(spacing: 12) {
-                Image(systemName: "hand.wave.fill")
-                    .font(.system(size: 44))
-                    .foregroundStyle(AppTheme.gold)
-                    .symbolRenderingMode(.hierarchical)
-
-                Text("Before you go")
-                    .font(.title2.bold())
-
-                Text("You'd unlock 11 tools and 2 guides built for your transition — for one payment, no subscription.")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            VStack(spacing: 10) {
-                quickBenefit(icon: "doc.text.fill", text: "Translate your resume in minutes")
-                quickBenefit(icon: "hand.raised.fill", text: "Negotiate salary with confidence")
-                quickBenefit(icon: "calendar.badge.clock", text: "A week-by-week post-hire plan")
-            }
-
-            Spacer(minLength: 0)
-
-            VStack(spacing: 10) {
-                Button {
-                    onContinue()
-                } label: {
-                    Text("Keep looking at Pro")
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(minHeight: 50)
-                        .background(AppTheme.forestGreen)
-                        .clipShape(.rect(cornerRadius: 14))
-                }
-
-                Button {
-                    onDismiss()
-                } label: {
-                    Text("No thanks, maybe later")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(minHeight: 44)
-                }
-            }
-        }
-        .padding(24)
-        .presentationBackground(Color(.systemBackground))
-    }
-
-    private func quickBenefit(icon: String, text: String) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(AppTheme.forestGreen)
-                .frame(width: 28, height: 28)
-                .background(AppTheme.forestGreen.opacity(0.12))
-                .clipShape(.rect(cornerRadius: 8))
-            Text(text)
-                .font(.subheadline.weight(.semibold))
-            Spacer()
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
