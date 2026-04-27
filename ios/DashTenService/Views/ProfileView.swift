@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 import RevenueCat
 
 struct ProfileView: View {
@@ -6,6 +7,7 @@ struct ProfileView: View {
     var store: StoreViewModel
     @State private var showAbout: Bool = false
     @State private var showPaywall: Bool = false
+    @State private var showRedeemCode: Bool = false
     @State private var showTransparency: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPrivacy: Bool = false
@@ -236,6 +238,14 @@ struct ProfileView: View {
                             .font(.body.weight(.semibold))
                     }
                     .accessibilityLabel("Restore previous purchases")
+
+                    Button {
+                        showRedeemCode = true
+                    } label: {
+                        Label("Redeem a Code", systemImage: "gift.fill")
+                            .font(.body.weight(.semibold))
+                    }
+                    .accessibilityLabel("Redeem an offer code for a free or discounted subscription")
                 } header: {
                     Text("Subscription")
                 }
@@ -359,6 +369,9 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showPaywall) {
                 PaywallView(store: store)
+            }
+            .offerCodeRedemption(isPresented: $showRedeemCode) { _ in
+                Task { await store.checkStatus() }
             }
             .alert("Delete All My Data?", isPresented: $showResetAlert) {
                 Button("Delete Everything", role: .destructive) {

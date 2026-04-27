@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 import RevenueCat
 
 struct PaywallView: View {
@@ -7,6 +8,7 @@ struct PaywallView: View {
     @State private var appeared: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPrivacy: Bool = false
+    @State private var showRedeemCode: Bool = false
 
     private let transformations: [(before: String, after: String, icon: String)] = [
         ("Overwhelm and scattered notes", "One clear roadmap you trust", "map.fill"),
@@ -26,6 +28,7 @@ struct PaywallView: View {
                     purchaseSection
                     trustRow
                     restoreButton
+                    redeemCodeButton
                     legalSection
                 }
             }
@@ -65,7 +68,29 @@ struct PaywallView: View {
             .sheet(isPresented: $showPrivacy) {
                 PrivacyPolicyView()
             }
+            .offerCodeRedemption(isPresented: $showRedeemCode) { _ in
+                Task { await store.checkStatus() }
+            }
         }
+    }
+
+    private var redeemCodeButton: some View {
+        Button {
+            showRedeemCode = true
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "gift.fill")
+                    .font(.subheadline.weight(.bold))
+                Text("Have a code? Redeem here")
+                    .font(.subheadline.weight(.bold))
+            }
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 44)
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+        .accessibilityLabel("Redeem an offer code for a free or discounted subscription")
     }
 
     private var headerSection: some View {
