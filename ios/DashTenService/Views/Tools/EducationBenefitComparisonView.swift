@@ -58,6 +58,18 @@ struct EducationBenefitComparisonView: View {
                     Text("Understanding the differences between education benefits helps you maximize your investment. Each program has unique advantages depending on your situation.")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.primary.opacity(0.8))
+                    HStack(alignment: .top, spacing: 6) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.caption2)
+                            .foregroundStyle(.orange)
+                        Text("Educational summary only — not legal, financial, or VA-certified guidance. Verify with the VA and your School Certifying Official before enrolling.")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.85))
+                    }
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.orange.opacity(0.10))
+                    .clipShape(.rect(cornerRadius: 8))
                 }
                 .padding(14)
                 .background(.indigo.opacity(0.06))

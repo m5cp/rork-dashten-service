@@ -27,6 +27,7 @@ struct NetworkingEventPrepView: View {
                     Image(systemName: "plus.circle.fill")
                         .foregroundStyle(AppTheme.forestGreen)
                 }
+                .accessibilityLabel("Add networking event")
             }
         }
         .sheet(isPresented: $showAddEvent) {
@@ -347,6 +348,7 @@ private struct EventListSection: View {
                             .font(.caption)
                             .foregroundStyle(.tertiary)
                     }
+                    .accessibilityLabel("Remove item")
                 }
             }
 
@@ -360,6 +362,7 @@ private struct EventListSection: View {
                         .foregroundStyle(color)
                 }
                 .disabled(newItemText.trimmingCharacters(in: .whitespaces).isEmpty)
+                .accessibilityLabel("Add item")
             }
             .padding(10)
             .background(Color(.tertiarySystemGroupedBackground))

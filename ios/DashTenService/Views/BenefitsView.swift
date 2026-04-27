@@ -134,6 +134,7 @@ struct BenefitDetailView: View {
                     Image(systemName: currentCategory.isSaved ? "bookmark.fill" : "bookmark")
                         .foregroundStyle(color)
                 }
+                .accessibilityLabel(currentCategory.isSaved ? "Unsave benefit" : "Save benefit")
             }
         }
     }

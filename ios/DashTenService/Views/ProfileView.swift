@@ -494,6 +494,8 @@ struct AboutView: View {
                     }
                     .frame(maxWidth: .infinity)
 
+                    SupportContactCard()
+
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Why This App Exists")
                             .font(.headline.weight(.bold))
@@ -587,6 +589,8 @@ struct SourceTransparencyView: View {
 struct TermsOfUseView: View {
     @Environment(\.dismiss) private var dismiss
 
+    private static let lastUpdated: String = "April 2026"
+
     private let terms: [String] = [
         "DashTen is an informational and organizational tool designed to help users plan their transition from military to civilian life.",
         "You accept full responsibility for verifying all information with official sources before making any decisions based on content in this app.",
@@ -601,6 +605,10 @@ struct TermsOfUseView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    Text("Last updated: \(Self.lastUpdated)")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+
                     Text("By using DashTen, you acknowledge and agree to the following:")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.primary.opacity(0.8))
@@ -628,6 +636,8 @@ struct TermsOfUseView: View {
 struct PrivacyPolicyView: View {
     @Environment(\.dismiss) private var dismiss
 
+    private static let lastUpdated: String = "April 2026"
+
     private let items: [(icon: String, color: Color, title: String, body: String)] = [
         ("iphone", .blue, "Local-only storage", "DashTen stores all data locally on your device. No personal information is transmitted to external servers."),
         ("lock.shield.fill", AppTheme.forestGreen, "Private by design", "Your transition plan, documents checklist, and progress are private and under your complete control."),
@@ -641,6 +651,10 @@ struct PrivacyPolicyView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    Text("Last updated: \(Self.lastUpdated)")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+
                     ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                         PolicyBlock(icon: item.icon, accent: item.color, title: item.title, body: item.body)
                     }

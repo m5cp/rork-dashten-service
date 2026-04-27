@@ -242,6 +242,7 @@ struct GoalTrackerView: View {
                         .font(.caption)
                         .foregroundStyle(.red.opacity(0.6))
                 }
+                .accessibilityLabel("Delete goal")
             }
 
             let days = daysUntil(goal.deadline)

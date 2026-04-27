@@ -54,6 +54,7 @@ struct MentorTrackerView: View {
                     Image(systemName: "plus.circle.fill")
                         .foregroundStyle(AppTheme.forestGreen)
                 }
+                .accessibilityLabel("Add mentor")
             }
         }
         .sheet(isPresented: $showAddMentor) {

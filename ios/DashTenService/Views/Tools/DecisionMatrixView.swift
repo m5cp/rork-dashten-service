@@ -38,6 +38,7 @@ struct DecisionMatrixView: View {
                     Image(systemName: "plus.circle.fill")
                         .foregroundStyle(AppTheme.forestGreen)
                 }
+                .accessibilityLabel("New decision matrix")
             }
         }
         .alert("New Decision", isPresented: $showNewMatrix) {
@@ -401,6 +402,7 @@ struct DecisionMatrixDetailView: View {
                         .font(.title3)
                         .foregroundStyle(AppTheme.forestGreen)
                 }
+                .accessibilityLabel("Add criteria")
             }
 
             if storage.decisionMatrices[idx].criteria.isEmpty {
@@ -452,6 +454,7 @@ struct DecisionMatrixDetailView: View {
                                     .foregroundStyle(.secondary.opacity(0.5))
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Remove criteria")
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 10)
@@ -483,6 +486,7 @@ struct DecisionMatrixDetailView: View {
                         .font(.title3)
                         .foregroundStyle(AppTheme.forestGreen)
                 }
+                .accessibilityLabel("Add option")
             }
 
             Text("Slide to rate each option (1 = worst, 10 = best)")
@@ -513,6 +517,7 @@ struct DecisionMatrixDetailView: View {
                                 .foregroundStyle(.red.opacity(0.6))
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("Delete option")
                     }
 
                     ForEach(Array(storage.decisionMatrices[idx].criteria.enumerated()), id: \.offset) { cIdx, criteria in

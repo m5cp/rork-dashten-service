@@ -306,6 +306,7 @@ private struct PlanSection: View {
                             .font(.caption)
                             .foregroundStyle(.tertiary)
                     }
+                    .accessibilityLabel("Remove item")
                 }
             }
 
@@ -321,6 +322,7 @@ private struct PlanSection: View {
                         .foregroundStyle(color)
                 }
                 .disabled(newItemText.trimmingCharacters(in: .whitespaces).isEmpty)
+                .accessibilityLabel("Add item")
             }
             .padding(10)
             .background(Color(.tertiarySystemGroupedBackground))

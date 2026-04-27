@@ -152,6 +152,7 @@ struct InterviewPrepView: View {
                                 .foregroundStyle(storage.practicedQuestions.contains(q.id) ? AppTheme.forestGreen : .primary.opacity(0.4))
                         }
                         .sensoryFeedback(.success, trigger: storage.practicedQuestions.contains(q.id))
+                        .accessibilityLabel(storage.practicedQuestions.contains(q.id) ? "Mark as not practiced" : "Mark as practiced")
 
                         Button {
                             withAnimation(.spring(response: 0.3)) {

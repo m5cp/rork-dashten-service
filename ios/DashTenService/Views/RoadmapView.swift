@@ -77,6 +77,7 @@ struct RoadmapView: View {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(AppTheme.forestGreen)
                     }
+                    .accessibilityLabel("Add roadmap item")
                 }
             }
             .sheet(isPresented: $showAddItem) {

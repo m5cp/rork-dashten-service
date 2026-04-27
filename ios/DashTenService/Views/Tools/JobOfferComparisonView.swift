@@ -33,6 +33,7 @@ struct JobOfferComparisonView: View {
                     Image(systemName: "plus.circle.fill")
                         .foregroundStyle(AppTheme.forestGreen)
                 }
+                .accessibilityLabel("Add job offer")
             }
         }
         .sheet(isPresented: $showAddOffer) {

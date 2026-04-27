@@ -87,6 +87,39 @@ struct StatusBadge: View {
     }
 }
 
+struct SupportContactCard: View {
+    private let supportURL: URL? = URL(string: "https://apps.apple.com/account/billing")
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Support & Billing", systemImage: "questionmark.circle.fill")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(AppTheme.forestGreen)
+            Text("For purchase, billing, refund, or restore questions, manage your purchase from your Apple ID. For app feedback or bug reports, use the App Store \"Report a Problem\" link on the DashTen listing.")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.8))
+            if let supportURL {
+                Link(destination: supportURL) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "creditcard.fill")
+                            .font(.caption.weight(.bold))
+                        Text("Manage Apple ID Purchases")
+                            .font(.caption.weight(.bold))
+                        Image(systemName: "arrow.up.right")
+                            .font(.caption2.weight(.bold))
+                    }
+                    .foregroundStyle(AppTheme.forestGreen)
+                    .frame(minHeight: 44)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(AppTheme.forestGreen.opacity(0.06))
+        .clipShape(.rect(cornerRadius: 12))
+    }
+}
+
 struct NonAffiliationBanner: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {

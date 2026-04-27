@@ -33,6 +33,7 @@ struct BenefitsEnrollmentCountdownView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { showAddDeadline = true } label: {
                     Image(systemName: "plus.circle.fill")
+                        .accessibilityLabel("Add deadline")
                         .foregroundStyle(AppTheme.forestGreen)
                 }
             }
@@ -218,6 +219,7 @@ private struct SuggestedDeadlineRow: View {
                     .font(.body)
                     .foregroundStyle(AppTheme.forestGreen)
             }
+            .accessibilityLabel("Add suggested deadline")
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
