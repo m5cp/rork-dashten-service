@@ -364,7 +364,7 @@ struct BRSRetirementSnapshotView: View {
                     .font(.caption)
                     .foregroundStyle(.orange)
                     .padding(.top, 2)
-                Text("DashTen is not affiliated with the Department of Defense or any government agency. This is an educational estimator only — not financial, tax, or legal advice. Results are hypothetical projections. Actual benefits depend on your service record, pay grade, and applicable regulations. Consult a financial professional and your service finance office before making retirement decisions.")
+                Text("DashTen is not affiliated with the Department of War (formerly Department of Defense) or any government agency. This is an educational estimator only — not financial, tax, or legal advice. Results are hypothetical projections. Actual benefits depend on your service record, pay grade, and applicable regulations. Consult a financial professional and your service finance office before making retirement decisions.")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary.opacity(0.7))
             }

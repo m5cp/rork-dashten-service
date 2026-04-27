@@ -113,7 +113,7 @@ struct TSPGrowthEstimatorView: View {
                 Text("Project Your TSP at Separation")
                     .font(.subheadline.weight(.bold))
             }
-            Text("See what your Thrift Savings Plan could be worth when you separate, including DoD matching contributions under the Blended Retirement System.")
+            Text("See what your Thrift Savings Plan could be worth when you separate, including DoW matching contributions under the Blended Retirement System.")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.primary.opacity(0.8))
 
@@ -163,7 +163,7 @@ struct TSPGrowthEstimatorView: View {
                 }
                 Slider(value: $contributionPct, in: 0...15, step: 1)
                     .tint(AppTheme.forestGreen)
-                Text("Most service members should aim for at least 5% to capture the full DoD match.")
+                Text("Most service members should aim for at least 5% to capture the full DoW match.")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
             }
@@ -238,7 +238,7 @@ struct TSPGrowthEstimatorView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .foregroundStyle(.orange)
-                    Text("Contributing 5% captures the maximum match. You're currently leaving DoD money on the table.")
+                    Text("Contributing 5% captures the maximum match. You're currently leaving DoW money on the table.")
                         .font(.caption.weight(.bold))
                         .foregroundStyle(.primary)
                 }
@@ -292,7 +292,7 @@ struct TSPGrowthEstimatorView: View {
 
             VStack(spacing: 10) {
                 breakdownRow(label: "Your Contributions", value: totalYourContributions, color: .blue, icon: "person.fill")
-                breakdownRow(label: "DoD Contributions", value: totalDoDContributions, color: AppTheme.gold, icon: "shield.fill")
+                breakdownRow(label: "DoW Contributions", value: totalDoDContributions, color: AppTheme.gold, icon: "shield.fill")
                 breakdownRow(label: "Estimated Growth", value: estimatedGrowth, color: AppTheme.forestGreen, icon: "chart.line.uptrend.xyaxis")
             }
 
@@ -345,7 +345,7 @@ struct TSPGrowthEstimatorView: View {
                     .font(.caption)
                     .foregroundStyle(.orange)
                     .padding(.top, 2)
-                Text("DashTen is not affiliated with the Department of Defense, the Thrift Savings Plan, or any government agency. This estimator uses general planning assumptions and is not financial advice. Results are hypothetical projections. Actual returns vary. Consult a financial professional before making retirement decisions.")
+                Text("DashTen is not affiliated with the Department of War (formerly Department of Defense), the Thrift Savings Plan, or any government agency. This estimator uses general planning assumptions and is not financial advice. Results are hypothetical projections. Actual returns vary. Consult a financial professional before making retirement decisions.")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary.opacity(0.7))
             }
