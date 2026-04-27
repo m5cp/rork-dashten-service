@@ -165,7 +165,6 @@ struct ToolboxView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Tools")
-            .searchable(text: $searchText, prompt: "Search tools")
             .navigationDestination(for: PlanningRoute.self) { route in
                 routeDestination(route)
             }

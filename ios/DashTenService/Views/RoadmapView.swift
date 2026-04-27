@@ -69,7 +69,6 @@ struct RoadmapView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Roadmap")
-            .searchable(text: $searchText, prompt: "Search tasks")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

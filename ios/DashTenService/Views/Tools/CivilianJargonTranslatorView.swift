@@ -38,7 +38,6 @@ struct CivilianJargonTranslatorView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Jargon Translator")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $searchText, prompt: "Search terms...")
     }
 
     static let milToCivEntries: [JargonEntry] = [

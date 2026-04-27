@@ -84,8 +84,6 @@ struct SearchView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Search")
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search all tools")
-            .searchFocused($searchFocused)
             .navigationDestination(for: PlanningRoute.self) { route in
                 routeDestination(route)
             }

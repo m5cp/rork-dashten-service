@@ -575,7 +575,6 @@ struct LearnBenefitsListView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Benefits")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $searchText, prompt: "Search benefits")
     }
 }
 

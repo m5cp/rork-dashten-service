@@ -30,7 +30,6 @@ struct BenefitsView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Benefits")
-            .searchable(text: $searchText, prompt: "Search benefits")
             .navigationDestination(for: String.self) { categoryId in
                 if let category = storage.benefitCategories.first(where: { $0.id == categoryId }) {
                     BenefitDetailView(storage: storage, category: category)

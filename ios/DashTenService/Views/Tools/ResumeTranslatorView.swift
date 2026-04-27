@@ -197,7 +197,6 @@ struct ResumeTranslatorView: View {
                 }
             }
             .listStyle(.insetGrouped)
-            .searchable(text: $jargonSearch, prompt: "Search terms...")
         }
     }
 }

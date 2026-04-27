@@ -173,24 +173,6 @@ struct TodayView: View {
                     }
                 }
             }
-            .searchable(text: $searchText, prompt: "Search topics, tools, benefits...")
-            .searchSuggestions {
-                if !searchText.isEmpty {
-                    ForEach(filteredSearchSuggestions, id: \.title) { suggestion in
-                        NavigationLink(value: suggestion.route) {
-                            Label(suggestion.title, systemImage: suggestion.icon)
-                        }
-                        .searchCompletion(suggestion.title)
-                    }
-                } else {
-                    ForEach(topSearchSuggestions, id: \.title) { suggestion in
-                        NavigationLink(value: suggestion.route) {
-                            Label(suggestion.title, systemImage: suggestion.icon)
-                        }
-                        .searchCompletion(suggestion.title)
-                    }
-                }
-            }
             .navigationDestination(for: PlanningRoute.self) { route in
                 routeDestination(route)
             }
