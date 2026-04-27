@@ -19,7 +19,7 @@ import Foundation
 // (typically January of each year).
 // ============================================================================
 
-nonisolated enum PayCategory: String, CaseIterable, Identifiable, Hashable, Sendable {
+enum PayCategory: String, CaseIterable, Identifiable, Hashable {
     case enlisted = "Enlisted"
     case warrant = "Warrant Officer"
     case officer = "Officer"
@@ -63,7 +63,7 @@ nonisolated enum PayCategory: String, CaseIterable, Identifiable, Hashable, Send
     }
 }
 
-nonisolated enum MilitaryPayTables {
+enum MilitaryPayTables {
     /// Lower bounds (in years) for each years-of-service column on the official chart.
     /// Bracket index 0 = "Less than 2", 1 = "Over 2", 2 = "Over 3", 3 = "Over 4",
     /// 4 = "Over 6", 5 = "Over 8", 6 = "Over 10", 7 = "Over 12", 8 = "Over 14",
