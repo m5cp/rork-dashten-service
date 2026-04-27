@@ -132,6 +132,8 @@ struct LearnView: View {
         case .benefitsCountdown: BenefitsEnrollmentCountdownView(storage: storage)
         case .achievementBadges: AchievementBadgesView(storage: storage)
         case .firstYearGuide: FirstYearGuideView()
+        case .tspGrowthEstimator: TSPGrowthEstimatorView()
+        case .brsRetirementSnapshot: BRSRetirementSnapshotView()
         }
     }
 

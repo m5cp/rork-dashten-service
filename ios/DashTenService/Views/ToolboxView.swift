@@ -37,6 +37,22 @@ struct ToolboxView: View {
             ToolEntry(title: "Emergency Fund Calculator", subtitle: "Target 3–6 months of essential expenses", icon: "shield.lefthalf.filled", color: .teal, action: .sheet(.emergencyFund), keywords: ["emergency", "fund"]),
             ToolEntry(title: "Cost of Living Comparator", subtitle: "Compare cities side by side", icon: "building.2.fill", color: .mint, action: .nav(.costOfLiving), keywords: ["city", "cost", "compare"]),
             ToolEntry(title: "Research TSP", subtitle: "Explore rollover options", icon: "arrow.triangle.swap", color: .blue, action: .nav(.tspRollover), keywords: ["tsp", "retirement", "401k"]),
+            ToolEntry(
+                title: "TSP Growth Estimator",
+                subtitle: "Project your TSP at separation with DoD match",
+                icon: "chart.line.uptrend.xyaxis",
+                color: AppTheme.forestGreen,
+                action: .nav(.tspGrowthEstimator),
+                keywords: ["tsp", "growth", "retirement", "match", "brs"]
+            ),
+            ToolEntry(
+                title: "BRS Retirement Snapshot",
+                subtitle: "TSP + pension combined picture",
+                icon: "chart.pie.fill",
+                color: AppTheme.gold,
+                action: .nav(.brsRetirementSnapshot),
+                keywords: ["brs", "pension", "retirement", "snapshot"]
+            ),
             ToolEntry(title: "Job Offer Compare", subtitle: "Side-by-side total compensation analysis", icon: "scalemass.fill", color: .indigo, action: .nav(.jobOfferCompare), keywords: ["offer", "compare", "job"]),
             ToolEntry(title: "Salary Negotiation", subtitle: "Know your worth and ask for it", icon: "hand.raised.fill", color: .pink, action: .nav(.salaryNegotiation), keywords: ["negotiate", "salary"]),
         ]
@@ -234,6 +250,8 @@ struct ToolboxView: View {
         case .benefitsCountdown: BenefitsEnrollmentCountdownView(storage: storage)
         case .achievementBadges: AchievementBadgesView(storage: storage)
         case .firstYearGuide: FirstYearGuideView()
+        case .tspGrowthEstimator: TSPGrowthEstimatorView()
+        case .brsRetirementSnapshot: BRSRetirementSnapshotView()
         }
     }
 
