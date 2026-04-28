@@ -17,8 +17,9 @@ nonisolated struct MilitaryCareer: Identifiable, Hashable, Sendable {
     let civilianTitles: [String]
     let bulletPoints: [String]
     let skills: [String]
+    let isOfficer: Bool
 
-    init(code: String, title: String, branch: MilitaryServiceBranch, civilianTitles: [String], bulletPoints: [String], skills: [String]) {
+    init(code: String, title: String, branch: MilitaryServiceBranch, civilianTitles: [String], bulletPoints: [String], skills: [String], isOfficer: Bool = false) {
         self.id = UUID()
         self.code = code
         self.title = title
@@ -26,6 +27,7 @@ nonisolated struct MilitaryCareer: Identifiable, Hashable, Sendable {
         self.civilianTitles = civilianTitles
         self.bulletPoints = bulletPoints
         self.skills = skills
+        self.isOfficer = isOfficer
     }
 }
 
@@ -341,6 +343,199 @@ nonisolated enum MilitaryCareerData {
             ],
             skills: ["Supply Management", "Inventory Control", "Logistics Systems", "Property Accountability", "Organizational Skills"]
         ),
+        // ─── ARMY OFFICERS ───
+        MilitaryCareer(
+            code: "11A", title: "Infantry Officer", branch: .army,
+            civilianTitles: ["Operations Director", "Law Enforcement Commander", "Program Manager"],
+            bulletPoints: [
+                "Commanded an infantry company of 130+ soldiers, directing all training, operations, and personnel actions",
+                "Led complex multi-echelon operations in austere environments, achieving mission success with zero fatalities",
+                "Managed a $2.4M equipment budget and maintained 95%+ operational readiness",
+                "Developed and executed training programs that increased unit proficiency scores by 30%"
+            ],
+            skills: ["Executive Leadership", "Operations Management", "Budget Management", "Strategic Planning", "Team Development"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "13A", title: "Field Artillery Officer", branch: .army,
+            civilianTitles: ["Operations Manager", "Systems Integration Manager", "Project Director"],
+            bulletPoints: [
+                "Commanded a 90-person field artillery battery operating $15M in precision weapons systems",
+                "Synchronized fires with maneuver, aviation, and joint assets during combined arms operations",
+                "Led technical integration of digital fire control systems improving mission response time by 40%",
+                "Mentored and developed 8 junior officers and 12 NCOs in professional and technical competencies"
+            ],
+            skills: ["Systems Integration", "Operations Leadership", "Technical Program Management", "Cross-Functional Coordination", "Personnel Development"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "15A", title: "Aviation Officer (Rotary Wing)", branch: .army,
+            civilianTitles: ["Commercial Helicopter Pilot", "Aviation Operations Manager", "Flight Safety Officer"],
+            bulletPoints: [
+                "Commanded an aviation company operating 15 UH-60 Black Hawk aircraft and 180 personnel",
+                "Accumulated 1,200+ flight hours across combat, training, and humanitarian operations",
+                "Led flight safety programs achieving zero Class A/B mishaps over a 3-year command period",
+                "Managed $40M in aircraft and aviation ground support equipment with zero loss"
+            ],
+            skills: ["Rotary Wing Aviation", "Aviation Safety", "Fleet Management", "Program Management", "Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "18A", title: "Special Forces Officer", branch: .army,
+            civilianTitles: ["Senior Operations Director", "Defense Contractor — SOF", "Security & Intelligence Executive"],
+            bulletPoints: [
+                "Commanded a 12-man Special Forces ODA conducting foreign internal defense, direct action, and HUMINT operations across 3 countries",
+                "Built and led indigenous security forces up to battalion size (800+ personnel) from scratch",
+                "Managed interagency relationships with CIA, DIA, and State Department in complex, politically sensitive environments",
+                "Developed and executed campaign plans spanning 18–36 months with strategic-level impact"
+            ],
+            skills: ["Special Operations Leadership", "Interagency Coordination", "Strategic Planning", "Foreign Partner Development", "Crisis Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "25A", title: "Signal Officer", branch: .army,
+            civilianTitles: ["Chief Information Officer", "IT Director", "Network Engineering Manager"],
+            bulletPoints: [
+                "Directed enterprise network operations supporting 5,000+ users across a multi-site organization",
+                "Led digital transformation projects integrating cloud, cybersecurity, and mobile communication platforms",
+                "Managed a $12M IT infrastructure budget and a team of 60 signal soldiers and contractors",
+                "Developed cybersecurity policies and incident response plans adopted across the division"
+            ],
+            skills: ["IT Leadership", "Network Architecture", "Cybersecurity Strategy", "Digital Transformation", "Budget Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "27A", title: "Judge Advocate General (JAG) Officer", branch: .army,
+            civilianTitles: ["Attorney", "Corporate Counsel", "Compliance Officer"],
+            bulletPoints: [
+                "Provided legal counsel to commanders on military justice, administrative law, and international law of armed conflict",
+                "Prosecuted and defended courts-martial across felony-level criminal cases",
+                "Advised on contracting, fiscal law, and acquisition compliance for programs valued at $50M+",
+                "Developed legal training programs for 2,000+ soldiers on ethics, UCMJ, and legal rights"
+            ],
+            skills: ["Legal Counsel", "Criminal Litigation", "Compliance", "Contracting Law", "Executive Advising"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "35D", title: "All Source Intelligence Officer", branch: .army,
+            civilianTitles: ["Intelligence Director", "Research & Analysis Director", "Senior Threat Analyst"],
+            bulletPoints: [
+                "Directed a 40-person intelligence section producing all-source products for brigade-level operations",
+                "Provided daily intelligence briefings to senior commanders on adversary capabilities and intentions",
+                "Integrated HUMINT, SIGINT, IMINT, and cyber intelligence into actionable operational assessments",
+                "Managed classified databases and intelligence sharing relationships with interagency partners"
+            ],
+            skills: ["Intelligence Leadership", "All-Source Analysis", "Briefing Executive Leadership", "Interagency Coordination", "Strategic Assessments"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "36A", title: "Financial Management Officer", branch: .army,
+            civilianTitles: ["Chief Financial Officer", "Finance Director", "Government Contracting Officer"],
+            bulletPoints: [
+                "Managed a $180M operational budget including pay, contracts, and contingency funding",
+                "Directed financial operations for a 5,000-person organization across 3 countries",
+                "Implemented audit-ready financial controls reducing discrepancies by 85%",
+                "Advised commanders on fiscal law, appropriations, and fund execution strategy"
+            ],
+            skills: ["Financial Management", "Budget Execution", "Fiscal Law", "Audit Compliance", "Executive Advising"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "38A", title: "Civil Affairs Officer", branch: .army,
+            civilianTitles: ["International Development Manager", "Government Affairs Director", "NGO Country Director"],
+            bulletPoints: [
+                "Led civil-military operations restoring governance and infrastructure in post-conflict environments",
+                "Managed $5M in humanitarian assistance projects across water, healthcare, education, and economic sectors",
+                "Built relationships with host nation government officials, international organizations, and NGOs",
+                "Directed assessments of civil vulnerabilities and recommended courses of action to senior commanders"
+            ],
+            skills: ["International Development", "Project Management", "Government Relations", "Cross-Cultural Leadership", "Stakeholder Engagement"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "42B", title: "Human Resources Officer", branch: .army,
+            civilianTitles: ["Chief People Officer", "HR Director", "Talent Management Director"],
+            bulletPoints: [
+                "Directed human resources operations for an organization of 10,000+ soldiers across 12 installations",
+                "Led talent management programs including officer/NCO evaluations, promotions, and succession planning",
+                "Managed casualty operations, survivor benefits processing, and family support programs",
+                "Developed HR policy and advised senior commanders on personnel readiness and manning requirements"
+            ],
+            skills: ["HR Leadership", "Talent Management", "Policy Development", "Workforce Planning", "Executive Advisory"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "56A", title: "Chaplain", branch: .army,
+            civilianTitles: ["Hospital Chaplain", "Nonprofit Executive Director", "Counseling Program Director"],
+            bulletPoints: [
+                "Provided religious, spiritual, and pastoral care to a diverse population of 3,000+ soldiers and families",
+                "Advised commanders on morale, unit climate, and ethical leadership",
+                "Managed a religious support team and coordinated programs across multiple faiths",
+                "Developed and led resilience programs that measurably improved unit mental health outcomes"
+            ],
+            skills: ["Pastoral Counseling", "Program Leadership", "Community Building", "Executive Advisory", "Crisis Support"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "65D", title: "Physician Assistant", branch: .army,
+            civilianTitles: ["Physician Assistant", "Clinical Operations Manager", "Medical Director"],
+            bulletPoints: [
+                "Provided primary and emergency medical care as independent duty provider for units with no physician",
+                "Managed clinical operations for a healthcare facility serving 2,000+ patients annually",
+                "Led a medical team of 12 providers across multiple specialties in combat and garrison environments",
+                "Developed clinical protocols that reduced emergency room visits by 25%"
+            ],
+            skills: ["Clinical Medicine", "Emergency Care", "Healthcare Management", "Team Leadership", "Protocol Development"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "70A", title: "Medical Service Corps Officer (Healthcare Administration)", branch: .army,
+            civilianTitles: ["Hospital Administrator", "Healthcare Operations Director", "Health Systems Manager"],
+            bulletPoints: [
+                "Administered a military treatment facility delivering care to 15,000+ beneficiaries",
+                "Managed a $22M healthcare budget and a staff of 200 medical professionals",
+                "Led Joint Commission readiness programs achieving successful accreditation with zero deficiencies",
+                "Implemented EHR transition reducing documentation errors by 40%"
+            ],
+            skills: ["Healthcare Administration", "Budget Management", "Regulatory Compliance", "EHR Systems", "Operations Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "74A", title: "Chemical Officer", branch: .army,
+            civilianTitles: ["Environmental Health & Safety Director", "Hazmat Program Manager", "Emergency Management Director"],
+            bulletPoints: [
+                "Directed CBRN defense operations and developed response plans for mass casualty incidents",
+                "Led decontamination exercises for units of 5,000+ personnel achieving 100% readiness",
+                "Advised commanders on chemical, biological, radiological, and nuclear threat environments",
+                "Managed hazardous materials compliance programs across a large installation"
+            ],
+            skills: ["CBRN Operations", "Emergency Management", "Hazmat Compliance", "Risk Assessment", "Program Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "91A", title: "Ordnance Officer", branch: .army,
+            civilianTitles: ["Logistics Director", "Supply Chain Executive", "Maintenance Operations Director"],
+            bulletPoints: [
+                "Directed maintenance and supply operations sustaining $500M in equipment across a brigade-sized unit",
+                "Managed a team of 300 maintenance technicians and logistics specialists",
+                "Achieved 90%+ equipment readiness rates in high-tempo operational environments",
+                "Led lean process improvement initiatives reducing maintenance turnaround time by 35%"
+            ],
+            skills: ["Logistics Leadership", "Supply Chain Management", "Maintenance Operations", "Budget Management", "Process Improvement"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "92A-O", title: "Quartermaster Officer (Logistics)", branch: .army,
+            civilianTitles: ["VP of Supply Chain", "Director of Logistics", "Operations Executive"],
+            bulletPoints: [
+                "Managed integrated logistics operations including supply, transportation, and field services for 10,000-person force",
+                "Directed $80M in Class I–IX supply operations across multi-echelon distribution networks",
+                "Led fuel, water, and subsistence operations sustaining combat operations for 90+ days",
+                "Developed logistics synchronization matrices adopted as division standard operating procedures"
+            ],
+            skills: ["Supply Chain Leadership", "Distribution Management", "Operations Planning", "Budget Management", "Process Development"],
+            isOfficer: true
+        ),
         MilitaryCareer(
             code: "91B", title: "Wheeled Vehicle Mechanic", branch: .army,
             civilianTitles: ["Fleet Mechanic", "Diesel Technician", "Automotive Service Manager"],
@@ -618,6 +813,103 @@ nonisolated enum MilitaryCareerData {
                 "Maintained compliance with Navy administrative regulations and privacy act requirements"
             ],
             skills: ["Administrative Management", "Personnel Records", "Correspondence Writing", "Policy Compliance", "Office Operations"]
+        ),
+        // ─── NAVY OFFICERS ───
+        MilitaryCareer(
+            code: "1110", title: "Surface Warfare Officer", branch: .navy,
+            civilianTitles: ["Ship Captain / Maritime Executive", "Operations Director", "Logistics & Transportation Manager"],
+            bulletPoints: [
+                "Commanded or served as department head aboard naval vessels with crews of 25–350 personnel",
+                "Directed bridge watch operations, navigation, and ship handling in restricted waters and open ocean",
+                "Managed a $15M department budget and oversaw maintenance of complex shipboard systems",
+                "Led damage control training achieving zero sailor casualties in multiple emergency casualty events"
+            ],
+            skills: ["Maritime Leadership", "Operations Management", "Navigation", "Emergency Response", "Budget Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "1130", title: "Submarine Warfare Officer", branch: .navy,
+            civilianTitles: ["Nuclear Plant Operations Manager", "Engineering Director", "National Security Consultant"],
+            bulletPoints: [
+                "Qualified as submarine officer of the deck, directing submerged and surface operations",
+                "Led nuclear propulsion plant operations maintaining zero reactor safety incidents over 4 years",
+                "Managed classified intelligence collection and special operations missions",
+                "Supervised 8 division officers and 60 sailors in ship's engineering and navigation departments"
+            ],
+            skills: ["Nuclear Operations", "Engineering Leadership", "Classified Programs", "Technical Management", "Risk Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "1310", title: "Naval Aviator", branch: .navy,
+            civilianTitles: ["Airline Pilot", "Aviation Safety Manager", "Flight Operations Director"],
+            bulletPoints: [
+                "Accumulated 2,000+ flight hours in tactical jet aircraft including carrier operations",
+                "Led a 12-pilot strike fighter squadron through two combat deployments",
+                "Managed aviation safety program achieving zero Class A mishaps over a 36-month period",
+                "Instructed and evaluated junior pilots in advanced strike tactics and carrier qualification"
+            ],
+            skills: ["Fixed-Wing Aviation", "Aviation Safety", "Flight Instruction", "Operations Leadership", "Program Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "2100", title: "Naval Aviation Maintenance Officer", branch: .navy,
+            civilianTitles: ["MRO Director", "Aviation Maintenance Manager", "Quality Assurance Director"],
+            bulletPoints: [
+                "Directed maintenance operations for a 12-aircraft squadron maintaining 85%+ mission-capable rate",
+                "Managed a maintenance department of 120 technicians across 6 work centers",
+                "Implemented quality assurance program reducing repeat maintenance discrepancies by 50%",
+                "Managed $60M in aircraft, support equipment, and parts inventory"
+            ],
+            skills: ["Aviation Maintenance Leadership", "Quality Assurance", "Fleet Management", "Team Leadership", "Budget Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "2900", title: "Supply Corps Officer", branch: .navy,
+            civilianTitles: ["VP of Supply Chain", "Procurement Director", "Logistics Operations Executive"],
+            bulletPoints: [
+                "Managed naval supply operations supporting ships and squadrons with 500–5,000 personnel",
+                "Directed $100M+ in procurement, inventory management, and financial operations",
+                "Led food service, retail, and fleet issue operations aboard aircraft carrier with 5,000-person crew",
+                "Developed supply chain optimization initiatives saving $2M annually in procurement costs"
+            ],
+            skills: ["Supply Chain Management", "Procurement", "Financial Management", "Retail Operations", "Strategic Sourcing"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "2200", title: "Civil Engineer Corps Officer", branch: .navy,
+            civilianTitles: ["Civil Engineer", "Construction Project Manager", "Facilities Director"],
+            bulletPoints: [
+                "Managed construction and facilities maintenance projects valued at $50M+ on Navy installations",
+                "Led a 200-person Naval Mobile Construction Battalion (Seabee) in combat and humanitarian construction",
+                "Directed environmental compliance and sustainability programs across a major naval installation",
+                "Oversaw simultaneous execution of 20+ construction projects on time and within budget"
+            ],
+            skills: ["Civil Engineering", "Construction Management", "Facilities Management", "Environmental Compliance", "Program Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "2500", title: "Information Warfare Officer", branch: .navy,
+            civilianTitles: ["Cybersecurity Director", "Information Operations Manager", "Intelligence Director"],
+            bulletPoints: [
+                "Directed information warfare operations integrating cyber, intelligence, and electronic warfare capabilities",
+                "Led a 50-person intelligence and information operations department afloat and ashore",
+                "Developed information warfare campaign plans adopted at fleet level",
+                "Managed classified programs and interagency intelligence sharing relationships"
+            ],
+            skills: ["Information Operations", "Cybersecurity Leadership", "Intelligence Integration", "Strategic Planning", "Classified Program Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "2300", title: "JAG Corps Officer", branch: .navy,
+            civilianTitles: ["Attorney", "Corporate Counsel", "Compliance & Ethics Officer"],
+            bulletPoints: [
+                "Prosecuted and defended courts-martial including sexual assault, fraud, and drug-related felony cases",
+                "Advised commanding officers on military justice, administrative separations, and legal readiness",
+                "Managed a legal assistance program serving 3,000+ sailors and family members annually",
+                "Provided international law and law of armed conflict training to deploying units"
+            ],
+            skills: ["Military Law", "Criminal Litigation", "Compliance", "Legal Advising", "Client Services"],
+            isOfficer: true
         )
     ]
 
@@ -742,6 +1034,79 @@ nonisolated enum MilitaryCareerData {
                 "Maintained aircraft airworthiness in compliance with NATOPS and MIL-SPEC standards"
             ],
             skills: ["Aviation Maintenance", "Rotary Wing Systems", "Avionics Troubleshooting", "Technical Documentation", "Safety Compliance"]
+        ),
+        // ─── MARINE CORPS OFFICERS ───
+        MilitaryCareer(
+            code: "0302", title: "Infantry Officer", branch: .marines,
+            civilianTitles: ["Operations Director", "Law Enforcement Commander", "Security Executive"],
+            bulletPoints: [
+                "Commanded a Marine infantry company of 180+ Marines through combat deployments and sustained training",
+                "Planned and executed amphibious, air assault, and ground offensive operations in complex environments",
+                "Managed a $3.5M equipment budget with zero loss or reportable deficiency",
+                "Developed and executed training plans improving unit combat readiness scores by 25%"
+            ],
+            skills: ["Operations Leadership", "Strategic Planning", "Budget Management", "Team Development", "Crisis Decision Making"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "0202", title: "Intelligence Officer", branch: .marines,
+            civilianTitles: ["Intelligence Director", "Risk & Threat Analyst", "Research Director"],
+            bulletPoints: [
+                "Directed all-source intelligence operations for a Marine regiment of 3,500 personnel",
+                "Produced intelligence assessments and targeting products supporting combat operations across multiple theaters",
+                "Managed classified information programs and security protocols for sensitive operations",
+                "Built and led a 25-person intelligence section integrating HUMINT, SIGINT, and imagery capabilities"
+            ],
+            skills: ["Intelligence Leadership", "All-Source Analysis", "Targeting", "Classified Program Management", "Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "0402", title: "Logistics Officer", branch: .marines,
+            civilianTitles: ["VP of Logistics", "Supply Chain Director", "Operations Executive"],
+            bulletPoints: [
+                "Directed integrated logistics operations sustaining a Marine regiment of 3,500 across three countries",
+                "Managed $120M in equipment, supply, and transportation assets with zero reportable loss",
+                "Led 200-person combat logistics battalion in direct support of ground combat operations",
+                "Developed logistics synchronization plans that reduced supply delays by 45%"
+            ],
+            skills: ["Logistics Leadership", "Supply Chain Management", "Transportation Management", "Budget Management", "Operations Planning"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "0602", title: "Communications Officer", branch: .marines,
+            civilianTitles: ["IT Director", "Network Operations Manager", "Telecommunications Executive"],
+            bulletPoints: [
+                "Directed communications network operations supporting 5,000+ Marines across a dispersed battlespace",
+                "Managed a $8M communications equipment budget and a 60-person communications platoon",
+                "Led integration of satellite, radio, and data network systems for distributed maritime operations",
+                "Developed communication standard operating procedures adopted at Marine Expeditionary Force level"
+            ],
+            skills: ["Network Operations", "IT Management", "Communications Planning", "Budget Management", "Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "4302", title: "Public Affairs Officer", branch: .marines,
+            civilianTitles: ["VP of Communications", "Public Relations Director", "Media Relations Executive"],
+            bulletPoints: [
+                "Directed strategic communications for a Marine division of 20,000 personnel",
+                "Managed media relations during high-profile operations, coordinating 50+ press embeds and media events",
+                "Developed and executed social media strategy growing official channels by 200%",
+                "Advised the commanding general on communication strategy and reputational risk"
+            ],
+            skills: ["Strategic Communications", "Executive Advisory", "Media Relations", "Crisis Communications", "Brand Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "5803", title: "Military Police Officer", branch: .marines,
+            civilianTitles: ["Chief of Police", "Director of Security", "Law Enforcement Executive"],
+            bulletPoints: [
+                "Commanded a military police company of 120 Marines providing law enforcement and force protection",
+                "Directed criminal investigation operations and collaborated with NCIS and civilian law enforcement agencies",
+                "Managed installation security and anti-terrorism force protection programs for a major Marine base",
+                "Led detainee operations and ensured compliance with law of armed conflict and DoD directives"
+            ],
+            skills: ["Law Enforcement Leadership", "Criminal Investigation", "Security Management", "Policy Compliance", "Community Relations"],
+            isOfficer: true
         )
     ]
 
@@ -932,6 +1297,103 @@ nonisolated enum MilitaryCareerData {
                 "Provided acquisition advisory services to program managers and commanders"
             ],
             skills: ["Government Contracting", "Procurement", "Federal Acquisition Regulation", "Negotiation", "Contract Administration"]
+        ),
+        // ─── AIR FORCE OFFICERS ───
+        MilitaryCareer(
+            code: "11X", title: "Pilot (Fighter/Bomber/Mobility)", branch: .airForce,
+            civilianTitles: ["Commercial Airline Pilot", "Aviation Safety Director", "Flight Operations Manager"],
+            bulletPoints: [
+                "Accumulated 2,500+ flight hours in high-performance military aircraft including combat sorties",
+                "Led a 20-pilot squadron through operational deployments maintaining zero safety mishaps",
+                "Qualified as instructor pilot, evaluating and training 30+ student pilots to mission-ready status",
+                "Managed $200M aviation program including flight scheduling, maintenance coordination, and mission planning"
+            ],
+            skills: ["Fixed-Wing Aviation", "Flight Instruction", "Aviation Safety", "Program Management", "Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "12X", title: "Combat Systems Officer", branch: .airForce,
+            civilianTitles: ["Aviation Systems Analyst", "Defense Systems Engineer", "Avionics Program Manager"],
+            bulletPoints: [
+                "Operated advanced weapons, navigation, and sensor systems aboard B-52, B-1, B-2, and E-3 aircraft",
+                "Led targeting and electronic warfare operations supporting theater-level combat campaigns",
+                "Managed avionics systems integration programs and recommended upgrades based on operational feedback",
+                "Trained and evaluated student CSOs in mission systems operation and crew coordination"
+            ],
+            skills: ["Avionics Systems", "Electronic Warfare", "Targeting", "Systems Integration", "Flight Crew Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "13S", title: "Space Operations Officer", branch: .airForce,
+            civilianTitles: ["Satellite Program Manager", "Space Systems Engineer", "Defense Contractor — Space"],
+            bulletPoints: [
+                "Directed satellite command and control operations for strategic space assets 24/7/365",
+                "Managed space situational awareness and conjunction analysis for a constellation of 20+ satellites",
+                "Led a 40-person space operations squadron achieving 99.9% mission uptime",
+                "Collaborated with NRO, NGA, and commercial space providers on joint operations and data sharing"
+            ],
+            skills: ["Space Systems Management", "Satellite Operations", "Program Management", "Interagency Coordination", "Operations Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "14N", title: "Intelligence Officer", branch: .airForce,
+            civilianTitles: ["Intelligence Director", "Senior Analyst", "National Security Consultant"],
+            bulletPoints: [
+                "Directed intelligence operations for an air wing supporting 100+ aircraft and 3,000 personnel",
+                "Produced all-source intelligence assessments directly informing combatant command targeting decisions",
+                "Managed a 30-person intelligence flight across imagery, signals, and all-source disciplines",
+                "Briefed senior DoD leaders and interagency partners on adversary air and missile threats"
+            ],
+            skills: ["Intelligence Leadership", "All-Source Analysis", "Executive Briefing", "Targeting", "Interagency Coordination"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "17D", title: "Cyberspace Operations Officer", branch: .airForce,
+            civilianTitles: ["Chief Information Security Officer", "Cybersecurity Director", "Cyber Operations Manager"],
+            bulletPoints: [
+                "Led Air Force cyber operations defending networks and critical infrastructure against nation-state threats",
+                "Directed a 50-person cyber operations team executing offensive and defensive cyber missions",
+                "Developed cyber campaign plans in coordination with US Cyber Command and NSA",
+                "Managed $15M in cybersecurity infrastructure and tools across multiple classification levels"
+            ],
+            skills: ["Cybersecurity Leadership", "Offensive/Defensive Cyber", "Program Management", "Interagency Operations", "Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "21A", title: "Aircraft Maintenance Officer", branch: .airForce,
+            civilianTitles: ["MRO Director", "VP of Technical Operations", "Aviation Maintenance Executive"],
+            bulletPoints: [
+                "Directed maintenance operations for a 24-aircraft wing maintaining 90%+ mission-capable rates",
+                "Managed a maintenance group of 600 technicians across 8 aircraft systems specialties",
+                "Led $80M depot-level maintenance programs on time and under budget",
+                "Implemented LEAN maintenance practices reducing aircraft turnaround time by 30%"
+            ],
+            skills: ["Aviation Maintenance Leadership", "LEAN/Process Improvement", "Fleet Management", "Budget Management", "Large Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "31P", title: "Security Forces Officer", branch: .airForce,
+            civilianTitles: ["Director of Security", "Police Chief", "Corporate Security Executive"],
+            bulletPoints: [
+                "Commanded a security forces squadron of 300 personnel protecting $2B+ in Air Force assets",
+                "Directed nuclear security operations and anti-terrorism force protection programs",
+                "Led law enforcement operations and collaborated with FBI and civilian agencies on joint investigations",
+                "Developed installation security plans and emergency response protocols adopted base-wide"
+            ],
+            skills: ["Security Leadership", "Force Protection", "Nuclear Security", "Law Enforcement Management", "Emergency Planning"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "38F", title: "Force Support Officer", branch: .airForce,
+            civilianTitles: ["HR Director", "Chief People Officer", "Talent & Workforce Manager"],
+            bulletPoints: [
+                "Directed human resources, manpower, and personnel programs for an Air Force wing of 5,000+",
+                "Led force support squadron delivering services including fitness, lodging, food service, and mortuary affairs",
+                "Managed $10M in morale, welfare, and recreation programs and retail operations",
+                "Advised wing commander on workforce planning, retention, and quality-of-life initiatives"
+            ],
+            skills: ["HR Leadership", "Workforce Planning", "Retail & Services Management", "Budget Management", "Executive Advisory"],
+            isOfficer: true
         )
     ]
 
@@ -1001,6 +1463,43 @@ nonisolated enum MilitaryCareerData {
                 "Enforced MARPOL, Clean Water Act, and international maritime environmental regulations"
             ],
             skills: ["Environmental Compliance", "Marine Casualty Investigation", "Pollution Response", "Regulatory Enforcement", "Report Writing"]
+        ),
+        // ─── COAST GUARD OFFICERS ───
+        MilitaryCareer(
+            code: "OPS", title: "Operations Officer", branch: .coastGuard,
+            civilianTitles: ["Port Operations Director", "Maritime Safety Manager", "Logistics Operations Executive"],
+            bulletPoints: [
+                "Directed cutter operations including search and rescue, law enforcement, and port security missions",
+                "Managed operational planning and resource allocation for a Marine Safety unit covering 500 miles of coastline",
+                "Led interagency coordination with CBP, DEA, and local law enforcement on maritime law enforcement operations",
+                "Commanded cutter with crew of 75, responsible for vessel readiness, personnel, and mission execution"
+            ],
+            skills: ["Maritime Operations", "Interagency Coordination", "Search & Rescue Leadership", "Crew Management", "Emergency Planning"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "AVOPS", title: "Aviation Officer", branch: .coastGuard,
+            civilianTitles: ["Commercial Pilot", "Aviation Safety Officer", "Flight Operations Manager"],
+            bulletPoints: [
+                "Accumulated 2,000+ flight hours in C-130, MH-60, and MH-65 aircraft on SAR and law enforcement missions",
+                "Led aviation unit delivering search and rescue response with average on-scene time under 30 minutes",
+                "Managed flight safety program achieving zero Class A/B mishaps over a 4-year period",
+                "Coordinated multi-agency air operations with Navy, Air Force, and civilian aviation authorities"
+            ],
+            skills: ["Multi-Engine Aviation", "Search & Rescue", "Aviation Safety", "Interagency Coordination", "Operations Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "LLAW", title: "Maritime Law Enforcement Officer", branch: .coastGuard,
+            civilianTitles: ["Federal Agent", "Customs & Border Officer", "Homeland Security Director"],
+            bulletPoints: [
+                "Led maritime law enforcement operations seizing $500M+ in illicit narcotics over a 6-year career",
+                "Commanded boarding teams conducting 200+ high-risk law enforcement boardings on domestic and foreign vessels",
+                "Developed and delivered maritime law enforcement training to partner-nation coast guards in 8 countries",
+                "Collaborated with DEA, FBI, Homeland Security, and international partners on joint interdiction campaigns"
+            ],
+            skills: ["Federal Law Enforcement", "Narcotics Interdiction", "International Partnerships", "Tactical Leadership", "Training & Development"],
+            isOfficer: true
         )
     ]
 
@@ -1037,6 +1536,43 @@ nonisolated enum MilitaryCareerData {
                 "Briefed senior leaders on adversary space order of battle and operational implications"
             ],
             skills: ["Space Intelligence", "All-Source Analysis", "Threat Assessment", "Briefing & Presentation", "Research"]
+        ),
+        // ─── SPACE FORCE OFFICERS ───
+        MilitaryCareer(
+            code: "13S-O", title: "Space Operations Officer (USSF)", branch: .spaceForce,
+            civilianTitles: ["Satellite Program Manager", "Space Systems Director", "Defense Technology Executive"],
+            bulletPoints: [
+                "Led space operations squadron of 40 Guardians managing command and control of strategic satellite constellations",
+                "Directed space domain awareness operations tracking 500+ resident space objects daily",
+                "Managed $30M satellite operations program maintaining 99.9% mission availability",
+                "Advised combatant commanders on space support, space control, and space force application"
+            ],
+            skills: ["Space Operations Leadership", "Satellite Management", "Program Management", "Executive Advisory", "Strategic Planning"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "17D-O", title: "Cyber Officer (USSF)", branch: .spaceForce,
+            civilianTitles: ["CISO", "Cyber Program Director", "Information Security Executive"],
+            bulletPoints: [
+                "Directed cyber defense operations protecting Space Force satellite and ground control networks",
+                "Led offensive cyber planning in coordination with US Cyber Command for space-related infrastructure",
+                "Managed a $12M cybersecurity program and a 30-person cyber operations team",
+                "Developed zero-trust architecture implementation roadmap adopted across Space Force installations"
+            ],
+            skills: ["Cybersecurity Leadership", "Zero Trust Architecture", "Offensive Cyber", "Program Management", "Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "63A", title: "Acquisition Officer (Space Systems)", branch: .spaceForce,
+            civilianTitles: ["Program Manager — Space", "Defense Acquisitions Director", "Technology Program Executive"],
+            bulletPoints: [
+                "Managed acquisition programs for next-generation satellite communication systems valued at $1.2B",
+                "Led source selection teams evaluating contractor proposals and awarding major defense contracts",
+                "Coordinated with contractors, DoD stakeholders, and Congress on program budget and schedule",
+                "Implemented Agile acquisition practices reducing program milestone delays by 40%"
+            ],
+            skills: ["Defense Acquisitions", "Program Management", "Contract Management", "Stakeholder Coordination", "Agile Methods"],
+            isOfficer: true
         )
     ]
 }

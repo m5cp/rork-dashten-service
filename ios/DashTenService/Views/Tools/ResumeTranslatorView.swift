@@ -68,6 +68,7 @@ struct ResumeTranslatorView: View {
 
 private struct CareerTranslateTab: View {
     @State private var selectedBranchFilter: BranchFilter = .all
+    @State private var selectedRankFilter: RankFilter = .all
     @State private var searchText: String = ""
 
     private let allCareers: [MilitaryCareer] = MilitaryCareerData.all
@@ -93,9 +94,19 @@ private struct CareerTranslateTab: View {
             byBranch = allCareers.filter { $0.branch == b }
         }
 
+        let byRank: [MilitaryCareer]
+        switch selectedRankFilter {
+        case .all:
+            byRank = byBranch
+        case .enlisted:
+            byRank = byBranch.filter { !$0.isOfficer }
+        case .officer:
+            byRank = byBranch.filter { $0.isOfficer }
+        }
+
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return byBranch }
-        return byBranch.filter {
+        guard !trimmed.isEmpty else { return byRank }
+        return byRank.filter {
             $0.code.localizedStandardContains(trimmed) ||
             $0.title.localizedStandardContains(trimmed)
         }
@@ -115,6 +126,8 @@ private struct CareerTranslateTab: View {
                 introCard
 
                 branchFilterBar
+
+                rankFilterBar
 
                 searchField
 
@@ -176,6 +189,21 @@ private struct CareerTranslateTab: View {
             }
         }
         .contentMargins(.horizontal, 0)
+    }
+
+    private var rankFilterBar: some View {
+        HStack(spacing: 8) {
+            BranchPill(title: "All Ranks", isActive: selectedRankFilter == .all) {
+                selectedRankFilter = .all
+            }
+            BranchPill(title: "Enlisted", isActive: selectedRankFilter == .enlisted) {
+                selectedRankFilter = .enlisted
+            }
+            BranchPill(title: "Officer", isActive: selectedRankFilter == .officer) {
+                selectedRankFilter = .officer
+            }
+            Spacer(minLength: 0)
+        }
     }
 
     private var searchField: some View {
@@ -273,6 +301,12 @@ private nonisolated enum BranchFilter: Hashable, Sendable {
     case branch(MilitaryServiceBranch)
 }
 
+private nonisolated enum RankFilter: Hashable, Sendable {
+    case all
+    case enlisted
+    case officer
+}
+
 private struct BranchPill: View {
     let title: String
     let isActive: Bool
@@ -328,10 +362,20 @@ private struct CareerRow: View {
                         .foregroundStyle(.primary)
                         .multilineTextAlignment(.leading)
 
-                    if showBranchTag {
-                        Text(career.branch.rawValue)
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                    HStack(spacing: 6) {
+                        Text(career.isOfficer ? "Officer" : "Enlisted")
+                            .font(.caption2.weight(.bold))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background((career.isOfficer ? AppTheme.gold : Color.secondary).opacity(0.15))
+                            .foregroundStyle(career.isOfficer ? AppTheme.gold : .secondary)
+                            .clipShape(.rect(cornerRadius: 4))
+
+                        if showBranchTag {
+                            Text(career.branch.rawValue)
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
 
@@ -458,13 +502,23 @@ private struct CareerDetailView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(career.code)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(AppTheme.forestGreen)
-                .clipShape(.rect(cornerRadius: 6))
+            HStack(spacing: 6) {
+                Text(career.code)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(AppTheme.forestGreen)
+                    .clipShape(.rect(cornerRadius: 6))
+
+                Text(career.isOfficer ? "Officer" : "Enlisted")
+                    .font(.caption.weight(.bold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background((career.isOfficer ? AppTheme.gold : Color.secondary).opacity(0.18))
+                    .foregroundStyle(career.isOfficer ? AppTheme.gold : .primary)
+                    .clipShape(.rect(cornerRadius: 6))
+            }
 
             Text(career.title)
                 .font(.title2.weight(.bold))
