@@ -614,6 +614,39 @@ nonisolated enum MilitaryCareerData {
             skills: ["Satellite Communications", "Network Engineering", "COMSEC", "Technical Training", "System Design"]
         ),
         MilitaryCareer(
+            code: "18C", title: "Special Forces Engineer Sergeant", branch: .army,
+            civilianTitles: ["Construction Project Manager", "Demolitions Safety Specialist", "Civil Engineer — International"],
+            bulletPoints: [
+                "Planned and executed construction projects including bridges, airstrips, and fortifications in denied and austere environments",
+                "Trained partner-nation forces in construction techniques, demolitions, and field engineering",
+                "Conducted route clearance and obstacle breaching in support of direct action and unconventional warfare missions",
+                "Managed $1.5M in engineer equipment and demolitions materials with zero loss or incident"
+            ],
+            skills: ["Construction Engineering", "Demolitions Safety", "Foreign Partner Training", "Project Management", "Field Engineering"]
+        ),
+        MilitaryCareer(
+            code: "18F", title: "Special Forces Intelligence Sergeant", branch: .army,
+            civilianTitles: ["Intelligence Analyst", "HUMINT Collector", "Senior Threat Analyst"],
+            bulletPoints: [
+                "Collected and analyzed all-source intelligence in support of Special Forces direct action and unconventional warfare operations",
+                "Developed intelligence products and target packages for ODA-level missions across 3 theaters",
+                "Managed relationships with human intelligence sources and foreign liaison partners",
+                "Integrated HUMINT, SIGINT, and imagery intelligence to produce actionable assessments for team and higher command"
+            ],
+            skills: ["HUMINT Collection", "All-Source Analysis", "Targeting", "Source Management", "Intelligence Reporting"]
+        ),
+        MilitaryCareer(
+            code: "18Z", title: "Special Forces Senior NCO / Team Sergeant", branch: .army,
+            civilianTitles: ["Senior Operations Manager", "Defense Contractor — SOF Program", "Security & Intelligence Executive"],
+            bulletPoints: [
+                "Served as Team Sergeant of a 12-man ODA, responsible for all training, operations, and personnel across 15+ deployments",
+                "Planned and led direct action, foreign internal defense, unconventional warfare, and HUMINT operations globally",
+                "Built, trained, and advised indigenous security forces up to battalion size (500–800 personnel) from scratch",
+                "Managed interagency relationships and coordinated operations with CIA, DIA, and State Department in politically sensitive environments"
+            ],
+            skills: ["Senior Special Operations Leadership", "Strategic Planning", "Foreign Partner Development", "Interagency Coordination", "Executive Program Management"]
+        ),
+        MilitaryCareer(
             code: "79R", title: "Recruiting & Retention NCO", branch: .army,
             civilianTitles: ["Corporate Recruiter", "Talent Acquisition Specialist", "Sales Representative"],
             bulletPoints: [
@@ -645,6 +678,258 @@ nonisolated enum MilitaryCareerData {
                 "Managed religious program budgets and logistics including equipment and travel"
             ],
             skills: ["Program Coordination", "Counseling Support", "Event Planning", "Confidentiality", "Budget Management"]
+        ),
+        MilitaryCareer(
+            code: "12A", title: "Engineer Officer", branch: .army,
+            civilianTitles: ["Civil Engineer", "Construction Program Manager", "Infrastructure Director"],
+            bulletPoints: [
+                "Commanded an engineer company of 120 soldiers executing construction, mobility, and counter-mobility operations",
+                "Managed $8M in construction and demolition projects across forward-deployed environments",
+                "Led route clearance and obstacle breaching operations in direct support of maneuver brigades",
+                "Developed engineer support plans for large-scale combat operations adopted at brigade level"
+            ],
+            skills: ["Construction Management", "Project Engineering", "Operations Planning", "Budget Management", "Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "14A", title: "Air Defense Artillery Officer", branch: .army,
+            civilianTitles: ["Systems Integration Manager", "Aerospace Defense Program Manager", "Operations Director"],
+            bulletPoints: [
+                "Commanded a Patriot or SHORAD battery defending critical assets from air and missile threats",
+                "Directed integration of air defense systems with joint air operations centers and theater fire control networks",
+                "Managed $50M+ in air defense equipment with zero mission-critical failures during operational deployments",
+                "Developed air defense employment plans for major exercises and real-world contingency operations"
+            ],
+            skills: ["Systems Integration", "Joint Operations", "Program Management", "Technical Leadership", "Threat Assessment"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "19A", title: "Armor Officer", branch: .army,
+            civilianTitles: ["Operations Director", "Logistics & Fleet Manager", "Security Executive"],
+            bulletPoints: [
+                "Commanded an armor company of 60 soldiers and 14 M1A2 Abrams tanks valued at $60M+",
+                "Planned and executed combined arms maneuver operations integrating tanks, infantry, artillery, and aviation",
+                "Maintained 92% fleet readiness rate across complex mechanical and electronic systems",
+                "Led gunnery programs achieving highest qualification scores in the brigade two consecutive years"
+            ],
+            skills: ["Combined Arms Leadership", "Fleet Management", "Operations Planning", "Technical Program Management", "Team Development"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "29A", title: "Electronic Warfare Officer", branch: .army,
+            civilianTitles: ["Electronic Warfare Engineer", "RF Systems Analyst", "Signals Intelligence Manager"],
+            bulletPoints: [
+                "Directed electronic warfare operations integrating jamming, spectrum management, and signals intelligence",
+                "Advised brigade commanders on electromagnetic spectrum exploitation and protection",
+                "Managed electronic warfare support teams and coordinated with joint EW agencies",
+                "Developed EW synchronization matrices and targeting products for brigade-level operations"
+            ],
+            skills: ["Electronic Warfare", "RF/Spectrum Management", "Signals Intelligence", "Joint Operations", "Technical Analysis"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "30A", title: "Information Operations Officer", branch: .army,
+            civilianTitles: ["Information Strategy Director", "Communications Operations Manager", "Influence Campaign Manager"],
+            bulletPoints: [
+                "Planned and synchronized information operations across cyber, MISO, EW, and public affairs capabilities",
+                "Advised commanding generals on information environment assessment and influence strategy",
+                "Developed IO campaign plans supporting corps and division operations in multiple theaters",
+                "Coordinated interagency information operations with State Department and intelligence community partners"
+            ],
+            skills: ["Information Operations", "Strategic Communications", "Interagency Coordination", "Campaign Planning", "Executive Advisory"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "31A", title: "Military Police Officer", branch: .army,
+            civilianTitles: ["Chief of Police", "Director of Security", "Law Enforcement Executive"],
+            bulletPoints: [
+                "Commanded a military police company of 120 soldiers providing law enforcement, detainee operations, and force protection",
+                "Directed criminal investigation operations and partnered with CID, FBI, and civilian law enforcement agencies",
+                "Managed installation security programs protecting assets and personnel on a major Army post",
+                "Led detainee operations and ensured full compliance with Geneva Conventions and DoD directives"
+            ],
+            skills: ["Law Enforcement Leadership", "Criminal Investigation", "Security Management", "Policy Compliance", "Interagency Coordination"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "37A", title: "Psychological Operations Officer", branch: .army,
+            civilianTitles: ["Communications Strategy Director", "Marketing Director", "Influence & Advertising Executive"],
+            bulletPoints: [
+                "Planned and executed multi-channel influence campaigns targeting foreign audiences in 3 countries",
+                "Directed a 40-person PSYOP company producing radio, print, digital, and face-to-face influence products",
+                "Advised joint force commanders on target audience analysis and information environment assessments",
+                "Coordinated influence operations with State Department, CIA, and interagency partners"
+            ],
+            skills: ["Strategic Communications", "Campaign Planning", "Target Audience Analysis", "Content Production", "Interagency Coordination"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "40A", title: "Space Operations Officer", branch: .army,
+            civilianTitles: ["Satellite Program Manager", "Space Systems Analyst", "Defense Space Consultant"],
+            bulletPoints: [
+                "Integrated space capabilities including satellite communications, GPS, and space domain awareness into ground operations",
+                "Advised division and corps commanders on space support and adversary space threats",
+                "Coordinated with US Space Command, Space Force, and NRO on joint space operations",
+                "Developed space support annex for large-scale combat operations planning"
+            ],
+            skills: ["Space Operations", "Satellite Communications", "Joint Operations", "Strategic Planning", "Technical Advisory"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "41A", title: "Foreign Area Officer", branch: .army,
+            civilianTitles: ["International Affairs Director", "Country Director — NGO/State Dept", "Global Risk Analyst"],
+            bulletPoints: [
+                "Served as regional expert and senior advisor on political-military affairs for a combatant command",
+                "Built and maintained relationships with foreign military and government officials across 5+ countries",
+                "Produced regional assessments and policy recommendations adopted at the theater commander level",
+                "Conducted security cooperation programs training and equipping partner-nation military forces"
+            ],
+            skills: ["International Relations", "Political-Military Affairs", "Foreign Language Proficiency", "Diplomatic Engagement", "Regional Expertise"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "46A", title: "Public Affairs Officer", branch: .army,
+            civilianTitles: ["VP of Communications", "Corporate Communications Director", "Public Relations Executive"],
+            bulletPoints: [
+                "Directed strategic communications for Army commands of 5,000–20,000 soldiers",
+                "Advised commanding generals on media strategy, crisis communications, and reputational risk",
+                "Managed media relations during high-profile operations including 100+ press embed coordination",
+                "Developed social media and digital communication strategies that grew command audience by 300%"
+            ],
+            skills: ["Strategic Communications", "Executive Advisory", "Media Relations", "Crisis Communications", "Digital Strategy"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "49A", title: "Operations Research / Systems Analyst (ORSA)", branch: .army,
+            civilianTitles: ["Data Scientist", "Operations Research Analyst", "Strategy & Analytics Director"],
+            bulletPoints: [
+                "Applied statistical modeling and operations research methods to optimize combat readiness and resource allocation",
+                "Built decision-support tools and dashboards used by senior commanders for operational planning",
+                "Analyzed large datasets to identify patterns and recommend evidence-based policy changes",
+                "Led quantitative analysis teams supporting Pentagon-level strategy and force structure decisions"
+            ],
+            skills: ["Data Analysis", "Statistical Modeling", "Decision Support", "Operations Research", "Executive Briefing"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "51A", title: "Acquisitions Officer", branch: .army,
+            civilianTitles: ["Program Manager", "Defense Acquisitions Director", "Government Contracts Executive"],
+            bulletPoints: [
+                "Managed defense acquisition programs from milestone A through fielding for systems valued at $500M–$2B",
+                "Led source selection boards evaluating major defense contractor proposals",
+                "Coordinated with Congress, OSD, and defense industry on program cost, schedule, and performance",
+                "Implemented Agile and DevSecOps acquisition practices reducing delivery timelines by 35%"
+            ],
+            skills: ["Defense Acquisitions", "Program Management", "Contract Management", "Stakeholder Engagement", "Government Procurement"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "53A", title: "Information Systems Management Officer", branch: .army,
+            civilianTitles: ["Chief Information Officer", "IT Director", "Enterprise Architect"],
+            bulletPoints: [
+                "Directed Army enterprise IT systems modernization programs valued at $100M+",
+                "Led a 75-person IT organization managing network infrastructure for 10,000+ users",
+                "Drove cloud migration and cybersecurity enhancement initiatives across a major Army command",
+                "Developed IT governance frameworks and enterprise architecture standards adopted Army-wide"
+            ],
+            skills: ["IT Leadership", "Enterprise Architecture", "Cloud Migration", "Cybersecurity Strategy", "Program Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "57A", title: "Simulation Operations Officer", branch: .army,
+            civilianTitles: ["Training Systems Program Manager", "Simulation Engineer", "Learning & Development Director"],
+            bulletPoints: [
+                "Managed combat training simulations and instrumented exercise systems for major Army exercises",
+                "Directed a simulation center operating $20M in live, virtual, and constructive training systems",
+                "Developed training scenarios and exercise design for brigade and division-level combat training center rotations",
+                "Collaborated with TRADOC and defense contractors to modernize Army simulation capabilities"
+            ],
+            skills: ["Training Systems Management", "Simulation & Modeling", "Exercise Design", "Program Management", "Instructional Design"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "59A", title: "Strategic Plans & Policy Officer", branch: .army,
+            civilianTitles: ["Strategic Planning Director", "Policy Advisor", "Management Consultant"],
+            bulletPoints: [
+                "Developed and staffed strategic plans and policy documents at Army, Joint, and interagency levels",
+                "Advised four-star commanders and senior civilians on strategy, force structure, and resource allocation",
+                "Led strategic planning teams producing campaign plans and theater security cooperation strategies",
+                "Represented the Army in interagency and coalition strategy forums with 15+ partner nations"
+            ],
+            skills: ["Strategic Planning", "Policy Development", "Executive Advisory", "Interagency Coordination", "Coalition Building"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "88A", title: "Transportation Officer", branch: .army,
+            civilianTitles: ["VP of Transportation", "Logistics Operations Director", "Supply Chain Executive"],
+            bulletPoints: [
+                "Directed multi-modal transportation operations moving troops, equipment, and supplies across theater",
+                "Managed a 300-person transportation battalion operating trucks, watercraft, and air cargo operations",
+                "Coordinated with host-nation transportation providers and commercial carriers on strategic lift requirements",
+                "Developed transportation synchronization plans supporting corps-level combat operations"
+            ],
+            skills: ["Transportation Management", "Multi-Modal Logistics", "Supply Chain Operations", "Budget Management", "Large Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "61A", title: "Medical Corps Officer (Physician)", branch: .army,
+            civilianTitles: ["Physician", "Medical Director", "Healthcare Executive"],
+            bulletPoints: [
+                "Provided primary care, emergency medicine, and preventive healthcare for units of 500–5,000 soldiers",
+                "Directed medical operations for a 200-bed combat support hospital in deployed environments",
+                "Led a 60-person medical team delivering care across internal medicine, surgery, and mental health",
+                "Developed medical readiness programs achieving 98% deployable status for assigned populations"
+            ],
+            skills: ["Clinical Medicine", "Healthcare Leadership", "Emergency Medicine", "Medical Operations", "Team Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "64A", title: "Veterinary Corps Officer", branch: .army,
+            civilianTitles: ["Veterinarian", "Food Safety Director", "Public Health Officer"],
+            bulletPoints: [
+                "Provided veterinary care for military working dogs and other government-owned animals in garrison and deployed settings",
+                "Directed food safety and quality assurance programs for dining facilities serving 5,000+ personnel daily",
+                "Led zoonotic disease surveillance and public health programs protecting soldiers in austere environments",
+                "Managed veterinary treatment facility operations and a team of veterinary technicians"
+            ],
+            skills: ["Veterinary Medicine", "Food Safety", "Public Health", "Laboratory Management", "Team Leadership"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "66A", title: "Army Nurse Corps Officer", branch: .army,
+            civilianTitles: ["Registered Nurse", "Nursing Director", "Clinical Operations Manager"],
+            bulletPoints: [
+                "Delivered critical care and emergency nursing in combat support hospitals and forward surgical teams",
+                "Led a nursing department of 30 nurses across ICU, emergency, and general medical-surgical wards",
+                "Managed patient throughput and clinical quality for a treatment facility processing 200+ patients monthly",
+                "Developed nursing protocols and training programs improving clinical outcomes and staff proficiency"
+            ],
+            skills: ["Critical Care Nursing", "Clinical Leadership", "Patient Management", "Quality Improvement", "Staff Development"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "67A", title: "Medical Service Corps Officer (Operations)", branch: .army,
+            civilianTitles: ["Hospital Administrator", "Healthcare Operations Manager", "Health Systems Director"],
+            bulletPoints: [
+                "Directed medical logistics, health information management, and medical operations for a division",
+                "Managed medical supply chain operations ensuring uninterrupted pharmaceutical and equipment availability",
+                "Led healthcare administration for a military treatment facility serving 20,000+ beneficiaries",
+                "Coordinated aeromedical evacuation operations transporting 500+ patients in a single deployment"
+            ],
+            skills: ["Healthcare Administration", "Medical Logistics", "Operations Management", "Patient Flow", "Budget Management"],
+            isOfficer: true
+        ),
+        MilitaryCareer(
+            code: "71A", title: "Medical Specialist Corps Officer (PT/OT/Dietitian)", branch: .army,
+            civilianTitles: ["Physical Therapist", "Occupational Therapist", "Clinical Director"],
+            bulletPoints: [
+                "Provided physical therapy and rehabilitation services preventing and treating musculoskeletal injuries in high-demand populations",
+                "Directed a rehabilitation department serving 150+ patients weekly across a large military installation",
+                "Developed injury prevention programs reducing soldier profile rates by 20%",
+                "Led a multidisciplinary team of PTs, OTs, and dietitians delivering comprehensive wellness services"
+            ],
+            skills: ["Physical/Occupational Therapy", "Rehabilitation", "Injury Prevention", "Clinical Program Management", "Interdisciplinary Care"],
+            isOfficer: true
         )
     ]
 
