@@ -9,6 +9,7 @@ struct PaywallView: View {
     @State private var showTerms: Bool = false
     @State private var showPrivacy: Bool = false
     @State private var showRedeemCode: Bool = false
+    @State private var selectedPackageId: String?
 
     private let transformations: [(before: String, after: String, icon: String)] = [
         ("Overwhelm and scattered notes", "One clear roadmap you trust", "map.fill"),
@@ -259,15 +260,54 @@ struct PaywallView: View {
         ("flag.fill", "First 30 Days Guide", "Week-by-week separation plan")
     ]
 
+    private var sortedPackages: [Package] {
+        guard let current = store.offerings?.current else { return [] }
+        return current.availablePackages.sorted { a, b in
+            packageRank(a) < packageRank(b)
+        }
+    }
+
+    private func packageRank(_ package: Package) -> Int {
+        switch package.packageType {
+        case .annual: return 0
+        case .sixMonth: return 1
+        case .threeMonth: return 2
+        case .twoMonth: return 3
+        case .monthly: return 4
+        case .weekly: return 5
+        case .lifetime: return 6
+        default: return 7
+        }
+    }
+
+    private var monthlyPackage: Package? {
+        sortedPackages.first { $0.packageType == .monthly }
+    }
+
+    private var annualPackage: Package? {
+        sortedPackages.first { $0.packageType == .annual }
+    }
+
+    private var selectedPackage: Package? {
+        if let id = selectedPackageId, let match = sortedPackages.first(where: { $0.identifier == id }) {
+            return match
+        }
+        return annualPackage ?? sortedPackages.first
+    }
+
     private var purchaseSection: some View {
         VStack(spacing: 14) {
             if store.isLoading {
                 ProgressView()
                     .padding(.vertical, 20)
-            } else if let current = store.offerings?.current {
-                ForEach(current.availablePackages, id: \.identifier) { package in
-                    purchaseButton(package: package)
+            } else if !sortedPackages.isEmpty {
+                VStack(spacing: 10) {
+                    ForEach(sortedPackages, id: \.identifier) { package in
+                        packageOption(package: package)
+                    }
                 }
+
+                continueButton
 
                 if store.isPurchasing {
                     ProgressView()
@@ -294,94 +334,170 @@ struct PaywallView: View {
         .padding(.bottom, 14)
     }
 
-    private func purchaseButton(package: Package) -> some View {
+    private func packageOption(package: Package) -> some View {
+        let isSelected = selectedPackage?.identifier == package.identifier
+        let isAnnual = package.packageType == .annual
+        let title = packageTitle(package)
         let price = package.storeProduct.localizedPriceString
-        let decimalPrice = package.storeProduct.price as NSDecimalNumber
-        let anchorPrice = anchorPriceString(from: decimalPrice)
-        let perDay = perDayString(from: decimalPrice)
+        let perPeriod = perPeriodString(package)
+        let savings = isAnnual ? annualSavingsString() : nil
 
         return Button {
+            selectedPackageId = package.identifier
+        } label: {
+            HStack(alignment: .center, spacing: 14) {
+                ZStack {
+                    Circle()
+                        .stroke(isSelected ? AppTheme.forestGreen : Color.secondary.opacity(0.4), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                    if isSelected {
+                        Circle()
+                            .fill(AppTheme.forestGreen)
+                            .frame(width: 14, height: 14)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Text(title)
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.primary)
+                        if let savings {
+                            Text(savings)
+                                .font(.caption2.weight(.heavy))
+                                .foregroundStyle(AppTheme.forestGreen)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(AppTheme.gold)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    if let perPeriod {
+                        Text(perPeriod)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(price)
+                        .font(.title3.weight(.heavy))
+                        .foregroundStyle(.primary)
+                    Text(billingCycleLabel(package))
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(isSelected ? AppTheme.forestGreen.opacity(0.08) : Color(.secondarySystemGroupedBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 2)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(title), \(price) \(billingCycleLabel(package))")
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+    }
+
+    private var continueButton: some View {
+        Button {
+            guard let package = selectedPackage else { return }
             Task { await store.purchase(package: package) }
         } label: {
-            VStack(spacing: 10) {
-                HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    if let anchorPrice {
-                        Text(anchorPrice)
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(.white.opacity(0.55))
-                            .strikethrough()
-                    }
-                    Text(price)
-                        .font(.system(size: 38, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                }
-
-                Text("Lifetime Access — One-Time Purchase")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.white)
-
-                if let perDay {
-                    Text("That's about \(perDay) a day for the next year — then free forever.")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.85))
-                        .multilineTextAlignment(.center)
-                }
-
-                Text("BEST VALUE")
-                    .font(.caption2.weight(.heavy))
-                    .foregroundStyle(AppTheme.forestGreen)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(AppTheme.gold)
-                    .clipShape(Capsule())
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 22)
-            .padding(.horizontal, 16)
-            .background(
-                LinearGradient(
-                    colors: [AppTheme.forestGreen, Color(red: 0.15, green: 0.32, blue: 0.15)],
-                    startPoint: .top,
-                    endPoint: .bottom
+            Text("Continue")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .background(
+                    LinearGradient(
+                        colors: [AppTheme.forestGreen, Color(red: 0.15, green: 0.32, blue: 0.15)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                 )
-            )
-            .clipShape(.rect(cornerRadius: 16))
-            .shadow(color: AppTheme.forestGreen.opacity(0.3), radius: 12, y: 6)
+                .clipShape(.rect(cornerRadius: 14))
+                .shadow(color: AppTheme.forestGreen.opacity(0.3), radius: 12, y: 6)
         }
-        .disabled(store.isPurchasing)
+        .disabled(store.isPurchasing || selectedPackage == nil)
         .opacity(store.isPurchasing ? 0.7 : 1)
         .sensoryFeedback(.impact(weight: .medium), trigger: store.isPurchasing)
-        .accessibilityLabel("Unlock DashTen Pro for \(price), one-time purchase")
+        .padding(.top, 4)
+        .accessibilityLabel("Continue with selected plan")
     }
 
-    private func anchorPriceString(from price: NSDecimalNumber) -> String? {
-        let value = price.doubleValue
-        guard value > 0 else { return nil }
-        let anchor = value * 4
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = Locale.current
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: anchor))
+    private func packageTitle(_ package: Package) -> String {
+        switch package.packageType {
+        case .annual: return "Yearly"
+        case .sixMonth: return "6 Months"
+        case .threeMonth: return "3 Months"
+        case .twoMonth: return "2 Months"
+        case .monthly: return "Monthly"
+        case .weekly: return "Weekly"
+        case .lifetime: return "Lifetime"
+        default: return package.storeProduct.localizedTitle
+        }
     }
 
-    private func perDayString(from price: NSDecimalNumber) -> String? {
-        let value = price.doubleValue
+    private func billingCycleLabel(_ package: Package) -> String {
+        switch package.packageType {
+        case .annual: return "per year"
+        case .sixMonth: return "per 6 mo"
+        case .threeMonth: return "per 3 mo"
+        case .twoMonth: return "per 2 mo"
+        case .monthly: return "per month"
+        case .weekly: return "per week"
+        case .lifetime: return "once"
+        default: return ""
+        }
+    }
+
+    private func perPeriodString(_ package: Package) -> String? {
+        let value = (package.storeProduct.price as NSDecimalNumber).doubleValue
         guard value > 0 else { return nil }
-        let perDay = value / 365.0
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = Locale.current
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
-        return formatter.string(from: NSNumber(value: perDay))
+
+        switch package.packageType {
+        case .annual:
+            let perMonth = value / 12.0
+            if let s = formatter.string(from: NSNumber(value: perMonth)) {
+                return "Just \(s) / month, billed yearly"
+            }
+            return nil
+        case .monthly:
+            return "Cancel anytime"
+        default:
+            return nil
+        }
+    }
+
+    private func annualSavingsString() -> String? {
+        guard let monthly = monthlyPackage, let annual = annualPackage else { return nil }
+        let monthlyPrice = (monthly.storeProduct.price as NSDecimalNumber).doubleValue
+        let annualPrice = (annual.storeProduct.price as NSDecimalNumber).doubleValue
+        guard monthlyPrice > 0, annualPrice > 0 else { return nil }
+        let yearlyEquivalent = monthlyPrice * 12.0
+        guard yearlyEquivalent > annualPrice else { return nil }
+        let savings = (1.0 - (annualPrice / yearlyEquivalent)) * 100.0
+        guard savings >= 1 else { return nil }
+        return "SAVE \(Int(savings.rounded()))%"
     }
 
     private var trustRow: some View {
         VStack(spacing: 8) {
             HStack(spacing: 14) {
-                TrustBadge(icon: "checkmark.shield.fill", label: "One-time")
-                TrustBadge(icon: "xmark.circle.fill", label: "No sub")
+                TrustBadge(icon: "arrow.clockwise", label: "Cancel anytime")
+                TrustBadge(icon: "lock.shield.fill", label: "Secure billing")
                 TrustBadge(icon: "arrow.down.circle.fill", label: "Free updates")
             }
         }
@@ -412,7 +528,7 @@ struct PaywallView: View {
 
     private var legalSection: some View {
         VStack(spacing: 8) {
-            Text("Payment is charged at time of purchase. This is a one-time, non-recurring purchase. No subscription required. Purchases are tied to your Apple ID — restore is available anytime.")
+            Text("Subscriptions auto-renew at the end of each billing period unless cancelled at least 24 hours before the period ends. Payment is charged to your Apple ID. Manage or cancel anytime in your Apple ID subscription settings.")
                 .font(.caption2.weight(.medium))
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
