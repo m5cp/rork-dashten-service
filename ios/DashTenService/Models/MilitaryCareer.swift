@@ -30,7 +30,7 @@ nonisolated struct MilitaryCareer: Identifiable, Hashable, Sendable {
 }
 
 nonisolated enum MilitaryCareerData {
-    static let all: [MilitaryCareer] = army
+    static let all: [MilitaryCareer] = army + navy + marines
 
     static let army: [MilitaryCareer] = [
         MilitaryCareer(
@@ -450,6 +450,298 @@ nonisolated enum MilitaryCareerData {
                 "Managed religious program budgets and logistics including equipment and travel"
             ],
             skills: ["Program Coordination", "Counseling Support", "Event Planning", "Confidentiality", "Budget Management"]
+        )
+    ]
+
+    static let navy: [MilitaryCareer] = [
+        MilitaryCareer(
+            code: "BM", title: "Boatswain's Mate", branch: .navy,
+            civilianTitles: ["Harbor Operations Manager", "Marine Deck Officer", "Port Operations Supervisor"],
+            bulletPoints: [
+                "Managed deck seamanship operations including mooring, anchoring, and underway replenishment",
+                "Supervised deck crew of 10–25 sailors in maintenance and operational tasks",
+                "Operated small boats and directed navigation in restricted waterways",
+                "Maintained all deck equipment, lifesaving gear, and damage control systems"
+            ],
+            skills: ["Maritime Operations", "Team Supervision", "Navigation", "Equipment Maintenance", "Safety Management"]
+        ),
+        MilitaryCareer(
+            code: "AC", title: "Air Traffic Controller", branch: .navy,
+            civilianTitles: ["FAA Air Traffic Controller", "Airport Operations Specialist", "Aviation Coordinator"],
+            bulletPoints: [
+                "Controlled aircraft movements in controlled airspace with zero safety incidents over 1,000+ flight hours managed",
+                "Coordinated sequencing and separation of military and civilian aircraft in high-traffic environments",
+                "Operated radar, communication, and navigation aids to ensure safe and efficient traffic flow",
+                "Trained junior controllers and evaluated their performance on certification checklists"
+            ],
+            skills: ["Air Traffic Control", "Radar Operations", "Communication", "High-Stakes Decision Making", "Aviation Safety"]
+        ),
+        MilitaryCareer(
+            code: "CS", title: "Culinary Specialist", branch: .navy,
+            civilianTitles: ["Executive Chef", "Food Service Manager", "Catering Operations Manager"],
+            bulletPoints: [
+                "Prepared and served meals for crews of 50–5,000 personnel aboard ships and shore stations",
+                "Managed galley operations including menu planning, inventory management, and food safety compliance",
+                "Supervised kitchen staff and maintained a sanitary, compliant food service environment",
+                "Reduced food waste by 20% through improved portion control and inventory tracking"
+            ],
+            skills: ["Food Service Management", "Menu Planning", "Inventory Control", "Food Safety/ServSafe", "Team Leadership"]
+        ),
+        MilitaryCareer(
+            code: "CT", title: "Cryptologic Technician", branch: .navy,
+            civilianTitles: ["Cybersecurity Analyst", "Signals Intelligence Analyst", "Information Security Specialist"],
+            bulletPoints: [
+                "Collected and analyzed signals intelligence to support national and theater-level operations",
+                "Operated classified communication and cryptographic systems under strict security protocols",
+                "Produced intelligence reports and briefed findings to operational commanders",
+                "Maintained COMSEC materials and ensured classified systems operated within NSA standards"
+            ],
+            skills: ["Signals Intelligence", "Cryptographic Operations", "Data Analysis", "Security Clearance Management", "Technical Reporting"]
+        ),
+        MilitaryCareer(
+            code: "EM", title: "Electrician's Mate", branch: .navy,
+            civilianTitles: ["Electrical Engineer", "Power Systems Technician", "Facilities Electrician"],
+            bulletPoints: [
+                "Operated and maintained shipboard electrical distribution systems including switchboards and generators",
+                "Diagnosed and repaired electrical faults across AC/DC power systems on naval vessels",
+                "Supervised electrical safety programs and ensured compliance with Navy electrical standards",
+                "Conducted training on electrical safety and system operations for junior sailors"
+            ],
+            skills: ["Electrical Systems", "Power Distribution", "Fault Diagnosis", "Safety Compliance", "Team Training"]
+        ),
+        MilitaryCareer(
+            code: "ET", title: "Electronics Technician", branch: .navy,
+            civilianTitles: ["Electronics Engineer", "Avionics Technician", "Communications Systems Technician"],
+            bulletPoints: [
+                "Maintained and repaired shipboard radar, sonar, and communications electronic systems",
+                "Performed diagnostic testing and calibration on complex electronic equipment",
+                "Managed electronic parts inventory and coordinated with supply for timely equipment repair",
+                "Trained junior technicians on maintenance procedures and troubleshooting techniques"
+            ],
+            skills: ["Electronics Repair", "Radar/Sonar Systems", "Calibration", "Technical Documentation", "Training & Mentorship"]
+        ),
+        MilitaryCareer(
+            code: "HM", title: "Hospital Corpsman", branch: .navy,
+            civilianTitles: ["Emergency Medical Technician", "Medical Assistant", "Surgical Technologist"],
+            bulletPoints: [
+                "Provided comprehensive medical care to Navy and Marine Corps personnel in shipboard, field, and clinical settings",
+                "Assisted physicians and nurses in surgical procedures, emergency response, and inpatient care",
+                "Trained Marines in combat first aid and Tactical Combat Casualty Care (TCCC)",
+                "Maintained medical supply accountability and managed immunization records for 500+ personnel"
+            ],
+            skills: ["Emergency Medical Care", "Surgical Assistance", "Clinical Documentation", "Medical Training", "Patient Assessment"]
+        ),
+        MilitaryCareer(
+            code: "IS", title: "Intelligence Specialist", branch: .navy,
+            civilianTitles: ["Intelligence Analyst", "Geospatial Analyst", "Threat Assessment Specialist"],
+            bulletPoints: [
+                "Produced all-source intelligence products including threat assessments and target packages for naval operations",
+                "Operated classified intelligence databases and imagery analysis systems",
+                "Briefed operational commanders on current intelligence and emerging threats",
+                "Collaborated with national-level agencies and joint intelligence teams"
+            ],
+            skills: ["Intelligence Analysis", "Imagery Analysis", "Report Writing", "Database Management", "Briefing & Presentation"]
+        ),
+        MilitaryCareer(
+            code: "IT", title: "Information Systems Technician", branch: .navy,
+            civilianTitles: ["Network Administrator", "IT Systems Specialist", "Cybersecurity Technician"],
+            bulletPoints: [
+                "Administered shipboard and shore-based computer networks supporting 500–2,000 users",
+                "Maintained servers, routers, switches, and cybersecurity infrastructure to 99%+ uptime",
+                "Enforced DoD cybersecurity compliance across all networked systems and user accounts",
+                "Provided technical support and user training for military information systems"
+            ],
+            skills: ["Network Administration", "Cybersecurity", "Systems Administration", "Help Desk Support", "IT Compliance"]
+        ),
+        MilitaryCareer(
+            code: "MA", title: "Master-at-Arms", branch: .navy,
+            civilianTitles: ["Law Enforcement Officer", "Security Manager", "Loss Prevention Specialist"],
+            bulletPoints: [
+                "Enforced military law and maintained order on naval installations and vessels",
+                "Conducted criminal investigations, collected evidence, and prepared case files",
+                "Managed access control, installation security, and anti-terrorism force protection programs",
+                "Operated K-9 programs and trained in crime scene processing"
+            ],
+            skills: ["Law Enforcement", "Criminal Investigation", "Security Management", "Force Protection", "Report Writing"]
+        ),
+        MilitaryCareer(
+            code: "MC", title: "Mass Communication Specialist", branch: .navy,
+            civilianTitles: ["Public Relations Specialist", "Journalist", "Digital Media Manager"],
+            bulletPoints: [
+                "Produced written, photo, and video content for internal and public audiences across multiple media platforms",
+                "Covered military operations and human interest stories for Navy news outlets and national media",
+                "Managed social media accounts and digital communications for commands of 1,000+ personnel",
+                "Coordinated media embeds and public affairs operations during major exercises and deployments"
+            ],
+            skills: ["Journalism", "Photography/Videography", "Social Media Management", "Public Relations", "Content Production"]
+        ),
+        MilitaryCareer(
+            code: "OS", title: "Operations Specialist", branch: .navy,
+            civilianTitles: ["Operations Coordinator", "Air Traffic Specialist", "Maritime Logistics Manager"],
+            bulletPoints: [
+                "Operated radar, electronic warfare, and navigation systems in the Combat Information Center",
+                "Tracked surface, subsurface, and air contacts and maintained the tactical picture for commanding officers",
+                "Coordinated communication between ships, aircraft, and shore installations during complex operations",
+                "Trained and evaluated junior OS personnel in combat system operation and watchstanding"
+            ],
+            skills: ["Radar Operations", "Tactical Communications", "Situational Awareness", "Operations Planning", "Team Training"]
+        ),
+        MilitaryCareer(
+            code: "QM", title: "Quartermaster", branch: .navy,
+            civilianTitles: ["Navigation Officer", "Maritime Logistics Specialist", "Vessel Operations Manager"],
+            bulletPoints: [
+                "Maintained celestial, electronic, and visual navigation for naval vessels in open ocean and restricted waters",
+                "Prepared voyage plans and coordinated chart corrections using official hydrographic publications",
+                "Maintained bridge navigation watch and supervised junior quartermasters",
+                "Ensured all nautical charts and publications were current and compliant with navigational standards"
+            ],
+            skills: ["Navigation", "Maritime Charts", "Watchstanding", "Logistics Planning", "Technical Documentation"]
+        ),
+        MilitaryCareer(
+            code: "SO", title: "Special Warfare Operator (Navy SEAL)", branch: .navy,
+            civilianTitles: ["Federal Agent", "Defense Contractor — SOF", "Security & Intelligence Consultant"],
+            bulletPoints: [
+                "Planned and executed direct action, special reconnaissance, and unconventional warfare missions globally",
+                "Led small teams in high-risk operations under extreme physical and psychological pressure",
+                "Maintained expert proficiency in combat diving, military freefall, and advanced weapons systems",
+                "Trained foreign special operations forces in maritime and land-based counterterrorism tactics"
+            ],
+            skills: ["Special Operations Leadership", "Mission Planning", "Physical & Mental Resilience", "Weapons Expertise", "Foreign Partner Training"]
+        ),
+        MilitaryCareer(
+            code: "YN", title: "Yeoman", branch: .navy,
+            civilianTitles: ["Administrative Assistant", "Office Manager", "Human Resources Coordinator"],
+            bulletPoints: [
+                "Managed personnel records, correspondence, and administrative functions for commands of 100–1,000 personnel",
+                "Processed official naval correspondence, evaluations, awards, and personnel actions",
+                "Prepared and briefed administrative reports to senior officers and department heads",
+                "Maintained compliance with Navy administrative regulations and privacy act requirements"
+            ],
+            skills: ["Administrative Management", "Personnel Records", "Correspondence Writing", "Policy Compliance", "Office Operations"]
+        )
+    ]
+
+    static let marines: [MilitaryCareer] = [
+        MilitaryCareer(
+            code: "0311", title: "Rifleman", branch: .marines,
+            civilianTitles: ["Law Enforcement Officer", "Security Specialist", "Emergency Response Technician"],
+            bulletPoints: [
+                "Executed infantry operations including direct action, raids, and patrolling in complex environments",
+                "Maintained expert proficiency with M16A4, M4, M27 IAR, and crew-served weapons",
+                "Led fire team of 4 Marines in training and combat operations",
+                "Performed physical fitness training and maintained personal and equipment readiness at all times"
+            ],
+            skills: ["Team Leadership", "Tactical Operations", "Weapons Proficiency", "Physical Fitness", "Mission Planning"]
+        ),
+        MilitaryCareer(
+            code: "0321", title: "Reconnaissance Marine", branch: .marines,
+            civilianTitles: ["Intelligence Analyst", "Security Consultant", "Federal Agent"],
+            bulletPoints: [
+                "Conducted deep reconnaissance operations behind enemy lines to gather and report critical intelligence",
+                "Performed combat diving, military freefall, and direct action missions with Special Operations forces",
+                "Planned and executed small-unit operations with minimal supervision in denied environments",
+                "Trained partner forces in reconnaissance and direct action tactics"
+            ],
+            skills: ["Reconnaissance", "Intelligence Collection", "Small Unit Leadership", "Combat Diving/HALO", "High-Pressure Operations"]
+        ),
+        MilitaryCareer(
+            code: "0411", title: "Maintenance Management Specialist", branch: .marines,
+            civilianTitles: ["Fleet Manager", "Maintenance Planner", "Operations Analyst"],
+            bulletPoints: [
+                "Managed maintenance data collection and analysis for unit equipment fleets valued at $50M+",
+                "Tracked maintenance schedules, equipment readiness rates, and parts requisition",
+                "Advised commanders on equipment availability and readiness trends",
+                "Maintained accuracy of maintenance management information systems (MIMMS)"
+            ],
+            skills: ["Fleet Management", "Data Analysis", "Operations Planning", "Logistics Software", "Report Writing"]
+        ),
+        MilitaryCareer(
+            code: "0621", title: "Field Radio Operator", branch: .marines,
+            civilianTitles: ["Communications Technician", "Radio Frequency Specialist", "Network Field Technician"],
+            bulletPoints: [
+                "Operated and maintained tactical HF/VHF/UHF radio systems in support of ground operations",
+                "Established and maintained communication networks under time-critical and austere conditions",
+                "Ensured COMSEC compliance and maintained communication equipment to 100% readiness",
+                "Trained junior Marines on radio procedures, antenna assembly, and communication security"
+            ],
+            skills: ["Radio Communications", "COMSEC", "Field Maintenance", "Communications Planning", "Technical Training"]
+        ),
+        MilitaryCareer(
+            code: "0651", title: "Cyber Network Operator", branch: .marines,
+            civilianTitles: ["Network Administrator", "Cybersecurity Analyst", "IT Security Specialist"],
+            bulletPoints: [
+                "Administered and defended Marine Corps computer networks from cyber threats",
+                "Performed network monitoring, vulnerability scanning, and incident response",
+                "Configured routers, switches, and firewalls to maintain secure network operations",
+                "Produced cyber incident reports and coordinated remediation actions with security teams"
+            ],
+            skills: ["Network Administration", "Cybersecurity", "Incident Response", "Network Monitoring", "Technical Reporting"]
+        ),
+        MilitaryCareer(
+            code: "1371", title: "Combat Engineer", branch: .marines,
+            civilianTitles: ["Construction Project Manager", "Civil Engineer", "Demolitions Safety Officer"],
+            bulletPoints: [
+                "Conducted breaching, mine clearing, and obstacle reduction operations in support of infantry missions",
+                "Built and repaired roads, bridges, fighting positions, and field fortifications",
+                "Operated combat engineering equipment including bulldozers, excavators, and mine-clearing systems",
+                "Maintained demolition and explosive safety compliance during all construction operations"
+            ],
+            skills: ["Construction Management", "Demolitions Safety", "Heavy Equipment Operation", "Combat Engineering", "Project Execution"]
+        ),
+        MilitaryCareer(
+            code: "3043", title: "Supply Administration and Operations", branch: .marines,
+            civilianTitles: ["Supply Chain Manager", "Logistics Analyst", "Procurement Specialist"],
+            bulletPoints: [
+                "Managed supply chain operations for units of 200–5,000 Marines including requisition, receipt, and distribution",
+                "Operated Marine Corps logistics systems to manage inventory valued at $10M+",
+                "Coordinated with transportation and maintenance sections for integrated logistics support",
+                "Produced supply status reports and briefed commanders on readiness-impacting shortfalls"
+            ],
+            skills: ["Supply Chain Management", "Logistics Systems", "Inventory Control", "Procurement", "Report Writing"]
+        ),
+        MilitaryCareer(
+            code: "3521", title: "Motor Vehicle Mechanic", branch: .marines,
+            civilianTitles: ["Fleet Mechanic", "Automotive Technician", "Diesel Engine Specialist"],
+            bulletPoints: [
+                "Maintained and repaired tactical wheeled vehicles including HMMWVs, MRAPs, and 7-ton trucks",
+                "Diagnosed mechanical, electrical, and hydraulic faults using diagnostic tools and technical manuals",
+                "Supervised vehicle maintenance operations for fleets of 15–50 vehicles",
+                "Ensured vehicle readiness met operational requirements through proactive preventive maintenance"
+            ],
+            skills: ["Automotive/Diesel Mechanics", "Fleet Maintenance", "Electrical Diagnostics", "Technical Documentation", "Team Supervision"]
+        ),
+        MilitaryCareer(
+            code: "4341", title: "Combat Correspondent", branch: .marines,
+            civilianTitles: ["Journalist", "Public Affairs Officer", "Digital Content Manager"],
+            bulletPoints: [
+                "Reported, photographed, and filmed military operations for internal and media distribution",
+                "Produced news articles, press releases, and multimedia content for USMC public affairs",
+                "Managed media relations and coordinated press embeds during major operations and exercises",
+                "Maintained social media platforms and digital newsroom for commands of 1,000+ Marines"
+            ],
+            skills: ["Journalism", "Photography/Videography", "Media Relations", "Social Media Management", "Content Writing"]
+        ),
+        MilitaryCareer(
+            code: "5811", title: "Military Police", branch: .marines,
+            civilianTitles: ["Law Enforcement Officer", "Security Manager", "Criminal Investigator"],
+            bulletPoints: [
+                "Enforced laws, regulations, and orders to maintain discipline across Marine Corps installations",
+                "Investigated criminal incidents, collected evidence, and prepared formal investigative reports",
+                "Managed detention operations and processed detainees in compliance with law of armed conflict",
+                "Provided force protection and physical security for critical facilities and personnel"
+            ],
+            skills: ["Law Enforcement", "Criminal Investigation", "Force Protection", "Report Writing", "De-escalation"]
+        ),
+        MilitaryCareer(
+            code: "6212", title: "Helicopter Mechanic", branch: .marines,
+            civilianTitles: ["Aviation Mechanic (A&P)", "Helicopter Maintenance Technician", "Aerospace Ground Equipment Technician"],
+            bulletPoints: [
+                "Performed organizational-level maintenance on CH-53, AH-1Z, and UH-1Y rotary wing aircraft",
+                "Conducted pre- and post-flight inspections and troubleshot mechanical and avionics discrepancies",
+                "Documented maintenance actions in NALCOMIS aviation maintenance information systems",
+                "Maintained aircraft airworthiness in compliance with NATOPS and MIL-SPEC standards"
+            ],
+            skills: ["Aviation Maintenance", "Rotary Wing Systems", "Avionics Troubleshooting", "Technical Documentation", "Safety Compliance"]
         )
     ]
 }
