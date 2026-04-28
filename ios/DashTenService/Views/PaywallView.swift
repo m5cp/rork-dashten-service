@@ -27,7 +27,6 @@ struct PaywallView: View {
                     transformationSection
                     featuresSection
                     purchaseSection
-                    trustRow
                     restoreButton
                     redeemCodeButton
                     legalSection
@@ -262,9 +261,9 @@ struct PaywallView: View {
 
     private var sortedPackages: [Package] {
         guard let current = store.offerings?.current else { return [] }
-        return current.availablePackages.sorted { a, b in
-            packageRank(a) < packageRank(b)
-        }
+        return current.availablePackages
+            .filter { $0.packageType == .annual || $0.packageType == .monthly }
+            .sorted { a, b in packageRank(a) < packageRank(b) }
     }
 
     private func packageRank(_ package: Package) -> Int {
@@ -339,7 +338,6 @@ struct PaywallView: View {
         let isAnnual = package.packageType == .annual
         let title = packageTitle(package)
         let price = package.storeProduct.localizedPriceString
-        let perPeriod = perPeriodString(package)
         let savings = isAnnual ? annualSavingsString() : nil
 
         return Button {
@@ -371,11 +369,6 @@ struct PaywallView: View {
                                 .background(AppTheme.gold)
                                 .clipShape(Capsule())
                         }
-                    }
-                    if let perPeriod {
-                        Text(perPeriod)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
                     }
                 }
 
@@ -458,29 +451,6 @@ struct PaywallView: View {
         }
     }
 
-    private func perPeriodString(_ package: Package) -> String? {
-        let value = (package.storeProduct.price as NSDecimalNumber).doubleValue
-        guard value > 0 else { return nil }
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = Locale.current
-        formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = 2
-
-        switch package.packageType {
-        case .annual:
-            let perMonth = value / 12.0
-            if let s = formatter.string(from: NSNumber(value: perMonth)) {
-                return "Just \(s) / month, billed yearly"
-            }
-            return nil
-        case .monthly:
-            return "Cancel anytime"
-        default:
-            return nil
-        }
-    }
-
     private func annualSavingsString() -> String? {
         guard let monthly = monthlyPackage, let annual = annualPackage else { return nil }
         let monthlyPrice = (monthly.storeProduct.price as NSDecimalNumber).doubleValue
@@ -493,19 +463,7 @@ struct PaywallView: View {
         return "SAVE \(Int(savings.rounded()))%"
     }
 
-    private var trustRow: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 14) {
-                TrustBadge(icon: "arrow.clockwise", label: "Cancel anytime")
-                TrustBadge(icon: "lock.shield.fill", label: "Secure billing")
-                TrustBadge(icon: "arrow.down.circle.fill", label: "Free updates")
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
-    }
-
-    private var restoreButton: some View {
+private var restoreButton: some View {
         Button {
             Task { await store.restore() }
         } label: {
@@ -542,26 +500,6 @@ struct PaywallView: View {
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 40)
-    }
-}
-
-private struct TrustBadge: View {
-    let icon: String
-    let label: String
-
-    var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(AppTheme.forestGreen)
-            Text(label)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(.rect(cornerRadius: 10))
     }
 }
 
