@@ -30,7 +30,7 @@ nonisolated struct MilitaryCareer: Identifiable, Hashable, Sendable {
 }
 
 nonisolated enum MilitaryCareerData {
-    static let all: [MilitaryCareer] = army + navy + marines
+    static let all: [MilitaryCareer] = army + navy + marines + airForce + coastGuard + spaceForce
 
     static let army: [MilitaryCareer] = [
         MilitaryCareer(
@@ -742,6 +742,301 @@ nonisolated enum MilitaryCareerData {
                 "Maintained aircraft airworthiness in compliance with NATOPS and MIL-SPEC standards"
             ],
             skills: ["Aviation Maintenance", "Rotary Wing Systems", "Avionics Troubleshooting", "Technical Documentation", "Safety Compliance"]
+        )
+    ]
+
+    static let airForce: [MilitaryCareer] = [
+        MilitaryCareer(
+            code: "1C1X1", title: "Air Traffic Controller", branch: .airForce,
+            civilianTitles: ["FAA Air Traffic Controller", "Airport Operations Specialist", "Aviation Safety Officer"],
+            bulletPoints: [
+                "Controlled sequencing and separation of military and civilian aircraft in radar and non-radar environments",
+                "Managed up to 30 aircraft simultaneously in high-traffic terminal and en-route airspace",
+                "Issued IFR/VFR clearances and coordinated airspace with adjacent facilities",
+                "Trained and evaluated student controllers on position certifications"
+            ],
+            skills: ["Air Traffic Control", "Aviation Safety", "Radar Operations", "High-Stakes Decision Making", "Communication"]
+        ),
+        MilitaryCareer(
+            code: "1C2X1", title: "Combat Controller", branch: .airForce,
+            civilianTitles: ["FAA Air Traffic Controller", "Federal Agent", "Emergency Operations Coordinator"],
+            bulletPoints: [
+                "Embedded with special operations forces to establish assault zones and control close air support",
+                "Directed airstrikes and coordinated fires for ground forces in direct contact with enemy",
+                "Maintained FAA air traffic control certification while serving as a combat-qualified special operator",
+                "Conducted military freefall, combat diving, and direct action missions behind enemy lines"
+            ],
+            skills: ["Air Traffic Control", "Special Operations", "Close Air Support", "Mission Planning", "Leadership Under Pressure"]
+        ),
+        MilitaryCareer(
+            code: "1C4X1", title: "Tactical Air Control Party", branch: .airForce,
+            civilianTitles: ["Operations Coordinator", "Aviation Liaison", "Emergency Communications Specialist"],
+            bulletPoints: [
+                "Directed close air support, air interdiction, and armed reconnaissance for ground forces",
+                "Coordinated airspace deconfliction and fire support integration in complex, dynamic environments",
+                "Provided real-time targeting data and battle damage assessment to aircrews and commanders",
+                "Trained Army and joint force partners on requesting and controlling tactical air support"
+            ],
+            skills: ["Close Air Support", "Fire Support Coordination", "Airspace Management", "Tactical Communications", "Joint Operations"]
+        ),
+        MilitaryCareer(
+            code: "1N0X1", title: "All Source Intelligence Analyst", branch: .airForce,
+            civilianTitles: ["Intelligence Analyst", "Research Analyst", "Threat Assessment Specialist"],
+            bulletPoints: [
+                "Fused HUMINT, SIGINT, IMINT, and open-source intelligence to produce all-source analytical products",
+                "Briefed senior commanders on adversary capabilities, intentions, and courses of action",
+                "Developed and maintained intelligence databases to track emerging threats",
+                "Collaborated with national intelligence community to support operational planning"
+            ],
+            skills: ["All-Source Analysis", "Intelligence Fusion", "Report Writing", "Database Management", "Briefing & Presentation"]
+        ),
+        MilitaryCareer(
+            code: "1N1X1", title: "Geospatial Intelligence", branch: .airForce,
+            civilianTitles: ["Geospatial Analyst", "Remote Sensing Specialist", "GIS Analyst"],
+            bulletPoints: [
+                "Produced geospatial intelligence products from satellite and aerial imagery for operational planning",
+                "Operated GIS software and imagery analysis tools to support intelligence and targeting requirements",
+                "Provided terrain analysis, infrastructure mapping, and change detection products to commanders",
+                "Collaborated with national geospatial agencies on time-sensitive intelligence requirements"
+            ],
+            skills: ["GIS Analysis", "Imagery Analysis", "Remote Sensing", "Geospatial Products", "Technical Reporting"]
+        ),
+        MilitaryCareer(
+            code: "1N3X1", title: "Cryptologic Language Analyst", branch: .airForce,
+            civilianTitles: ["Translator/Interpreter", "Intelligence Analyst", "Linguistic Specialist"],
+            bulletPoints: [
+                "Translated and analyzed foreign language signals intelligence to produce time-sensitive reports",
+                "Provided real-time linguistic support during joint and special operations missions",
+                "Identified cultural context and subtext to enhance intelligence reporting accuracy",
+                "Maintained proficiency in target language through continuous training and assessment"
+            ],
+            skills: ["Foreign Language Proficiency", "Translation & Interpretation", "Intelligence Analysis", "Cultural Expertise", "Reporting"]
+        ),
+        MilitaryCareer(
+            code: "1W0X1", title: "Weather Specialist", branch: .airForce,
+            civilianTitles: ["Meteorologist", "Environmental Analyst", "Aviation Weather Specialist"],
+            bulletPoints: [
+                "Prepared and delivered weather forecasts in support of flight operations, ground maneuvers, and special operations",
+                "Operated and maintained surface weather observation and radiosonde systems",
+                "Provided severe weather warnings and tactical weather support to commanders",
+                "Collaborated with National Weather Service and joint meteorological teams on regional forecasts"
+            ],
+            skills: ["Meteorology", "Aviation Weather", "Environmental Analysis", "Data Interpretation", "Technical Reporting"]
+        ),
+        MilitaryCareer(
+            code: "2A3X3", title: "Tactical Aircraft Maintenance", branch: .airForce,
+            civilianTitles: ["Aircraft Mechanic (A&P)", "Aerospace Maintenance Technician", "Aviation Quality Inspector"],
+            bulletPoints: [
+                "Performed phase, isochronal, and on-equipment maintenance on F-16/F-35/A-10 tactical aircraft",
+                "Troubleshot and repaired airframe, engine, and hydraulic systems using technical orders",
+                "Documented maintenance actions in the Integrated Maintenance Data System (IMDS)",
+                "Ensured aircraft met mission-capable standards through rigorous pre- and post-flight inspections"
+            ],
+            skills: ["Aircraft Maintenance", "Hydraulics/Pneumatics", "Technical Order Compliance", "Aviation Safety", "Fault Diagnosis"]
+        ),
+        MilitaryCareer(
+            code: "2A6X1", title: "Aerospace Propulsion", branch: .airForce,
+            civilianTitles: ["Jet Engine Mechanic", "Aerospace Propulsion Technician", "Aviation Maintenance Engineer"],
+            bulletPoints: [
+                "Performed engine removal, installation, inspection, and repair on turbofan and turboprop engines",
+                "Diagnosed and repaired compressor, combustion, and turbine section faults",
+                "Operated engine test cell equipment and documented all engine performance data",
+                "Maintained zero-defect standards in high-consequence propulsion maintenance operations"
+            ],
+            skills: ["Jet Engine Maintenance", "Engine Diagnostics", "Test Cell Operations", "Technical Documentation", "Safety Compliance"]
+        ),
+        MilitaryCareer(
+            code: "2F0X1", title: "Fuels", branch: .airForce,
+            civilianTitles: ["Petroleum Operations Manager", "Fuels Distribution Specialist", "Environmental Compliance Officer"],
+            bulletPoints: [
+                "Managed bulk fuel storage and distribution systems supporting 50+ aircraft and 500+ vehicles",
+                "Operated R-11 and R-12 aircraft refueling vehicles and ground fuel equipment",
+                "Maintained quality control and environmental compliance for fuel operations",
+                "Supervised fuels operations teams and ensured safe handling of Class III hazardous materials"
+            ],
+            skills: ["Petroleum Operations", "Hazmat Handling", "Fuel Quality Control", "Environmental Compliance", "Team Supervision"]
+        ),
+        MilitaryCareer(
+            code: "3D0X2", title: "Cyber Systems Operations", branch: .airForce,
+            civilianTitles: ["Cybersecurity Operations Analyst", "Network Defense Specialist", "SOC Analyst"],
+            bulletPoints: [
+                "Operated and defended Air Force networks against cyber threats and intrusions",
+                "Monitored security information and event management (SIEM) tools for anomalous activity",
+                "Performed vulnerability assessments and coordinated remediation with system owners",
+                "Contributed to incident response operations and produced post-incident reports"
+            ],
+            skills: ["Cybersecurity Operations", "Network Defense", "SIEM Tools", "Vulnerability Assessment", "Incident Response"]
+        ),
+        MilitaryCareer(
+            code: "3E7X1", title: "Fire Protection", branch: .airForce,
+            civilianTitles: ["Firefighter/EMT", "Fire Protection Specialist", "Emergency Services Manager"],
+            bulletPoints: [
+                "Responded to aircraft, structural, and hazardous materials emergencies on Air Force installations",
+                "Operated aerial firefighting apparatus and rescue equipment in time-critical situations",
+                "Conducted fire prevention inspections and developed fire safety plans for facilities",
+                "Trained personnel in fire suppression, evacuation procedures, and emergency response"
+            ],
+            skills: ["Firefighting", "Emergency Medical Response", "Aircraft Rescue", "Hazmat Operations", "Safety Training"]
+        ),
+        MilitaryCareer(
+            code: "3E8X1", title: "Explosive Ordnance Disposal", branch: .airForce,
+            civilianTitles: ["EOD Technician", "Hazmat Specialist", "Bomb Disposal Technician"],
+            bulletPoints: [
+                "Rendered safe and disposed of conventional, nuclear, biological, and chemical explosive hazards",
+                "Supported law enforcement agencies and deployed alongside special operations forces",
+                "Operated robotic systems and specialized tools to investigate and neutralize IEDs",
+                "Provided subject matter expertise in explosive hazard identification and threat assessment"
+            ],
+            skills: ["EOD Operations", "Risk Management", "Robotics Operation", "Hazmat Response", "Decision Making Under Pressure"]
+        ),
+        MilitaryCareer(
+            code: "3N0X1", title: "Public Affairs", branch: .airForce,
+            civilianTitles: ["Public Relations Manager", "Communications Director", "Journalist"],
+            bulletPoints: [
+                "Developed and executed strategic communication plans for commands of 1,000–10,000 personnel",
+                "Managed media relations including press conferences, interviews, and crisis communications",
+                "Produced written, photo, and broadcast content for internal and public audiences",
+                "Advised senior commanders on communication strategy and reputational risk management"
+            ],
+            skills: ["Strategic Communications", "Media Relations", "Content Production", "Crisis Communications", "Executive Advisory"]
+        ),
+        MilitaryCareer(
+            code: "3P0X1", title: "Security Forces", branch: .airForce,
+            civilianTitles: ["Law Enforcement Officer", "Security Manager", "Force Protection Specialist"],
+            bulletPoints: [
+                "Enforced law and order on Air Force installations protecting assets valued at billions of dollars",
+                "Managed nuclear security operations and high-security area access control",
+                "Conducted criminal investigations and processed crime scenes in collaboration with OSI",
+                "Led Quick Reaction Force and anti-terrorism force protection operations"
+            ],
+            skills: ["Law Enforcement", "Force Protection", "Nuclear Security", "Criminal Investigation", "Emergency Response"]
+        ),
+        MilitaryCareer(
+            code: "4N0X1", title: "Aerospace Medical Service", branch: .airForce,
+            civilianTitles: ["Emergency Medical Technician", "Medical Assistant", "Flight Medic"],
+            bulletPoints: [
+                "Provided emergency and primary medical care to aircrew and personnel at Air Force installations",
+                "Performed aeromedical evacuation missions transporting critical patients via military aircraft",
+                "Assisted physicians in clinical and urgent care settings across multiple specialties",
+                "Maintained medical readiness for rapid deployment in support of special operations and contingency missions"
+            ],
+            skills: ["Emergency Medical Care", "Aeromedical Evacuation", "Clinical Assistance", "Patient Assessment", "Medical Readiness"]
+        ),
+        MilitaryCareer(
+            code: "6C0X1", title: "Contracting", branch: .airForce,
+            civilianTitles: ["Contract Specialist", "Procurement Officer", "Government Acquisitions Manager"],
+            bulletPoints: [
+                "Awarded and administered government contracts valued from $5K to $100M+ in support of Air Force missions",
+                "Ensured compliance with Federal Acquisition Regulation and DoD acquisition directives",
+                "Negotiated contract terms, pricing, and performance requirements with commercial vendors",
+                "Provided acquisition advisory services to program managers and commanders"
+            ],
+            skills: ["Government Contracting", "Procurement", "Federal Acquisition Regulation", "Negotiation", "Contract Administration"]
+        )
+    ]
+
+    static let coastGuard: [MilitaryCareer] = [
+        MilitaryCareer(
+            code: "BM", title: "Boatswain's Mate", branch: .coastGuard,
+            civilianTitles: ["Harbor Pilot", "Marine Operations Manager", "Port Safety Officer"],
+            bulletPoints: [
+                "Operated small boats and cutters in search and rescue, law enforcement, and port security operations",
+                "Conducted maritime law enforcement boardings to enforce federal laws and international agreements",
+                "Maintained deck equipment, navigation gear, and safety systems on Coast Guard assets",
+                "Trained junior personnel in seamanship, navigation, and maritime law enforcement procedures"
+            ],
+            skills: ["Maritime Operations", "Search & Rescue", "Law Enforcement", "Navigation", "Team Leadership"]
+        ),
+        MilitaryCareer(
+            code: "HS", title: "Health Services Technician", branch: .coastGuard,
+            civilianTitles: ["Emergency Medical Technician", "Medical Assistant", "Physician Assistant"],
+            bulletPoints: [
+                "Provided independent duty medical care as sole healthcare provider for cutters with no physician onboard",
+                "Managed medical emergencies at sea and coordinated medevac operations with Coast Guard aviation",
+                "Conducted physical exams, sick call, and preventive health screenings for ship personnel",
+                "Maintained medical records, supply accountability, and immunization compliance for assigned crews"
+            ],
+            skills: ["Emergency Medical Care", "Independent Duty Medicine", "Medevac Coordination", "Clinical Documentation", "Patient Management"]
+        ),
+        MilitaryCareer(
+            code: "IT", title: "Information Systems Technician", branch: .coastGuard,
+            civilianTitles: ["Network Administrator", "IT Specialist", "Cybersecurity Analyst"],
+            bulletPoints: [
+                "Managed Coast Guard network infrastructure supporting communications and operational systems",
+                "Maintained satellite communication, radio, and data systems aboard cutters and shore stations",
+                "Enforced cybersecurity compliance across classified and unclassified systems",
+                "Provided tier-1 through tier-3 technical support for 50–500 end users"
+            ],
+            skills: ["Network Administration", "Satellite Communications", "Cybersecurity", "IT Support", "Technical Troubleshooting"]
+        ),
+        MilitaryCareer(
+            code: "ME", title: "Maritime Enforcement Specialist", branch: .coastGuard,
+            civilianTitles: ["Federal Law Enforcement Officer", "Customs & Border Agent", "Homeland Security Specialist"],
+            bulletPoints: [
+                "Conducted maritime law enforcement boardings on domestic and foreign vessels",
+                "Enforced federal drug, immigration, and fisheries laws in U.S. and international waters",
+                "Led tactical boarding teams as use-of-force certified officer",
+                "Collaborated with DEA, CBP, and foreign law enforcement agencies on joint interdiction operations"
+            ],
+            skills: ["Federal Law Enforcement", "Maritime Boarding", "Use of Force", "Drug Interdiction", "Interagency Coordination"]
+        ),
+        MilitaryCareer(
+            code: "MK", title: "Machinery Technician", branch: .coastGuard,
+            civilianTitles: ["Marine Engineer", "Diesel Mechanic", "Industrial Machinery Technician"],
+            bulletPoints: [
+                "Operated and maintained propulsion, electrical, and damage control systems on Coast Guard cutters",
+                "Diagnosed and repaired diesel engines, hydraulic systems, and pumping equipment",
+                "Conducted preventive maintenance and ensured engineering plant readiness for all underway operations",
+                "Trained crew in engineering casualty control and damage control procedures"
+            ],
+            skills: ["Marine Engineering", "Diesel Engine Maintenance", "Hydraulic Systems", "Damage Control", "Preventive Maintenance"]
+        ),
+        MilitaryCareer(
+            code: "MST", title: "Marine Science Technician", branch: .coastGuard,
+            civilianTitles: ["Environmental Compliance Officer", "Hazmat Inspector", "Port Safety Specialist"],
+            bulletPoints: [
+                "Investigated marine casualties, pollution incidents, and vessel safety violations",
+                "Conducted port safety exams and environmental compliance inspections on commercial vessels",
+                "Managed oil spill response operations and coordinated cleanup with federal and industry partners",
+                "Enforced MARPOL, Clean Water Act, and international maritime environmental regulations"
+            ],
+            skills: ["Environmental Compliance", "Marine Casualty Investigation", "Pollution Response", "Regulatory Enforcement", "Report Writing"]
+        )
+    ]
+
+    static let spaceForce: [MilitaryCareer] = [
+        MilitaryCareer(
+            code: "1C6X1", title: "Space Systems Operations", branch: .spaceForce,
+            civilianTitles: ["Satellite Systems Operator", "Space Operations Engineer", "Mission Control Specialist"],
+            bulletPoints: [
+                "Operated and maintained satellite command and control systems for strategic and tactical space assets",
+                "Monitored satellite health, attitude control, and payload operations in 24/7 shift environment",
+                "Detected and responded to satellite anomalies to maintain mission continuity",
+                "Coordinated with interagency partners on space situational awareness and conjunction analysis"
+            ],
+            skills: ["Satellite Operations", "Space Systems", "Mission Control", "Anomaly Resolution", "24/7 Operations"]
+        ),
+        MilitaryCareer(
+            code: "1D7X1", title: "Cyberspace Defense", branch: .spaceForce,
+            civilianTitles: ["Cybersecurity Analyst", "Network Defense Specialist", "Information Security Engineer"],
+            bulletPoints: [
+                "Defended Space Force networks and space systems from cyber intrusions and adversarial exploitation",
+                "Conducted continuous monitoring, threat hunting, and incident response for critical space assets",
+                "Performed vulnerability assessments and implemented hardening measures on mission systems",
+                "Produced cyber threat intelligence reports and coordinated with US Cyber Command on joint operations"
+            ],
+            skills: ["Cyber Defense", "Threat Hunting", "Incident Response", "Vulnerability Management", "Threat Intelligence"]
+        ),
+        MilitaryCareer(
+            code: "1N0X1", title: "All Source Intelligence (Space)", branch: .spaceForce,
+            civilianTitles: ["Space Intelligence Analyst", "National Security Analyst", "Geospatial Intelligence Specialist"],
+            bulletPoints: [
+                "Analyzed adversary space capabilities and produced intelligence assessments for Space Force commanders",
+                "Tracked foreign satellite programs and assessed threats to U.S. space assets",
+                "Fused multi-source intelligence to support space situational awareness operations",
+                "Briefed senior leaders on adversary space order of battle and operational implications"
+            ],
+            skills: ["Space Intelligence", "All-Source Analysis", "Threat Assessment", "Briefing & Presentation", "Research"]
         )
     ]
 }
