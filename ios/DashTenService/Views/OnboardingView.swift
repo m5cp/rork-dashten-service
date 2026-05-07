@@ -6,6 +6,7 @@ struct OnboardingView: View {
     @State private var currentPage: Int = 0
     @State private var selectedBranch: MilitaryBranch?
     @State private var selectedTimeline: TransitionTimeline?
+    @State private var selectedPostServiceStatus: PostServiceStatus?
     @State private var separationDate: Date = Calendar.current.date(byAdding: .month, value: 12, to: Date()) ?? Date()
     @State private var selectedGoals: Set<TransitionGoal> = []
     @State private var disclaimerAccepted: Bool = false
@@ -294,6 +295,48 @@ struct OnboardingView: View {
                     .clipShape(.rect(cornerRadius: 12))
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
+
+                if selectedTimeline == .separated {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Which best describes you?")
+                            .font(.subheadline.weight(.bold))
+                        ForEach(PostServiceStatus.allCases) { status in
+                            Button {
+                                selectedPostServiceStatus = status
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(systemName: status.icon)
+                                        .font(.title3)
+                                        .frame(width: 32)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(status.rawValue)
+                                            .font(.subheadline.weight(.heavy))
+                                        Text(status.subtitle)
+                                            .font(.caption2.weight(.semibold))
+                                            .foregroundStyle(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    Spacer()
+                                    if selectedPostServiceStatus == status {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(AppTheme.forestGreen)
+                                    }
+                                }
+                                .padding(14)
+                                .background(selectedPostServiceStatus == status ? AppTheme.forestGreen.opacity(0.12) : Color(.secondarySystemGroupedBackground))
+                                .foregroundStyle(selectedPostServiceStatus == status ? AppTheme.forestGreen : .primary)
+                                .clipShape(.rect(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(selectedPostServiceStatus == status ? AppTheme.forestGreen : .clear, lineWidth: 2)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .sensoryFeedback(.selection, trigger: selectedPostServiceStatus)
+                        }
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
             }
             .padding(.horizontal, 24)
         }
@@ -438,7 +481,7 @@ struct OnboardingView: View {
         switch currentPage {
         case 0: true
         case 1: selectedBranch != nil
-        case 2: selectedTimeline != nil
+        case 2: selectedTimeline != nil && (selectedTimeline != .separated || selectedPostServiceStatus != nil)
         case 3: !selectedGoals.isEmpty
         case 4: disclaimerAccepted
         default: false
@@ -479,6 +522,9 @@ struct OnboardingView: View {
         storage.profile.branch = selectedBranch
         storage.profile.timeline = selectedTimeline
         storage.profile.separationDate = selectedTimeline == .separated ? nil : separationDate
+        if selectedTimeline == .separated, let status = selectedPostServiceStatus {
+            storage.applyPostServiceStatus(status)
+        }
         storage.profile.goals = Array(selectedGoals)
         storage.profile.hasAcceptedDisclaimer = true
         storage.profile.hasCompletedOnboarding = true

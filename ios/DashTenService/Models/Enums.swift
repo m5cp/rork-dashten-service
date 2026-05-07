@@ -60,6 +60,27 @@ nonisolated enum TransitionTimeline: String, Codable, CaseIterable, Identifiable
     }
 }
 
+nonisolated enum PostServiceStatus: String, Codable, CaseIterable, Identifiable, Sendable {
+    case separated = "Separated (ETS)"
+    case retired = "Retired (20+ years)"
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .separated: "figure.walk.departure"
+        case .retired: "medal.fill"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .separated: "Ended service before retirement — focus on career, certs, civilian setup"
+        case .retired: "Retired with 20+ years — focus on Tricare, SBP, DFAS, pension planning"
+        }
+    }
+}
+
 nonisolated enum TransitionGoal: String, Codable, CaseIterable, Identifiable, Sendable {
     case employment = "Employment"
     case school = "School / Degree"

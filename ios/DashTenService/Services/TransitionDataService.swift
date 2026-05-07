@@ -116,6 +116,33 @@ enum TransitionDataService {
         ]
     }
 
+    static func retireeExtraItems() -> [ChecklistItem] {
+        let p1 = TimelinePhase.firstThirty
+        let p2 = TimelinePhase.firstNinety
+        let p3 = TimelinePhase.firstYear
+        return [
+            ChecklistItem(id: "ret_1", title: "Activate Tricare for retirees", subtitle: "Tricare Prime/Select for under 65, Tricare for Life at 65 — enroll within 90 days", phase: p1, readinessCategory: .health),
+            ChecklistItem(id: "ret_2", title: "Confirm DFAS retired pay & tax withholding", subtitle: "myPay account, federal/state W-4P, direct deposit, SBP deduction", phase: p1, readinessCategory: .finance),
+            ChecklistItem(id: "ret_3", title: "Get retiree (blue) ID card", subtitle: "Schedule at RAPIDS — unlocks commissary, exchange, MWR", phase: p1, readinessCategory: .admin),
+            ChecklistItem(id: "ret_4", title: "Finalize SBP / RCSBP election", subtitle: "Survivor Benefit Plan — spouse coverage decision is irrevocable", phase: p2, readinessCategory: .family),
+            ChecklistItem(id: "ret_5", title: "Plan pension-aware tax & retirement strategy", subtitle: "Pension is taxable income — review withholding, IRA contributions, RMDs", phase: p3, readinessCategory: .finance),
+            ChecklistItem(id: "ret_6", title: "Review CRDP / CRSC eligibility", subtitle: "Concurrent Retirement & Disability Pay or Combat-Related Special Comp", phase: p2, readinessCategory: .finance),
+        ]
+    }
+
+    static func separatedExtraItems() -> [ChecklistItem] {
+        let p1 = TimelinePhase.firstThirty
+        let p2 = TimelinePhase.firstNinety
+        let p3 = TimelinePhase.firstYear
+        return [
+            ChecklistItem(id: "sep_1", title: "Lock in civilian health coverage immediately", subtitle: "Employer plan, marketplace (60-day SEP), CHCBP, or VA — avoid any gap", phase: p1, readinessCategory: .health),
+            ChecklistItem(id: "sep_2", title: "Map COOL / VET TEC certifications to your target job", subtitle: "Free funding for certs like PMP, AWS, Security+, CDL", phase: p2, readinessCategory: .education),
+            ChecklistItem(id: "sep_3", title: "Aggressive LinkedIn + resume rebuild this month", subtitle: "Civilian title, results-first bullets, headshot, recruiter-friendly headline", phase: p1, readinessCategory: .employment),
+            ChecklistItem(id: "sep_4", title: "Practice civilian salary negotiation", subtitle: "Research market rate, prep counter-offer language, never accept first offer", phase: p3, readinessCategory: .employment),
+            ChecklistItem(id: "sep_5", title: "Build entry-level civilian job pipeline", subtitle: "5 applications/week + 3 networking conversations until first offer", phase: p2, readinessCategory: .employment),
+        ]
+    }
+
     static func defaultDocuments() -> [DocumentItem] {
         [
             DocumentItem(id: "d1", name: "DD214 (Certificate of Release)", category: .serviceRecords),

@@ -118,6 +118,25 @@ struct ProfileView: View {
                             set: { storage.profile.separationDate = $0 }
                         ))
                     }
+
+                    if storage.profile.timeline == .separated {
+                        Picker("Post-Service Status", selection: Binding(
+                            get: { storage.profile.postServiceStatus },
+                            set: { newValue in
+                                if let v = newValue {
+                                    storage.applyPostServiceStatus(v)
+                                } else {
+                                    storage.profile.postServiceStatus = nil
+                                }
+                            }
+                        )) {
+                            Text("Select Status").tag(PostServiceStatus?.none)
+                            ForEach(PostServiceStatus.allCases) { status in
+                                Label(status.rawValue, systemImage: status.icon).tag(PostServiceStatus?.some(status))
+                            }
+                        }
+                        .font(.body.weight(.semibold))
+                    }
                 }
 
                 Section("Personal Info") {

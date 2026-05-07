@@ -140,6 +140,36 @@ class StorageService {
         benefitCategories[index].isStarted = true
     }
 
+    func applyPostServiceStatus(_ status: PostServiceStatus) {
+        profile.postServiceStatus = status
+        let retireeIds = Set(TransitionDataService.retireeExtraItems().map { $0.id })
+        let separatedIds = Set(TransitionDataService.separatedExtraItems().map { $0.id })
+        // Remove items belonging to the other status to avoid stale entries
+        switch status {
+        case .retired:
+            checklistItems.removeAll { separatedIds.contains($0.id) }
+            let existing = Set(checklistItems.map { $0.id })
+            for item in TransitionDataService.retireeExtraItems() where !existing.contains(item.id) {
+                checklistItems.append(item)
+            }
+        case .separated:
+            checklistItems.removeAll { retireeIds.contains($0.id) }
+            let existing = Set(checklistItems.map { $0.id })
+            for item in TransitionDataService.separatedExtraItems() where !existing.contains(item.id) {
+                checklistItems.append(item)
+            }
+        }
+    }
+
+    func bulkMarkPreSeparationComplete() {
+        let preSepPhases: Set<TimelinePhase> = Set(TimelinePhase.preSeparationPhases)
+        for index in checklistItems.indices where preSepPhases.contains(checklistItems[index].phase) {
+            if !checklistItems[index].isCompleted {
+                checklistItems[index].isCompleted = true
+            }
+        }
+    }
+
     func addCustomChecklistItem(title: String, phase: TimelinePhase, category: ReadinessCategory) {
         let item = ChecklistItem(title: title, subtitle: "", phase: phase, readinessCategory: category, isCustom: true)
         checklistItems.append(item)

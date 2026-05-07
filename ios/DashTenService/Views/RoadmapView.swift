@@ -61,9 +61,20 @@ struct RoadmapView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(Array(filteredPhases.enumerated()), id: \.element.id) { index, phase in
+            Group {
+                if isPostService {
+                    PostServiceRoadmapView(storage: storage)
+                } else {
+                    preSeparationBody
+                }
+            }
+        }
+    }
+
+    private var preSeparationBody: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(Array(filteredPhases.enumerated()), id: \.element.id) { index, phase in
                         let isCurrent = phase == currentPhase
                         let isPast = isPhaseCompleted(phase)
                         let isLast = index == filteredPhases.count - 1
@@ -85,25 +96,24 @@ struct RoadmapView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Roadmap")
-            .toolbar {
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Roadmap")
+        .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showAddItem = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(AppTheme.forestGreen)
-                    }
-                    .accessibilityLabel("Add roadmap item")
+                Button {
+                    showAddItem = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(AppTheme.forestGreen)
                 }
+                .accessibilityLabel("Add roadmap item")
             }
-            .sheet(isPresented: $showAddItem) {
-                addItemSheet
-            }
-            .navigationDestination(for: TimelinePhase.self) { phase in
-                PhaseDetailView(storage: storage, phase: phase)
-            }
+        }
+        .sheet(isPresented: $showAddItem) {
+            addItemSheet
+        }
+        .navigationDestination(for: TimelinePhase.self) { phase in
+            PhaseDetailView(storage: storage, phase: phase)
         }
     }
 

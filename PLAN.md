@@ -1,35 +1,62 @@
-# Post-service Roadmap + State Benefits hero card
+# Tailored post-service roadmap for retired & separated veterans
 
-## Tools tab — State Benefits as a hero card
+## What changes for retired/separated users
 
-- Pull "State Benefits Finder" out of the Planning category list.
-- Add a new full-width hero card below the three category cards (Money / Career / Planning) titled **"State Benefits Guide"**, with a flag visual, accent colors, and a short subtitle ("Find what your state, territory, or overseas residence offers veterans").
-- Tapping it opens the full State Benefits finder.
-- Expand coverage to include: **District of Columbia, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa, Northern Mariana Islands**, and an **Expat / Overseas** entry with a curated list of federal/VA benefits that travel with you (VA healthcare abroad via Foreign Medical Program, disability comp, GI Bill use overseas, SS, voting, tax notes).
+When someone tells the app they've already left the military, the Roadmap will look completely different — focused on what's next, not what's coming.
 
-## Roadmap — different experience for already-out users
+### New onboarding question
 
-When the user's status is "Separated / Retired", the Roadmap tab swaps to a **post-service journey** instead of the pre-separation 18–24 → 30 days countdown.
+- After choosing "Separated / Retired," a quick follow-up asks: **"Did you retire (20+ years) or separate (ETS)?"**
+- Their answer tailors the roadmap, tools, and tips throughout the app.
 
-**New post-service phases** (replace timeline rail entirely for these users):
+### Roadmap redesign (for separated/retired only)
 
-1. **First 30 Days** — Verify essentials: DD-214 in hand, VA.gov account, healthcare enrolled, final pay reconciled, address updated, banking/credit transitioned.
-2. **First 90 Days** — Benefits activation: VA disability claim filed/tracked, GI Bill / VR&E decisions, state benefits claimed, life insurance (SGLI→VGLI) decision, TSP rollover.
-3. **First Year** — Career building: resume polished, LinkedIn rebuilt, certifications mapped, interview prep, networking cadence, mindset & identity reset, financial baseline.
-4. **Year 2 & Beyond** — Growth: career advancement, advanced education, mentorship, long-term financial planning, ongoing wellness.
+**1. Top hero — "Pre-Separation Review & Verify"**
 
-Each phase keeps the same progress bar + tap-into-detail flow, but the underlying tasks are post-service focused (documents check, benefits enrollment, career, resume, certs, interview prep, mindset, first-year guide).
+- A single collapsed card at the top, pre-marked complete.
+- "You've already crossed the starting line. Tap any step to flag a gap you still need to close."
+- Expanding it shows the pre-separation checklist (DD-214, final out, terminal leave, TAP, etc.) — every item green-checked by default.
+- Tapping an item flips it to "Needs attention" with a quick how-to and a link to the relevant tool.
 
-The "YOU ARE HERE" indicator is calculated from months since separation date.
+**2. Four pillar cards — "What's Next"**
+A 2×2 grid of bold, distinct cards. Each opens a focused list of tasks pulled from the existing post-service content, reorganized around the pillar:
 
-## How users see it
+- **Benefits** — VA healthcare, disability claim, GI Bill vs. VR&E, state benefits, VSO connection.
+- **Career & Resume** — Resume Translator, LinkedIn rebuild, certifications, interview prep, networking cadence.
+- **Mindset & Wellness** — Identity reset, annual physical, mental health, relationships, routine.
+- **Long-Term Growth** — Advanced education, mentoring others, financial plan, second VA loan use, secondary claims.
 
-- **Active-duty / pre-separation users**: roadmap looks the same as today (18–24 mo → 30 days).
-- **Separated / Retired users**: roadmap rail shows the four post-service phases above, with verification tasks front-loaded in "First 30 Days" so anyone who already did them can quickly check them off and move on to the meaningful work (benefits, career, mindset).
-- **Tools tab**: every user sees the new State Benefits Guide hero card at the bottom of the Tools tab, with broader location coverage.
+**3. Phase timeline (kept, but retitled)**
 
-## Notes
+- "Post-Service Timeline: First 30 → First 90 → First Year → Year 2+"
+- Stays below the pillars so users who like a chronological view still have it.
 
-- The existing onboarding choice "Separated / Retired" stays as-is — no new questions to answer.
-- All existing tasks, calculators, and how-to content remain available; only the roadmap framing changes for post-service users.
+### Retired vs. Separated tailoring
+
+**Retiree (20+ years)** sees extra emphasis on:
+
+- Tricare for Life / Retiree Tricare enrollment
+- SBP (Survivor Benefit Plan) decisions
+- DFAS retired pay and tax withholding setup
+- Retiree ID card & continued commissary/exchange access
+- Pension-aware financial planning
+
+**Separated (ETS)** sees extra emphasis on:
+
+- Civilian health coverage gap planning
+- Certifications & credentialing (COOL, VET TEC)
+- Aggressive resume/LinkedIn rebuild
+- Entry-level salary negotiation & first civilian job
+
+### Visual & feel
+
+- Pillar cards use rich color blocks (forest green, gold, deep teal, warm amber) with large SF Symbol icons — distinct, not generic gradients.
+- Smooth spring animation when expanding the Review & Verify card.
+- Subtle haptic when flipping a verified step to "needs attention."
+- Header copy adapts: "Welcome back, Veteran" for separated, "Welcome to retirement" for retirees.
+
+### What stays the same
+
+- Pre-separation users still see the original roadmap (18–24 mo → 30 days).
+- Tools, Benefits, Documents, Profile, and all other tabs are untouched except for the small retiree-vs-separated tailoring noted above.
 
