@@ -346,7 +346,7 @@ struct ProfileView: View {
 
                 Section {} footer: {
                     VStack(spacing: 4) {
-                        Text("DashTen v1.0.0")
+                        Text("DashTen \(Self.appVersionString)")
                             .font(.caption.weight(.bold))
                         Text("Built independently for the transition community")
                             .font(.caption.weight(.semibold))
@@ -402,6 +402,12 @@ struct ProfileView: View {
                 Text("This permanently erases your profile, roadmap, documents, journal, tool entries, streaks, and progress from this device. This cannot be undone. You'll be returned to setup.")
             }
         }
+    }
+
+    private static var appVersionString: String {
+        let version = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "1.0.0"
+        let build = (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "1"
+        return "v\(version) (\(build))"
     }
 
     private var proUpsellSubtitle: String {
