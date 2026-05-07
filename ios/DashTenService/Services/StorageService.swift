@@ -121,6 +121,13 @@ class StorageService {
         guard let catIndex = benefitCategories.firstIndex(where: { $0.id == categoryId }),
               let actIndex = benefitCategories[catIndex].actionItems.firstIndex(where: { $0.id == actionId }) else { return }
         benefitCategories[catIndex].actionItems[actIndex].isCompleted.toggle()
+        // Auto-start the benefit category whenever any action is checked
+        if benefitCategories[catIndex].actionItems.contains(where: { $0.isCompleted }) {
+            benefitCategories[catIndex].isStarted = true
+        }
+        if benefitCategories[catIndex].actionItems[actIndex].isCompleted {
+            awardXP(5)
+        }
     }
 
     func toggleBenefitSaved(_ categoryId: String) {

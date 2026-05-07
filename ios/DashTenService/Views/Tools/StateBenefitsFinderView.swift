@@ -34,7 +34,7 @@ struct StateBenefitsFinderView: View {
             .padding(.bottom, 32)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("State Benefits")
+        .navigationTitle("State & Territory Benefits")
         .navigationBarTitleDisplayMode(.inline)
         .animation(.spring(response: 0.35), value: selectedState)
     }
@@ -47,7 +47,7 @@ struct StateBenefitsFinderView: View {
                 Text("State-Specific Benefits")
                     .font(.subheadline.weight(.bold))
             }
-            Text("Every state offers different benefits for veterans. Select your destination state to see what's available. Benefits vary by disability status and eligibility.")
+            Text("Every state and U.S. territory offers different veteran benefits. Select your destination — including DC, Puerto Rico, Guam, USVI, American Samoa, N. Mariana Islands, or Living Abroad. Benefits vary by disability status and eligibility.")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.primary.opacity(0.8))
         }
@@ -210,6 +210,14 @@ struct StateBenefitsFinderView: View {
         StateBenefitData(state: "West Virginia", abbreviation: "WV", incomeTax: "State income tax (3%-6.5%)", propertyTax: "Disabled veteran homestead exemption", education: "Free tuition for dependents of disabled veterans", license: "Military spouse licensing accommodation", other: ["Free hunting/fishing for disabled veterans", "Veteran preference in state hiring", "West Virginia Veterans Nursing Facility"]),
         StateBenefitData(state: "Wisconsin", abbreviation: "WI", incomeTax: "State income tax (3.54%-7.65%)", propertyTax: "Disabled veteran property tax credit", education: "Wisconsin GI Bill — tuition remission at UW schools", license: "Military spouse expedited licensing", other: ["Free hunting/fishing for disabled veterans", "Veteran preference in state hiring", "Wisconsin Veterans Homes"]),
         StateBenefitData(state: "Wyoming", abbreviation: "WY", incomeTax: "No state income tax", propertyTax: "Disabled veteran property tax exemption", education: "Tuition benefits for Guard members", license: "Military spouse licensing", other: ["Free hunting/fishing for disabled veterans", "Veteran preference in state hiring", "Wyoming Veterans Home"]),
+        // U.S. Territories & District
+        StateBenefitData(state: "District of Columbia", abbreviation: "DC", incomeTax: "DC income tax (4%–1075%); military retirement partially excluded", propertyTax: "Disabled veteran property tax relief up to $500K assessed value", education: "DC Tuition Assistance Grant (DCTAG) for veterans and dependents", license: "Expedited licensing for military spouses", other: ["Free DC veteran ID card", "Veteran preference in DC government hiring", "DC Office of Veterans Affairs advocacy services"]),
+        StateBenefitData(state: "Puerto Rico", abbreviation: "PR", incomeTax: "Military pensions exempt; combat pay exempt; resident veterans get a personal exemption", propertyTax: "Property tax exemption up to $50K for veterans; full exemption for 50%+ disabled", education: "Tuition exemption at UPR system for veterans and dependents of disabled vets", license: "Military spouse licensing accommodation", other: ["Free vehicle registration for disabled veterans", "Preference in PR government hiring", "Casa del Veterano long-term care facility", "PR Public Advocate for Veterans Affairs"]),
+        StateBenefitData(state: "Guam", abbreviation: "GU", incomeTax: "Mirrors federal tax code; military retirement partially excluded", propertyTax: "Real property tax exemption for disabled veterans", education: "Tuition waiver at University of Guam for eligible veterans", license: "Military spouse expedited licensing", other: ["Veteran preference in Guam government hiring", "Guam Veterans Affairs Office assistance", "Free hunting/fishing license for disabled veterans"]),
+        StateBenefitData(state: "U.S. Virgin Islands", abbreviation: "VI", incomeTax: "Mirror of federal tax code; military retirement partially excluded", propertyTax: "Property tax exemption up to $400K for disabled veterans", education: "Tuition assistance at University of the Virgin Islands for veterans", license: "Military spouse licensing accommodation", other: ["Veteran preference in USVI government hiring", "USVI Office of Veterans Affairs services", "Veteran license plates available"]),
+        StateBenefitData(state: "American Samoa", abbreviation: "AS", incomeTax: "American Samoa income tax (mirrors federal)", propertyTax: "Limited — most land is communally owned; exemptions for matai-titled veterans", education: "Tuition support at American Samoa Community College for veterans", license: "Military spouse licensing accommodation", other: ["American Samoa Veterans Affairs Office services", "Veteran preference in territorial hiring", "Free territorial ID for veterans"]),
+        StateBenefitData(state: "Northern Mariana Islands", abbreviation: "MP", incomeTax: "NMI income tax (mirrors federal); military retirement partially excluded", propertyTax: "Property tax exemption for disabled veterans (limited program)", education: "Tuition assistance at Northern Marianas College for veterans", license: "Military spouse licensing accommodation", other: ["CNMI Office of Veterans Affairs services", "Veteran preference in CNMI government hiring", "Saipan Veterans Memorial programs"]),
+        StateBenefitData(state: "Living Abroad (Expat)", abbreviation: "INTL", incomeTax: "File a U.S. return annually; Foreign Earned Income Exclusion (FEIE) up to ~$126K (2024); foreign tax credit available", propertyTax: "Not applicable — follows host country rules; some U.S. states still tax if you keep residency", education: "GI Bill usable at foreign schools approved by VA (limited list)", license: "Vary by host country — check professional licensing reciprocity", other: ["VA Foreign Medical Program (FMP) for service-connected conditions abroad", "Vote absentee via Federal Voting Assistance Program (FVAP.gov)", "SSA and VA disability payments deliverable to most countries", "Use embassy Regional Affairs Office (RAO) and IRS expat helpline", "Establish a U.S. mailing address (CMRA) for benefits and banking"]),
     ]
 }
 

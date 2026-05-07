@@ -147,23 +147,14 @@ struct BenefitDetailView: View {
                     .foregroundStyle(color)
                 Text(category.type.rawValue)
                     .font(.title2.bold())
-            }
-            if !currentCategory.isStarted {
-                Button {
-                    storage.markBenefitStarted(category.id)
-                } label: {
-                    Label("Mark as Started", systemImage: "play.fill")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .background(color)
-                        .clipShape(Capsule())
+                Spacer()
+                if currentCategory.isStarted {
+                    StatusBadge(text: "In Progress", color: color)
                 }
-                .sensoryFeedback(.impact(weight: .medium), trigger: currentCategory.isStarted)
-            } else {
-                StatusBadge(text: "In Progress", color: color)
             }
+            Text("Tap any task below to mark it done — this guide will move to In Progress automatically.")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.6))
         }
     }
 
@@ -294,7 +285,7 @@ struct ActionChecklistContent: View {
     }
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             ForEach(Array(actions.enumerated()), id: \.element.id) { _, action in
                 ActionRow(action: action, color: color) {
                     withAnimation(.spring(response: 0.3)) {
@@ -310,21 +301,87 @@ struct ActionRow: View {
     let action: BenefitAction
     let color: Color
     let onToggle: () -> Void
+    @State private var showHowTo: Bool = false
+
+    private var howTo: BenefitActionHowTo? {
+        BenefitActionHowToData.howTo(for: action.id)
+    }
 
     var body: some View {
-        HStack(spacing: 12) {
-            Button(action: onToggle) {
-                Image(systemName: action.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(action.isCompleted ? color : Color.primary.opacity(0.5))
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 12) {
+                Button(action: onToggle) {
+                    Image(systemName: action.isCompleted ? "checkmark.circle.fill" : "circle")
+                        .font(.title3)
+                        .foregroundStyle(action.isCompleted ? color : Color.primary.opacity(0.5))
+                }
+                .buttonStyle(.plain)
+                .sensoryFeedback(.success, trigger: action.isCompleted)
+
+                Text(action.title)
+                    .font(.subheadline.weight(.semibold))
+                    .strikethrough(action.isCompleted)
+                    .foregroundStyle(action.isCompleted ? Color.primary.opacity(0.5) : Color.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                if howTo != nil {
+                    Button {
+                        withAnimation(.spring(response: 0.3)) { showHowTo.toggle() }
+                    } label: {
+                        Image(systemName: showHowTo ? "chevron.up" : "chevron.down")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(color)
+                            .frame(width: 28, height: 28)
+                            .background(color.opacity(0.12))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                }
             }
-            Text(action.title)
-                .font(.subheadline.weight(.semibold))
-                .strikethrough(action.isCompleted)
-                .foregroundStyle(action.isCompleted ? Color.primary.opacity(0.5) : Color.primary)
-            Spacer()
+            .padding(12)
+
+            if showHowTo, let howTo {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "list.number")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(color)
+                        Text("How to do this")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.7))
+                    }
+                    ForEach(Array(howTo.steps.enumerated()), id: \.offset) { index, step in
+                        HStack(alignment: .top, spacing: 10) {
+                            Text("\(index + 1)")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 18, height: 18)
+                                .background(color)
+                                .clipShape(Circle())
+                            Text(step)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.primary.opacity(0.85))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    if let link = howTo.link {
+                        Link(destination: URL(string: link.url) ?? URL(string: "https://www.va.gov")!) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "arrow.up.right.square.fill")
+                                Text(link.title)
+                            }
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(color)
+                        }
+                        .padding(.top, 2)
+                    }
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(color.opacity(0.06))
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
-        .padding(12)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 10))
     }

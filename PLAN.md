@@ -1,32 +1,38 @@
-# Add "Redeem Code" option on paywall and in Settings
+# Smarter readiness %, auto-start benefits, step-by-step guides, territories + expat support
 
-## Overview
+## How the readiness % works today
 
-Add a way for users to redeem **Offer Codes** you create in App Store Connect — perfect for giving out free subscriptions to testers, reviewers, friends, or promotional partners. When a user taps "Redeem Code," Apple's official redemption sheet slides up, they paste or type the code, and Apple handles the rest. RevenueCat automatically detects the new subscription and unlocks DashTen Pro instantly.
+Right now your % is an average across 7 categories (Admin, Health, Education, Employment, Family, Finance, Housing). Each category mixes:
+- Roadmap checklist items completed
+- Documents marked Received/Verified
+- Benefit action items completed
 
-## How it will work for you (the developer)
+So the headline % only moves when you finish things across **all** of those areas — that's why it feels slow.
 
-1. In App Store Connect → your subscription → **Promotions** → **Offer Codes**, you create a campaign (e.g. "Free 3 months for beta testers")
-2. Apple generates either a single shareable URL or a batch of one-time codes (up to 150,000 per quarter)
-3. You share the code(s) with users
-4. They tap "Redeem Code" inside DashTen and paste it in
+## What I'll change
 
-## How it will work for users
+### 1. Make the % feel actionable (drill-in + next best tasks)
+- **Tap any category** on the Readiness dashboard to open a focused screen showing every remaining task, document, and benefit action that's dragging that category down — checkable right there.
+- **"Next 3 to boost your score"** card on the dashboard: surfaces the exact items that will bump your % the most when you complete them.
+- Each item shows a small "+X%" hint so you can see what your next click is worth.
 
-- **On the paywall:** A small row with a gift icon labeled "Have a code? Redeem here" sits beneath the subscribe button, next to "Restore Purchases"
-- **In Settings (Profile):** A new "Redeem a Code" row appears in the subscription/account area, so existing users (or someone you give a code to after they've installed the app) can redeem without seeing the paywall first
-- Tapping either one launches Apple's native, trusted redemption sheet — no custom code entry UI, which means it works exactly like every other App Store redemption users have seen
-- After successful redemption, the paywall (if open) automatically dismisses and Pro features unlock
+### 2. Benefits guide: auto-start + better instructions
+- Checking off **any** action inside a benefit guide automatically flips it to **In Progress** — no more manual "Mark as Started." That button is removed.
+- Every action item gets a built-in **"How to do this"** step-by-step expander: clear numbered steps for what to click, what form to fill out, and what to bring. (Examples: VA disability claim → eBenefits/VA.gov walkthrough; SGLI→VGLI conversion → exact 120-day window steps; DD-214 request → eVetRecs flow.)
 
-## Design
+### 3. Territories + expats in the State Benefits Finder
+- Add full entries for: **District of Columbia, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa, Northern Mariana Islands**.
+- Add a **"Living Abroad (Expat)"** entry covering: Foreign Earned Income Exclusion basics, VA Foreign Medical Program, IRS filing rules, voting via FVAP, SSA payments abroad, and embassy/RAO contacts.
+- Rename the section to "State & Territory Benefits" so it's clear it's not just states.
 
-- **Paywall button:** Small horizontal row — gift symbol on the left, "Have a code? Redeem" label, subtle secondary text styling so it sits quietly under the main subscribe button without competing visually
-- **Settings row:** Standard list row with a gift icon and "Redeem a Code" title, matching the existing rows in the profile/subscription section
-- Native iOS redemption sheet handles the rest — Apple-styled, dark-mode aware, accessible
+### 4. Small polish
+- Category cards on the dashboard get a subtle "tap to view tasks" affordance.
+- Benefit category cards already show progress — they'll now also show "In Progress" automatically the moment you check anything.
 
-## Notes
+## Screens affected
+- **Readiness Score dashboard** — categories become tappable, new "Boost your score" suggestions card.
+- **New Category Detail screen** — all unfinished items for that category in one place.
+- **Benefit Detail screen** — auto-start logic, "How to do this" steps under each action item.
+- **State Benefits Finder** — new territory entries + expat entry, updated title.
 
-- Works on real devices and TestFlight; the simulator shows a placeholder since the App Store isn't available there
-- No additional permissions or capabilities needed — uses StoreKit which is already part of the project via RevenueCat
-- Once redeemed, the subscription appears in the user's Apple ID just like a normal purchase, and they can manage/cancel it the same way
-
+After this, your % will climb noticeably faster because you'll know exactly what to tap, and the guides will tell you how to actually do each step.
