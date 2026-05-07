@@ -1,62 +1,33 @@
-# Tailored post-service roadmap for retired & separated veterans
+# Remove brand and company name references from DashTen content
 
-## What changes for retired/separated users
+Strip out every named company, third-party platform, and branded program from the app's content so it doesn't imply a partnership. Official government benefits (GI Bill, VR&E, TAP, VA, etc.) stay because they're standard veteran benefits, not partnerships.
 
-When someone tells the app they've already left the military, the Roadmap will look completely different — focused on what's next, not what's coming.
+## What changes for the user
 
-### New onboarding question
+- **No more brand names in checklists, guides, or tips.** References to LinkedIn, VET TEC, COOL, Hiring Our Heroes, RecruitMilitary, Fortune 500, Google, etc. will be replaced with neutral, descriptive language.
+- **Resume & networking guidance** will say things like "professional networking site," "veteran-friendly job board," and "military-funded certification programs" instead of brand names.
+- **Career events** will be described as "veteran hiring events and career fairs" instead of named organizations.
+- **External links** will be cleaned up — only official government sites (va.gov and similar `.gov` resources) will remain. Links to LinkedIn, Hiring Our Heroes, etc. will be removed.
+- **Document checklist** item "LinkedIn Profile (Updated)" becomes "Professional Networking Profile (Updated)."
+- **Action items** like "Set up LinkedIn profile" become "Set up a professional networking profile."
+- **Certification examples** (PMP, AWS, Security+, CDL, Six Sigma) — these are industry-standard credentials, not company brands, so they stay unless you'd prefer otherwise. I'll genericize the surrounding text so it reads as examples, not endorsements.
 
-- After choosing "Separated / Retired," a quick follow-up asks: **"Did you retire (20+ years) or separate (ETS)?"**
-- Their answer tailors the roadmap, tools, and tips throughout the app.
+## Where these updates land
 
-### Roadmap redesign (for separated/retired only)
+- Transition checklist items (pre-separation and post-separation roadmap)
+- Benefit action how-to steps (resume, networking, job search, education)
+- Task how-to tips
+- Document checklist
+- Insight cards ("wish I knew" tips)
+- First Year Guide and Planning Hub guidance
+- Roadmap category subtitles
+- Resume / Personal Brand / Networking tool copy
+- Search keywords (so users can still find things by typing "linkedin" — internal keywords only, not visible text)
 
-**1. Top hero — "Pre-Separation Review & Verify"**
+## What stays unchanged
 
-- A single collapsed card at the top, pre-marked complete.
-- "You've already crossed the starting line. Tap any step to flag a gap you still need to close."
-- Expanding it shows the pre-separation checklist (DD-214, final out, terminal leave, TAP, etc.) — every item green-checked by default.
-- Tapping an item flips it to "Needs attention" with a quick how-to and a link to the relevant tool.
-
-**2. Four pillar cards — "What's Next"**
-A 2×2 grid of bold, distinct cards. Each opens a focused list of tasks pulled from the existing post-service content, reorganized around the pillar:
-
-- **Benefits** — VA healthcare, disability claim, GI Bill vs. VR&E, state benefits, VSO connection.
-- **Career & Resume** — Resume Translator, LinkedIn rebuild, certifications, interview prep, networking cadence.
-- **Mindset & Wellness** — Identity reset, annual physical, mental health, relationships, routine.
-- **Long-Term Growth** — Advanced education, mentoring others, financial plan, second VA loan use, secondary claims.
-
-**3. Phase timeline (kept, but retitled)**
-
-- "Post-Service Timeline: First 30 → First 90 → First Year → Year 2+"
-- Stays below the pillars so users who like a chronological view still have it.
-
-### Retired vs. Separated tailoring
-
-**Retiree (20+ years)** sees extra emphasis on:
-
-- Tricare for Life / Retiree Tricare enrollment
-- SBP (Survivor Benefit Plan) decisions
-- DFAS retired pay and tax withholding setup
-- Retiree ID card & continued commissary/exchange access
-- Pension-aware financial planning
-
-**Separated (ETS)** sees extra emphasis on:
-
-- Civilian health coverage gap planning
-- Certifications & credentialing (COOL, VET TEC)
-- Aggressive resume/LinkedIn rebuild
-- Entry-level salary negotiation & first civilian job
-
-### Visual & feel
-
-- Pillar cards use rich color blocks (forest green, gold, deep teal, warm amber) with large SF Symbol icons — distinct, not generic gradients.
-- Smooth spring animation when expanding the Review & Verify card.
-- Subtle haptic when flipping a verified step to "needs attention."
-- Header copy adapts: "Welcome back, Veteran" for separated, "Welcome to retirement" for retirees.
-
-### What stays the same
-
-- Pre-separation users still see the original roadmap (18–24 mo → 30 days).
-- Tools, Benefits, Documents, Profile, and all other tabs are untouched except for the small retiree-vs-separated tailoring noted above.
+- All official government benefits and programs: GI Bill, Post-9/11 GI Bill, Montgomery GI Bill, VR&E (Ch 31), TAP, VA Home Loan, BAH, SGLI, FAFSA, FEIE, etc.
+- All `va.gov` and other official `.gov` links
+- Industry-standard certifications referenced as examples (PMP, Security+, CDL, etc.)
+- App layout, navigation, and all other functionality
 

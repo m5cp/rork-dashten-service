@@ -375,7 +375,7 @@ struct CareerPlanningView: View {
                     icon: "person.3.fill",
                     color: AppTheme.forestGreen,
                     items: [
-                        "Update LinkedIn profile with civilian-friendly language",
+                        "Update your professional networking profile with civilian-friendly language",
                         "Connect with veteran employee resource groups",
                         "Attend at least one job fair or networking event monthly",
                         "Reach out to 3 new contacts per week",

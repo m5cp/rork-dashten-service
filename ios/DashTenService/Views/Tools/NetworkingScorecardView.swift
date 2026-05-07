@@ -186,7 +186,7 @@ struct NetworkingScorecardView: View {
                     .font(.title3.weight(.bold))
 
                 VStack(spacing: 10) {
-                    PayInputRow(label: "New Contacts Made", sublabel: "LinkedIn, events, referrals", value: $newContacts, color: .purple)
+                    PayInputRow(label: "New Contacts Made", sublabel: "Networking sites, events, referrals", value: $newContacts, color: .purple)
                     Divider()
                     PayInputRow(label: "Follow-ups Sent", sublabel: "Emails, messages, calls", value: $followUps, color: .blue)
                     Divider()

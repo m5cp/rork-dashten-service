@@ -195,7 +195,7 @@ struct FirstYearGuideView: View {
                     "Attend at least 2 networking events or informational interviews this quarter",
                     "Pursue any certifications that would boost your competitiveness",
                     "Ask for feedback at work — civilian performance culture is different",
-                    "Update LinkedIn with results and accomplishments, not just duties",
+                    "Update your professional networking profile with results and accomplishments, not just duties",
                 ]
             )
 

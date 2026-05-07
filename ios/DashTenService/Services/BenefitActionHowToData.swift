@@ -146,11 +146,11 @@ enum BenefitActionHowToData {
             "Use the in-app Resume Translator to speed this up."
         ], link: nil),
         "ba21": BenefitActionHowTo(steps: [
-            "Create a LinkedIn profile using your civilian-translated resume.",
+            "Create a profile on a major professional networking site using your civilian-translated resume.",
             "Add a professional headshot — no uniform.",
             "Connect with 50+ veterans and recruiters in your target industry.",
-            "Turn on 'Open to Work' (private to recruiters)."
-        ], link: HowToLink(title: "LinkedIn", url: "https://www.linkedin.com/")),
+            "Mark yourself as open to new opportunities (privately to recruiters)."
+        ], link: nil),
         "ba22": BenefitActionHowTo(steps: [
             "Practice the STAR method (Situation, Task, Action, Result) on 10 common questions.",
             "Record yourself answering — watch and refine.",
@@ -159,16 +159,16 @@ enum BenefitActionHowToData {
         ], link: nil),
         "ba23": BenefitActionHowTo(steps: [
             "Pick 10 target companies in your desired industry and location.",
-            "Research their veteran hiring programs (most Fortune 500 have them).",
-            "Identify 1–2 people at each company on LinkedIn.",
-            "Set Google alerts for company news."
+            "Research their veteran hiring programs — most large employers have them.",
+            "Identify 1–2 people at each company through professional networking sites.",
+            "Set up news alerts so you stay current on each company."
         ], link: nil),
         "ba24": BenefitActionHowTo(steps: [
-            "Find events through Hiring Our Heroes, RecruitMilitary, or local TAP.",
+            "Find veteran hiring events, career fairs, and local TAP-hosted events in your area.",
             "Pre-register and review the employer list before going.",
             "Bring 20+ printed resumes and dress one level up.",
             "Follow up within 48 hours with a thank-you message."
-        ], link: HowToLink(title: "Hiring Our Heroes Events", url: "https://www.hiringourheroes.org/career-services/events/")),
+        ], link: nil),
 
         // MARK: - Home Loan (b6)
         "ba25": BenefitActionHowTo(steps: [
@@ -295,7 +295,7 @@ enum BenefitActionHowToData {
         ], link: nil),
         "ba44": BenefitActionHowTo(steps: [
             "Scan DD-214, awards, evals, training certs, medical records.",
-            "Save to encrypted cloud (iCloud, Google Drive with 2FA).",
+            "Save to an encrypted cloud storage service with 2FA enabled.",
             "Keep a backup on a USB drive in a safe.",
             "Name files clearly: 'LastName_DD214_2025.pdf'."
         ], link: nil),

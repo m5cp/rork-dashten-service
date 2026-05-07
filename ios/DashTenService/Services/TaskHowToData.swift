@@ -110,7 +110,7 @@ enum TaskHowToData {
         ], tip: "The BDD program lets you file 90-180 days before separation.", tool: ("Open Benefits Countdown", .benefitsCountdown)),
         "c17": TaskHowTo(steps: [
             "Set a target: 5 applications and 3 networking touches per week.",
-            "Use LinkedIn to connect with 2-3 new industry contacts weekly.",
+            "Use a professional networking site to connect with 2-3 new industry contacts weekly.",
             "Attend at least one job fair or industry event each month.",
             "Track everything in a simple spreadsheet."
         ], tip: "Most jobs are filled through networking, not applications. Spend 70% of your effort on people.", tool: ("Open Networking Scorecard", .networkingScorecard)),

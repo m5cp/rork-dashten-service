@@ -20,7 +20,7 @@ nonisolated enum NextStepPillar: String, CaseIterable, Identifiable, Hashable {
     var subtitle: String {
         switch self {
         case .benefits: "VA, healthcare, claims, state perks"
-        case .career: "Resume, LinkedIn, certs, interviews"
+        case .career: "Resume, networking, certs, interviews"
         case .mindset: "Identity, wellness, family"
         case .growth: "Education, finances, mentoring"
         }

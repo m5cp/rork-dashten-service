@@ -73,7 +73,7 @@ struct PersonalBrandAuditView: View {
                 .font(.headline.weight(.bold))
 
             AuditRow(
-                title: "LinkedIn Profile Complete",
+                title: "Professional Networking Profile Complete",
                 subtitle: "Professional photo, headline, summary, experience, skills, 500+ connections target",
                 isChecked: $storage.brandAudit.linkedInComplete,
                 icon: "person.crop.circle.fill",
@@ -88,7 +88,7 @@ struct PersonalBrandAuditView: View {
             )
             AuditRow(
                 title: "Online Presence Clean",
-                subtitle: "Google yourself — remove or adjust any unprofessional content across all platforms",
+                subtitle: "Search yourself online — remove or adjust any unprofessional content across all platforms",
                 isChecked: $storage.brandAudit.onlinePresenceClean,
                 icon: "globe",
                 color: .purple
@@ -123,7 +123,7 @@ struct PersonalBrandAuditView: View {
             )
             AuditRow(
                 title: "Endorsements Collected",
-                subtitle: "LinkedIn recommendations or reference letters from supervisors and peers",
+                subtitle: "Online recommendations or reference letters from supervisors and peers",
                 isChecked: $storage.brandAudit.endorsementsCollected,
                 icon: "hand.thumbsup.fill",
                 color: AppTheme.gold
@@ -144,7 +144,7 @@ struct PersonalBrandAuditView: View {
                 .textCase(.uppercase)
 
             if !storage.brandAudit.linkedInComplete {
-                ImprovementTip(text: "Update your LinkedIn headline to include your target role and key skill", color: .blue)
+                ImprovementTip(text: "Update your professional networking headline to include your target role and key skill", color: .blue)
             }
             if !storage.brandAudit.resumeReady {
                 ImprovementTip(text: "Use the Resume Translator tool to convert military jargon to civilian language", color: .teal)
@@ -153,7 +153,7 @@ struct PersonalBrandAuditView: View {
                 ImprovementTip(text: "Use the Elevator Pitch Builder to craft your introduction", color: AppTheme.forestGreen)
             }
             if !storage.brandAudit.professionalEmail {
-                ImprovementTip(text: "Create a Gmail or Outlook email with your name — avoid nicknames or numbers", color: .orange)
+                ImprovementTip(text: "Create a clean professional email with your name — avoid nicknames or numbers", color: .orange)
             }
             if storage.brandAudit.score == storage.brandAudit.totalItems {
                 HStack(spacing: 8) {

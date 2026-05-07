@@ -93,8 +93,8 @@ enum TransitionDataService {
         let p = TimelinePhase.firstYear
         return [
             ChecklistItem(id: "py1_1", title: "Polish civilian resume — no jargon, metrics first", subtitle: "Use the Resume Translator tool to convert MOS to civilian roles", phase: p, readinessCategory: .employment),
-            ChecklistItem(id: "py1_2", title: "Rebuild LinkedIn for civilian recruiters", subtitle: "Civilian title, professional photo, results-driven summary", phase: p, readinessCategory: .employment),
-            ChecklistItem(id: "py1_3", title: "Map certifications to your target field", subtitle: "PMP, Security+, CDL, Six Sigma — use COOL or VET TEC", phase: p, readinessCategory: .education),
+            ChecklistItem(id: "py1_2", title: "Rebuild your professional networking profile for civilian recruiters", subtitle: "Civilian title, professional photo, results-driven summary", phase: p, readinessCategory: .employment),
+            ChecklistItem(id: "py1_3", title: "Map certifications to your target field", subtitle: "Identify high-value credentials (e.g., PMP, Security+, CDL) and check military-funded certification programs", phase: p, readinessCategory: .education),
             ChecklistItem(id: "py1_4", title: "Run interview prep reps weekly", subtitle: "STAR stories, civilian salary negotiation, behavioral questions", phase: p, readinessCategory: .employment),
             ChecklistItem(id: "py1_5", title: "Build a networking cadence", subtitle: "3 conversations per week — alumni, veterans, industry", phase: p, readinessCategory: .employment),
             ChecklistItem(id: "py1_6", title: "Work the mindset & identity reset", subtitle: "You’re not your rank — explore who you are now", phase: p, readinessCategory: .family),
@@ -108,7 +108,7 @@ enum TransitionDataService {
         return [
             ChecklistItem(id: "py2_1", title: "Plan your next career move", subtitle: "Promotion path, lateral move, or pivot — set a 2-year goal", phase: p, readinessCategory: .employment),
             ChecklistItem(id: "py2_2", title: "Pursue advanced education or credentials", subtitle: "Graduate degree, executive program, or stacked certs", phase: p, readinessCategory: .education),
-            ChecklistItem(id: "py2_3", title: "Become a mentor to a transitioning service member", subtitle: "American Corporate Partners, Veterati, FourBlock", phase: p, readinessCategory: .family),
+            ChecklistItem(id: "py2_3", title: "Become a mentor to a transitioning service member", subtitle: "Connect through a veteran mentorship program in your industry", phase: p, readinessCategory: .family),
             ChecklistItem(id: "py2_4", title: "Review long-term financial plan with an advisor", subtitle: "Retirement, real estate, taxes, college funds, estate planning", phase: p, readinessCategory: .finance),
             ChecklistItem(id: "py2_5", title: "File for any new VA claims (secondary conditions)", subtitle: "Conditions can develop or worsen — stay current", phase: p, readinessCategory: .health),
             ChecklistItem(id: "py2_6", title: "Audit your wellness routine", subtitle: "Sleep, fitness, mental health, relationships", phase: p, readinessCategory: .health),
@@ -136,8 +136,8 @@ enum TransitionDataService {
         let p3 = TimelinePhase.firstYear
         return [
             ChecklistItem(id: "sep_1", title: "Lock in civilian health coverage immediately", subtitle: "Employer plan, marketplace (60-day SEP), CHCBP, or VA — avoid any gap", phase: p1, readinessCategory: .health),
-            ChecklistItem(id: "sep_2", title: "Map COOL / VET TEC certifications to your target job", subtitle: "Free funding for certs like PMP, AWS, Security+, CDL", phase: p2, readinessCategory: .education),
-            ChecklistItem(id: "sep_3", title: "Aggressive LinkedIn + resume rebuild this month", subtitle: "Civilian title, results-first bullets, headshot, recruiter-friendly headline", phase: p1, readinessCategory: .employment),
+            ChecklistItem(id: "sep_2", title: "Map military-funded certifications to your target job", subtitle: "Funding may be available for in-demand credentials (e.g., PMP, AWS, Security+, CDL)", phase: p2, readinessCategory: .education),
+            ChecklistItem(id: "sep_3", title: "Aggressive networking profile + resume rebuild this month", subtitle: "Civilian title, results-first bullets, headshot, recruiter-friendly headline", phase: p1, readinessCategory: .employment),
             ChecklistItem(id: "sep_4", title: "Practice civilian salary negotiation", subtitle: "Research market rate, prep counter-offer language, never accept first offer", phase: p3, readinessCategory: .employment),
             ChecklistItem(id: "sep_5", title: "Build entry-level civilian job pipeline", subtitle: "5 applications/week + 3 networking conversations until first offer", phase: p2, readinessCategory: .employment),
         ]
@@ -161,7 +161,7 @@ enum TransitionDataService {
             DocumentItem(id: "d14", name: "Certificate of Eligibility (Home Loan)", category: .benefitRecords),
             DocumentItem(id: "d15", name: "Education Benefits Statement", category: .benefitRecords),
             DocumentItem(id: "d16", name: "Civilian Resume (Updated)", category: .employmentDocs),
-            DocumentItem(id: "d17", name: "LinkedIn Profile (Updated)", category: .employmentDocs),
+            DocumentItem(id: "d17", name: "Professional Networking Profile (Updated)", category: .employmentDocs),
             DocumentItem(id: "d18", name: "Professional References List", category: .employmentDocs),
             DocumentItem(id: "d19", name: "Security Clearance Verification", category: .employmentDocs),
             DocumentItem(id: "d20", name: "Marriage Certificate", category: .dependentDocs),
@@ -374,7 +374,7 @@ enum TransitionDataService {
                 officialLink: "",
                 actionItems: [
                     BenefitAction(id: "ba20", title: "Create a civilian-ready resume"),
-                    BenefitAction(id: "ba21", title: "Set up LinkedIn profile"),
+                    BenefitAction(id: "ba21", title: "Set up a professional networking profile"),
                     BenefitAction(id: "ba22", title: "Practice civilian interview skills"),
                     BenefitAction(id: "ba23", title: "Research target companies and industries"),
                     BenefitAction(id: "ba24", title: "Attend a job fair or networking event"),
@@ -624,7 +624,7 @@ enum TransitionDataService {
             InsightCard(title: "Start Earlier Than You Think", body: "Transition planning works best when you start at least 12 months out. The earlier you begin, the less stressful the final months become.", category: .wishIKnew),
             InsightCard(title: "Your DD214 Is Everything", body: "This single document unlocks nearly every veteran benefit. Get multiple certified copies and verify every line before signing. Errors can take months to fix.", category: .wishIKnew),
             InsightCard(title: "Civilian Time Moves Differently", body: "In the military, things happen on schedule. In the civilian world, job searches, claims, and applications can take much longer than expected. Build in buffer time.", category: .wishIKnew),
-            InsightCard(title: "Your Network Is Your Lifeline", body: "Start building civilian connections before you separate. LinkedIn, veteran organizations, and informational interviews are more powerful than cold applications.", category: .wishIKnew),
+            InsightCard(title: "Your Network Is Your Lifeline", body: "Start building civilian connections before you separate. Professional networking sites, veteran organizations, and informational interviews are more powerful than cold applications.", category: .wishIKnew),
             InsightCard(title: "Waiting Too Long to File Claims", body: "Many veterans wait years to file disability claims. If you have service-connected conditions, start the process before or immediately after separation.", category: .commonMistake),
             InsightCard(title: "Not Using All Available Benefits", body: "Many veterans don't know about career readiness programs, state benefits, or health care eligibility. Research everything — you've earned it.", category: .commonMistake),
             InsightCard(title: "Underestimating the Budget Gap", body: "The loss of BAH, BAS, and other allowances can be shocking. Build a realistic civilian budget before your last paycheck.", category: .commonMistake),

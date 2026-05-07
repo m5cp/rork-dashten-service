@@ -122,7 +122,7 @@ struct FirstYearGuideContent: View {
     private var q2: some View {
         VStack(spacing: 16) {
             QuarterHeader(title: "Build Momentum", subtitle: "Months 4–6", icon: "arrow.up.right", color: .blue, description: "You've survived the initial shock. Now it's time to build. Refine your career path, deepen your network.")
-            GuideSection(title: "Career Development", icon: "chart.line.uptrend.xyaxis", color: .blue, items: ["Assess your job — is it the right fit? If not, start planning your next move", "Attend at least 2 networking events or informational interviews this quarter", "Pursue any certifications that would boost your competitiveness", "Update LinkedIn with results and accomplishments, not just duties"])
+            GuideSection(title: "Career Development", icon: "chart.line.uptrend.xyaxis", color: .blue, items: ["Assess your job — is it the right fit? If not, start planning your next move", "Attend at least 2 networking events or informational interviews this quarter", "Pursue any certifications that would boost your competitiveness", "Update your professional networking profile with results and accomplishments, not just duties"])
             GuideSection(title: "Financial Foundation", icon: "dollarsign.circle.fill", color: AppTheme.gold, items: ["Review your first 3 months of civilian spending — identify leaks", "Start building an emergency fund (target: 3 months expenses)", "Decide on TSP: keep it, roll to IRA, or roll to employer 401(k)", "SGLI coverage ends 120 days post-separation — have a plan in place"])
             GuideSection(title: "Claims & Benefits", icon: "clock.arrow.circlepath", color: .orange, items: ["Check the status of any pending disability claims", "If you received a rating, review it for accuracy", "Apply for VGLI within 240 days if you want guaranteed life insurance"])
         }
@@ -229,7 +229,7 @@ struct CareerPlanningContent: View {
             ])
 
             GuideSection(title: "Networking", icon: "person.3.fill", color: AppTheme.forestGreen, items: [
-                "Update LinkedIn profile with civilian-friendly language",
+                "Update your professional networking profile with civilian-friendly language",
                 "Attend at least one job fair or networking event monthly",
                 "Reach out to 3 new contacts per week",
                 "Request informational interviews with industry professionals",
