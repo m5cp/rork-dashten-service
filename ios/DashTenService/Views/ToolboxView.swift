@@ -78,7 +78,6 @@ struct ToolboxView: View {
             ToolEntry(title: "GI Bill BAH Calculator", subtitle: "Housing allowance by school location", icon: "house.fill", color: .blue, action: .nav(.giBillBAH), keywords: ["gi bill", "bah", "housing"]),
             ToolEntry(title: "Education Benefits", subtitle: "Compare GI Bill options side by side", icon: "chart.bar.doc.horizontal.fill", color: .indigo, action: .nav(.educationComparison), keywords: ["education", "gi bill"]),
             ToolEntry(title: "Relocation Cost Estimator", subtitle: "Plan your moving budget", icon: "shippingbox.fill", color: .pink, action: .nav(.relocationCost), keywords: ["moving", "relocation"]),
-            ToolEntry(title: "State Benefits Finder", subtitle: "State-specific veteran benefits", icon: "flag.fill", color: AppTheme.forestGreen, action: .nav(.stateBenefits), keywords: ["state", "benefits"]),
         ]
     }
 
@@ -158,6 +157,7 @@ struct ToolboxView: View {
                         searchResultsSection
                     } else {
                         heroCategoriesSection
+                        stateBenefitsHeroCard
                     }
                 }
                 .padding(.horizontal, 16)
@@ -190,6 +190,13 @@ struct ToolboxView: View {
 
     private var isRetiredOrSeparated: Bool {
         storage.profile.timeline == .separated
+    }
+
+    private var stateBenefitsHeroCard: some View {
+        NavigationLink(value: PlanningRoute.stateBenefits) {
+            StateBenefitsHeroCard()
+        }
+        .buttonStyle(.plain)
     }
 
     private var heroCategoriesSection: some View {
@@ -426,6 +433,63 @@ private struct ToolCategoryHeroCard: View {
         .frame(height: 140)
         .background(category.gradient)
         .clipShape(.rect(cornerRadius: 20))
+    }
+}
+
+// MARK: - State Benefits Hero Card
+
+private struct StateBenefitsHeroCard: View {
+    var body: some View {
+        HStack(alignment: .center, spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(LinearGradient(colors: [Color.red.opacity(0.85), Color.blue.opacity(0.85)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                Image(systemName: "flag.fill")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white)
+            }
+            .frame(width: 56, height: 56)
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text("State Benefits Guide")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.white)
+                    Text("FEATURED")
+                        .font(.system(size: 9, weight: .heavy))
+                        .foregroundStyle(AppTheme.gold)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(.white.opacity(0.15))
+                        .clipShape(Capsule())
+                }
+                Text("All 50 states + DC, territories & overseas")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 0)
+
+            Image(systemName: "chevron.right")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.white.opacity(0.7))
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity)
+        .background(
+            LinearGradient(
+                colors: [Color(red: 0.10, green: 0.20, blue: 0.40), Color(red: 0.16, green: 0.30, blue: 0.55)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(.white.opacity(0.08), lineWidth: 1)
+        )
+        .clipShape(.rect(cornerRadius: 20))
+        .shadow(color: Color.blue.opacity(0.18), radius: 12, x: 0, y: 6)
     }
 }
 

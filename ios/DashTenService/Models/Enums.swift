@@ -185,8 +185,18 @@ nonisolated enum TimelinePhase: String, Codable, CaseIterable, Identifiable, Sen
     case sixMonths = "6 Months Out"
     case ninetyDays = "90 Days Out"
     case thirtyDays = "30 Days Out"
+    case firstThirty = "First 30 Days After"
     case firstNinety = "First 90 Days After"
     case firstYear = "First Year After"
+    case yearTwoPlus = "Year 2 & Beyond"
+
+    static var preSeparationPhases: [TimelinePhase] {
+        [.eighteenToTwentyFour, .twelveMonths, .sixMonths, .ninetyDays, .thirtyDays]
+    }
+
+    static var postServicePhases: [TimelinePhase] {
+        [.firstThirty, .firstNinety, .firstYear, .yearTwoPlus]
+    }
 
     var id: String { rawValue }
 
@@ -197,8 +207,10 @@ nonisolated enum TimelinePhase: String, Codable, CaseIterable, Identifiable, Sen
         case .sixMonths: -6
         case .ninetyDays: -3
         case .thirtyDays: -1
+        case .firstThirty: 1
         case .firstNinety: 3
         case .firstYear: 12
+        case .yearTwoPlus: 24
         }
     }
 
@@ -209,8 +221,10 @@ nonisolated enum TimelinePhase: String, Codable, CaseIterable, Identifiable, Sen
         case .sixMonths: "clock.fill"
         case .ninetyDays: "exclamationmark.clock.fill"
         case .thirtyDays: "alarm.fill"
+        case .firstThirty: "checkmark.seal.fill"
         case .firstNinety: "flag.fill"
         case .firstYear: "star.circle.fill"
+        case .yearTwoPlus: "chart.line.uptrend.xyaxis"
         }
     }
 
@@ -221,8 +235,10 @@ nonisolated enum TimelinePhase: String, Codable, CaseIterable, Identifiable, Sen
         case .sixMonths: "Lock in your plan"
         case .ninetyDays: "Final preparations"
         case .thirtyDays: "Last-minute essentials"
-        case .firstNinety: "Your first steps as a civilian"
-        case .firstYear: "Settle into your new life"
+        case .firstThirty: "Verify documents & essentials"
+        case .firstNinety: "Activate your benefits"
+        case .firstYear: "Career, mindset & momentum"
+        case .yearTwoPlus: "Growth & long-term planning"
         }
     }
 }
@@ -303,8 +319,10 @@ extension TimelinePhase {
         case .sixMonths: "6 mo"
         case .ninetyDays: "90 days"
         case .thirtyDays: "30 days"
-        case .firstNinety: "Post 90"
+        case .firstThirty: "First 30"
+        case .firstNinety: "First 90"
         case .firstYear: "Year 1"
+        case .yearTwoPlus: "Year 2+"
         }
     }
 }

@@ -54,25 +54,66 @@ enum TransitionDataService {
             ChecklistItem(id: "c30", title: "Update legal documents", subtitle: "Will, power of attorney, beneficiaries", phase: phase30, readinessCategory: .admin),
         ])
 
-        let phaseFirst90 = TimelinePhase.firstNinety
-        items.append(contentsOf: [
-            ChecklistItem(id: "c31", title: "Enroll in veteran health care if eligible", subtitle: "Research eligibility and enroll through official channels", phase: phaseFirst90, readinessCategory: .health),
-            ChecklistItem(id: "c32", title: "Register with your state's veteran services office", subtitle: "Access state-level benefits", phase: phaseFirst90, readinessCategory: .admin),
-            ChecklistItem(id: "c33", title: "Apply for state veteran ID or driver's license", subtitle: "Many states offer veteran designation", phase: phaseFirst90, readinessCategory: .admin),
-            ChecklistItem(id: "c34", title: "File taxes with veteran-specific considerations", subtitle: "Understand what income is taxable", phase: phaseFirst90, readinessCategory: .finance),
-            ChecklistItem(id: "c35", title: "Connect with local veteran organizations", subtitle: "Build your civilian support network", phase: phaseFirst90, readinessCategory: .family),
-        ])
+        items.append(contentsOf: postServiceFirstThirtyItems())
+        items.append(contentsOf: postServiceFirstNinetyItems())
 
-        let phaseYear = TimelinePhase.firstYear
-        items.append(contentsOf: [
-            ChecklistItem(id: "c36", title: "Review and adjust financial plan", subtitle: "Six-month check on budget and savings", phase: phaseYear, readinessCategory: .finance),
-            ChecklistItem(id: "c37", title: "Evaluate career progress", subtitle: "Are you on track with your goals?", phase: phaseYear, readinessCategory: .employment),
-            ChecklistItem(id: "c38", title: "Follow up on pending claims or applications", subtitle: "Check status of any submitted claims", phase: phaseYear, readinessCategory: .health),
-            ChecklistItem(id: "c39", title: "Review education progress if enrolled", subtitle: "Ensure benefits are being applied correctly", phase: phaseYear, readinessCategory: .education),
-            ChecklistItem(id: "c40", title: "Schedule annual health check-up", subtitle: "Maintain continuity of care", phase: phaseYear, readinessCategory: .health),
-        ])
+        items.append(contentsOf: postServiceFirstYearItems())
+        items.append(contentsOf: postServiceYearTwoPlusItems())
 
         return items
+    }
+
+    static func postServiceFirstThirtyItems() -> [ChecklistItem] {
+        let p = TimelinePhase.firstThirty
+        return [
+            ChecklistItem(id: "p30_1", title: "Verify DD-214 is accurate and stored safely", subtitle: "Check awards, dates, character of service — fix errors via DD-149", phase: p, readinessCategory: .admin),
+            ChecklistItem(id: "p30_2", title: "Create your VA.gov account", subtitle: "Use Login.gov or ID.me — unlocks claims, healthcare, education", phase: p, readinessCategory: .admin),
+            ChecklistItem(id: "p30_3", title: "Confirm civilian health insurance is active", subtitle: "VA, employer plan, marketplace, or TRICARE Reserve Select", phase: p, readinessCategory: .health),
+            ChecklistItem(id: "p30_4", title: "Reconcile final military pay & travel voucher", subtitle: "Last LES, leave sell-back, separation pay if applicable", phase: p, readinessCategory: .finance),
+            ChecklistItem(id: "p30_5", title: "Update mailing address everywhere", subtitle: "USPS forward, banks, IRS, DEERS, VA", phase: p, readinessCategory: .admin),
+            ChecklistItem(id: "p30_6", title: "Transition banking and credit accounts", subtitle: "Civilian-friendly bank, pull credit report, freeze if needed", phase: p, readinessCategory: .finance),
+            ChecklistItem(id: "p30_7", title: "Save digital + physical copies of all records", subtitle: "DD-214, medical, dental, evals, awards — in 2 places", phase: p, readinessCategory: .admin),
+        ]
+    }
+
+    static func postServiceFirstNinetyItems() -> [ChecklistItem] {
+        let p = TimelinePhase.firstNinety
+        return [
+            ChecklistItem(id: "p90_1", title: "File or track your VA disability claim", subtitle: "Use BDD if eligible — or file fully developed claim now", phase: p, readinessCategory: .health),
+            ChecklistItem(id: "p90_2", title: "Decide on GI Bill vs. VR&E", subtitle: "VR&E may pay more if you have a service-connected rating", phase: p, readinessCategory: .education),
+            ChecklistItem(id: "p90_3", title: "Claim your state & territory benefits", subtitle: "Property tax, tuition, hiring preference, license plates", phase: p, readinessCategory: .admin),
+            ChecklistItem(id: "p90_4", title: "Make SGLI → VGLI decision (240-day window)", subtitle: "Or shop private term life before health questions kick in", phase: p, readinessCategory: .finance),
+            ChecklistItem(id: "p90_5", title: "Decide on TSP: keep, roll to IRA, or 401(k)", subtitle: "Compare fees, fund choices, and Roth vs. traditional split", phase: p, readinessCategory: .finance),
+            ChecklistItem(id: "p90_6", title: "Enroll in VA healthcare", subtitle: "Form 10-10EZ — even if you have other insurance", phase: p, readinessCategory: .health),
+            ChecklistItem(id: "p90_7", title: "Connect with a VSO", subtitle: "DAV, AmVets, VFW, American Legion — free claim help", phase: p, readinessCategory: .family),
+        ]
+    }
+
+    static func postServiceFirstYearItems() -> [ChecklistItem] {
+        let p = TimelinePhase.firstYear
+        return [
+            ChecklistItem(id: "py1_1", title: "Polish civilian resume — no jargon, metrics first", subtitle: "Use the Resume Translator tool to convert MOS to civilian roles", phase: p, readinessCategory: .employment),
+            ChecklistItem(id: "py1_2", title: "Rebuild LinkedIn for civilian recruiters", subtitle: "Civilian title, professional photo, results-driven summary", phase: p, readinessCategory: .employment),
+            ChecklistItem(id: "py1_3", title: "Map certifications to your target field", subtitle: "PMP, Security+, CDL, Six Sigma — use COOL or VET TEC", phase: p, readinessCategory: .education),
+            ChecklistItem(id: "py1_4", title: "Run interview prep reps weekly", subtitle: "STAR stories, civilian salary negotiation, behavioral questions", phase: p, readinessCategory: .employment),
+            ChecklistItem(id: "py1_5", title: "Build a networking cadence", subtitle: "3 conversations per week — alumni, veterans, industry", phase: p, readinessCategory: .employment),
+            ChecklistItem(id: "py1_6", title: "Work the mindset & identity reset", subtitle: "You’re not your rank — explore who you are now", phase: p, readinessCategory: .family),
+            ChecklistItem(id: "py1_7", title: "Establish your civilian financial baseline", subtitle: "Budget, 3–6 month emergency fund, retirement contributions", phase: p, readinessCategory: .finance),
+            ChecklistItem(id: "py1_8", title: "Schedule your annual VA / civilian physical", subtitle: "Continuity of care + documents future claim conditions", phase: p, readinessCategory: .health),
+        ]
+    }
+
+    static func postServiceYearTwoPlusItems() -> [ChecklistItem] {
+        let p = TimelinePhase.yearTwoPlus
+        return [
+            ChecklistItem(id: "py2_1", title: "Plan your next career move", subtitle: "Promotion path, lateral move, or pivot — set a 2-year goal", phase: p, readinessCategory: .employment),
+            ChecklistItem(id: "py2_2", title: "Pursue advanced education or credentials", subtitle: "Graduate degree, executive program, or stacked certs", phase: p, readinessCategory: .education),
+            ChecklistItem(id: "py2_3", title: "Become a mentor to a transitioning service member", subtitle: "American Corporate Partners, Veterati, FourBlock", phase: p, readinessCategory: .family),
+            ChecklistItem(id: "py2_4", title: "Review long-term financial plan with an advisor", subtitle: "Retirement, real estate, taxes, college funds, estate planning", phase: p, readinessCategory: .finance),
+            ChecklistItem(id: "py2_5", title: "File for any new VA claims (secondary conditions)", subtitle: "Conditions can develop or worsen — stay current", phase: p, readinessCategory: .health),
+            ChecklistItem(id: "py2_6", title: "Audit your wellness routine", subtitle: "Sleep, fitness, mental health, relationships", phase: p, readinessCategory: .health),
+            ChecklistItem(id: "py2_7", title: "Evaluate housing & home loan opportunities", subtitle: "Refinance, second use of VA loan entitlement", phase: p, readinessCategory: .housing),
+        ]
     }
 
     static func defaultDocuments() -> [DocumentItem] {

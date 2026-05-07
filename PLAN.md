@@ -1,38 +1,35 @@
-# Smarter readiness %, auto-start benefits, step-by-step guides, territories + expat support
+# Post-service Roadmap + State Benefits hero card
 
-## How the readiness % works today
+## Tools tab — State Benefits as a hero card
 
-Right now your % is an average across 7 categories (Admin, Health, Education, Employment, Family, Finance, Housing). Each category mixes:
-- Roadmap checklist items completed
-- Documents marked Received/Verified
-- Benefit action items completed
+- Pull "State Benefits Finder" out of the Planning category list.
+- Add a new full-width hero card below the three category cards (Money / Career / Planning) titled **"State Benefits Guide"**, with a flag visual, accent colors, and a short subtitle ("Find what your state, territory, or overseas residence offers veterans").
+- Tapping it opens the full State Benefits finder.
+- Expand coverage to include: **District of Columbia, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa, Northern Mariana Islands**, and an **Expat / Overseas** entry with a curated list of federal/VA benefits that travel with you (VA healthcare abroad via Foreign Medical Program, disability comp, GI Bill use overseas, SS, voting, tax notes).
 
-So the headline % only moves when you finish things across **all** of those areas — that's why it feels slow.
+## Roadmap — different experience for already-out users
 
-## What I'll change
+When the user's status is "Separated / Retired", the Roadmap tab swaps to a **post-service journey** instead of the pre-separation 18–24 → 30 days countdown.
 
-### 1. Make the % feel actionable (drill-in + next best tasks)
-- **Tap any category** on the Readiness dashboard to open a focused screen showing every remaining task, document, and benefit action that's dragging that category down — checkable right there.
-- **"Next 3 to boost your score"** card on the dashboard: surfaces the exact items that will bump your % the most when you complete them.
-- Each item shows a small "+X%" hint so you can see what your next click is worth.
+**New post-service phases** (replace timeline rail entirely for these users):
 
-### 2. Benefits guide: auto-start + better instructions
-- Checking off **any** action inside a benefit guide automatically flips it to **In Progress** — no more manual "Mark as Started." That button is removed.
-- Every action item gets a built-in **"How to do this"** step-by-step expander: clear numbered steps for what to click, what form to fill out, and what to bring. (Examples: VA disability claim → eBenefits/VA.gov walkthrough; SGLI→VGLI conversion → exact 120-day window steps; DD-214 request → eVetRecs flow.)
+1. **First 30 Days** — Verify essentials: DD-214 in hand, VA.gov account, healthcare enrolled, final pay reconciled, address updated, banking/credit transitioned.
+2. **First 90 Days** — Benefits activation: VA disability claim filed/tracked, GI Bill / VR&E decisions, state benefits claimed, life insurance (SGLI→VGLI) decision, TSP rollover.
+3. **First Year** — Career building: resume polished, LinkedIn rebuilt, certifications mapped, interview prep, networking cadence, mindset & identity reset, financial baseline.
+4. **Year 2 & Beyond** — Growth: career advancement, advanced education, mentorship, long-term financial planning, ongoing wellness.
 
-### 3. Territories + expats in the State Benefits Finder
-- Add full entries for: **District of Columbia, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa, Northern Mariana Islands**.
-- Add a **"Living Abroad (Expat)"** entry covering: Foreign Earned Income Exclusion basics, VA Foreign Medical Program, IRS filing rules, voting via FVAP, SSA payments abroad, and embassy/RAO contacts.
-- Rename the section to "State & Territory Benefits" so it's clear it's not just states.
+Each phase keeps the same progress bar + tap-into-detail flow, but the underlying tasks are post-service focused (documents check, benefits enrollment, career, resume, certs, interview prep, mindset, first-year guide).
 
-### 4. Small polish
-- Category cards on the dashboard get a subtle "tap to view tasks" affordance.
-- Benefit category cards already show progress — they'll now also show "In Progress" automatically the moment you check anything.
+The "YOU ARE HERE" indicator is calculated from months since separation date.
 
-## Screens affected
-- **Readiness Score dashboard** — categories become tappable, new "Boost your score" suggestions card.
-- **New Category Detail screen** — all unfinished items for that category in one place.
-- **Benefit Detail screen** — auto-start logic, "How to do this" steps under each action item.
-- **State Benefits Finder** — new territory entries + expat entry, updated title.
+## How users see it
 
-After this, your % will climb noticeably faster because you'll know exactly what to tap, and the guides will tell you how to actually do each step.
+- **Active-duty / pre-separation users**: roadmap looks the same as today (18–24 mo → 30 days).
+- **Separated / Retired users**: roadmap rail shows the four post-service phases above, with verification tasks front-loaded in "First 30 Days" so anyone who already did them can quickly check them off and move on to the meaningful work (benefits, career, mindset).
+- **Tools tab**: every user sees the new State Benefits Guide hero card at the bottom of the Tools tab, with broader location coverage.
+
+## Notes
+
+- The existing onboarding choice "Separated / Retired" stays as-is — no new questions to answer.
+- All existing tasks, calculators, and how-to content remain available; only the roadmap framing changes for post-service users.
+

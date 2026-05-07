@@ -67,7 +67,7 @@ struct TodayView: View {
                     return card.category == .wishIKnew || card.category == .forgottenDoc
                 case .sixMonths, .ninetyDays, .thirtyDays:
                     return card.category == .commonMistake || card.category == .forgottenDoc
-                case .firstNinety, .firstYear:
+                case .firstThirty, .firstNinety, .firstYear, .yearTwoPlus:
                     return card.category == .benefitSpotlight || card.category == .wishIKnew
                 }
             }
@@ -643,10 +643,14 @@ struct TodayView: View {
             return "Time-sensitive — don't delay"
         case .thirtyDays:
             return "Last-minute essential"
+        case .firstThirty:
+            return "Top of the post-service list"
         case .firstNinety:
             return "Priority for your first 90 days"
         case .firstYear:
             return "Important for settling in"
+        case .yearTwoPlus:
+            return "Long-term wins compound"
         }
     }
 

@@ -78,7 +78,7 @@ class StorageService {
     init() {
         let stored = StorageService.loadFromDisk()
         self.profile = stored.profile
-        self.checklistItems = stored.checklist
+        self.checklistItems = StorageService.migratedChecklist(stored.checklist)
         self.documents = stored.documents
         self.benefitCategories = stored.benefits
         self.mentors = stored.mentors
@@ -267,6 +267,20 @@ class StorageService {
         )
         guard let data = try? JSONEncoder().encode(container) else { return }
         UserDefaults.standard.set(data, forKey: userDefaultsKey)
+    }
+
+    private static func migratedChecklist(_ existing: [ChecklistItem]) -> [ChecklistItem] {
+        var items = existing
+        let existingIds = Set(items.map { $0.id })
+        let postServiceSeeds: [ChecklistItem] =
+            TransitionDataService.postServiceFirstThirtyItems()
+            + TransitionDataService.postServiceFirstNinetyItems()
+            + TransitionDataService.postServiceFirstYearItems()
+            + TransitionDataService.postServiceYearTwoPlusItems()
+        for seed in postServiceSeeds where !existingIds.contains(seed.id) {
+            items.append(seed)
+        }
+        return items
     }
 
     private static func loadFromDisk() -> StorageContainer {

@@ -18,7 +18,19 @@ struct RoadmapView: View {
         return Double(items.filter(\.isCompleted).count) / Double(items.count)
     }
 
+    private var isPostService: Bool {
+        storage.profile.timeline == .separated
+    }
+
     private var currentPhase: TimelinePhase? {
+        if isPostService {
+            guard let sepDate = storage.profile.separationDate else { return .firstThirty }
+            let monthsSince = Calendar.current.dateComponents([.month], from: sepDate, to: Date()).month ?? 0
+            if monthsSince < 1 { return .firstThirty }
+            if monthsSince < 3 { return .firstNinety }
+            if monthsSince < 12 { return .firstYear }
+            return .yearTwoPlus
+        }
         guard let sepDate = storage.profile.separationDate else { return nil }
         let months = Calendar.current.dateComponents([.month], from: Date(), to: sepDate).month ?? 0
         if months > 18 { return .eighteenToTwentyFour }
@@ -27,13 +39,19 @@ struct RoadmapView: View {
         if months > 3 { return .ninetyDays }
         if months > 0 { return .thirtyDays }
         let monthsSince = Calendar.current.dateComponents([.month], from: sepDate, to: Date()).month ?? 0
-        if monthsSince <= 3 { return .firstNinety }
-        return .firstYear
+        if monthsSince < 1 { return .firstThirty }
+        if monthsSince < 3 { return .firstNinety }
+        if monthsSince < 12 { return .firstYear }
+        return .yearTwoPlus
+    }
+
+    private var visiblePhases: [TimelinePhase] {
+        isPostService ? TimelinePhase.postServicePhases : TimelinePhase.preSeparationPhases
     }
 
     private var filteredPhases: [TimelinePhase] {
-        guard !searchText.isEmpty else { return TimelinePhase.allCases.map { $0 } }
-        return TimelinePhase.allCases.filter { phase in
+        guard !searchText.isEmpty else { return visiblePhases }
+        return visiblePhases.filter { phase in
             itemsForPhase(phase).contains { item in
                 item.title.localizedCaseInsensitiveContains(searchText) ||
                 item.subtitle.localizedCaseInsensitiveContains(searchText)
@@ -91,7 +109,7 @@ struct RoadmapView: View {
 
     private func isPhaseCompleted(_ phase: TimelinePhase) -> Bool {
         guard let current = currentPhase else { return false }
-        let allPhases = TimelinePhase.allCases
+        let allPhases = visiblePhases
         guard let currentIdx = allPhases.firstIndex(of: current),
               let phaseIdx = allPhases.firstIndex(of: phase) else { return false }
         return phaseIdx < currentIdx

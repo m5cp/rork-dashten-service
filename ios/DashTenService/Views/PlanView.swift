@@ -263,10 +263,14 @@ struct PlanView: View {
             return "Final push. Complete medical exams, confirm orders, and tie up loose ends."
         case .thirtyDays:
             return "Last-minute essentials. Verify DD214, set up civilian accounts."
+        case .firstThirty:
+            return "Verify your DD-214, healthcare, and final pay. Lock the basics in."
         case .firstNinety:
-            return "Stabilize first. Enroll in health care, file claims, build your routine."
+            return "Activate benefits. File VA claims, decide GI Bill / VR&E, handle SGLI."
         case .firstYear:
-            return "Settle in. Review your plan, adjust your budget, follow up on claims."
+            return "Build the career. Resume, LinkedIn, certs, interviews, and mindset reset."
+        case .yearTwoPlus:
+            return "Compound the wins. Advance your career, mentor, and plan long-term."
         }
     }
 
