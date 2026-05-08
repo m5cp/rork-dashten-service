@@ -1,30 +1,52 @@
-# Reframe retired/separated roadmap as review-first, then after-service focus
+# Redesign Home tab with premium liquid-glass feel
 
-## What changes for already-out-of-service users
+## Overview
+Rename **Today** → **Home**, remove the Roadmap section, and rebuild the screen so a user understands their status in under 3 seconds. The new layout uses a calm, premium liquid-glass aesthetic with large typography and soft gradients — nothing busy, nothing redundant.
 
-When someone selects **Retired** or **Separated** during onboarding, the Roadmap tab will open with a clear, friendly message that their transition checklist is behind them — they just need to glance back and confirm nothing slipped through — and then guide them straight into life after service.
+## What changes
 
-### New top hero message
-- Headline: "You're already out of the service."
-- Subhead: "Quickly review your transition checklist to make sure nothing was missed — then let's focus on what's next."
-- Two clear action buttons stacked under the message:
-  1. **Review Transition Checklist** — opens the pre-separation review card expanded, ready to check off anything that was done.
-  2. **Go to After-Service Actions** — jumps the user down to the "What's Next" pillars (Benefits, Career, Mindset, Growth) and post-service timeline.
+**Tab rename**
+- Bottom tab labeled "Today" becomes "Home" with a house icon.
 
-### Pre-Separation Review card (refined)
-- Now framed as a *look-back*, not a to-do.
-- Copy changes to: "Tap each item you completed before leaving service. This is just a confirmation pass — most users finish in under a minute."
-- A prominent **"I completed everything"** button marks all pre-separation items done at once (already exists, made more prominent).
-- Once all items are confirmed, the card collapses into a small green "Transition review complete ✓" pill and the page auto-scrolls focus to the After-Service section.
+**Removed from Home**
+- The Roadmap / phase section (and any duplicate phase progress block).
+- Any redundant scroll-padding sections that made the page feel long.
 
-### After-Service section (the real focus)
-- Section header changes from "What's Next" to **"Your Focus Now"** with subhead "Benefits, career, mindset, and long-term growth."
-- The four pillar cards (Benefits, Career & Resume, Mindset & Wellness, Long-Term Growth) become the visual centerpiece — slightly larger, with richer descriptions tailored to someone already out.
-- The post-service timeline (First 30 days → Year 2+) sits below the pillars as a secondary reference.
+## New Home screen — top to bottom
 
-### Behavior
-- This new layout only applies when the user's status is Retired or Separated. Active duty / transitioning users keep their existing forward-looking roadmap.
-- All existing data, progress, and check-off logic is preserved — only the framing, copy, and order of the screen change.
+1. **Greeting + status hero (the 3-second answer)**
+   - Personal greeting ("Good morning, [Name]")
+   - One line that adapts to status:
+     - Active/transitioning: "**147 days** until separation"
+     - Retired/separated: "**Retired** · 4 months out"
+   - Below it, a soft status pill: "On track" / "Needs attention" / "Civilian chapter"
+   - Set on a soft gradient background with subtle liquid-glass layers — large, confident type.
 
-### Result
-A retired or separated user opens the Roadmap and immediately understands: "The checklist is for review. My real work now is benefits, career, mindset, and growth." No more confusion about why a transition roadmap is showing for someone already transitioned.
+2. **Readiness ring card**
+   - A single elegant circular ring showing overall % ready, with a short caption ("Documents, benefits, and checklist combined"). Tap to open Readiness Dashboard.
+
+3. **Today's Focus**
+   - One single task card — the most important next action.
+   - Big check button with haptic + celebration when completed.
+   - Small "See all tasks" link to the Plan tab.
+
+4. **Streak strip**
+   - A clean 7-day dot row with today highlighted, plus current streak number. No extra chrome.
+
+5. **Daily Insight**
+   - One rotating insight card (tip, common mistake, or benefit spotlight) — glass card with a soft accent.
+
+That's it. No quick-actions row, no roadmap, no duplicate progress bars. The page fits roughly one scroll on most phones.
+
+## Visual design
+- **Liquid-glass** layered cards with translucent fills and soft inner highlights (uses iOS 26 glass effect where available, ultra-thin material fallback).
+- **Soft gradient backdrop** that shifts subtly based on time of day (dawn / day / dusk / night).
+- **Large display typography** for the hero number (days remaining or "Retired") — confident, magazine-style.
+- **Forest green + gold accents** kept consistent with the rest of the app.
+- **Micro-interactions**: gentle entrance animations, spring on tap, haptic on completion, ring fills with a smooth animation when readiness changes.
+
+## Pages affected
+- **Home tab** (formerly Today): fully redesigned as described.
+- **Tab bar**: label and icon update only.
+
+No other tabs, data, or flows are changed.

@@ -17,7 +17,7 @@ struct ContentView: View {
 
     private var mainTabView: some View {
         TabView(selection: $selectedTab) {
-            Tab("Today", systemImage: "sun.max.fill", value: 0) {
+            Tab("Home", systemImage: "house.fill", value: 0) {
                 TodayView(storage: storage, store: store, selectedTab: $selectedTab)
             }
             Tab("Plan", systemImage: "map.fill", value: 1) {
