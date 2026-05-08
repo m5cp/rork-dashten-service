@@ -16,6 +16,7 @@ struct ProfileView: View {
     @State private var showDisclaimer: Bool = false
     @State private var showResetAlert: Bool = false
     @State private var showOnboarding: Bool = false
+    @State private var showEditProfile: Bool = false
 
     private var readiness: ReadinessCalculator.ReadinessScore {
         ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
@@ -139,15 +140,13 @@ struct ProfileView: View {
                     }
                 }
 
-                Section("Personal Info") {
-                    TextField("Display Name", text: $storage.profile.displayName)
-                        .font(.body.weight(.semibold))
-
+                Section {
                     Stepper("Household Size: \(storage.profile.householdSize)", value: $storage.profile.householdSize, in: 1...20)
                         .font(.body.weight(.semibold))
-
-                    TextField("Spouse Name", text: $storage.profile.spouseName)
-                        .font(.body.weight(.semibold))
+                } header: {
+                    Text("Household")
+                } footer: {
+                    Text("Used by budget and benefit calculators.")
                 }
 
                 Section("Notifications") {
@@ -389,6 +388,9 @@ struct ProfileView: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallView(store: store)
             }
+            .sheet(isPresented: $showEditProfile) {
+                EditProfileSheet(storage: storage)
+            }
             .offerCodeRedemption(isPresented: $showRedeemCode) { _ in
                 Task { await store.checkStatus() }
             }
@@ -428,34 +430,53 @@ struct ProfileView: View {
 
     private var profileHeader: some View {
         VStack(spacing: 16) {
-            HStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(AppTheme.forestGreen.opacity(0.12))
-                        .frame(width: 64, height: 64)
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 36))
-                        .foregroundStyle(AppTheme.forestGreen)
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(storage.profile.displayName.isEmpty ? "Service Member" : storage.profile.displayName)
-                        .font(.title3.bold())
-                    if let branch = storage.profile.branch {
-                        Text(branch.rawValue)
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.7))
+            Button {
+                showEditProfile = true
+            } label: {
+                HStack(spacing: 16) {
+                    ZStack(alignment: .bottomTrailing) {
+                        AvatarView(
+                            photoData: storage.profile.avatarPhotoData,
+                            presetId: storage.profile.avatarPresetId,
+                            displayName: storage.profile.displayName,
+                            size: 64
+                        )
+                        Image(systemName: "pencil")
+                            .font(.system(size: 11, weight: .heavy))
+                            .foregroundStyle(.white)
+                            .frame(width: 22, height: 22)
+                            .background(AppTheme.forestGreen, in: Circle())
+                            .overlay(Circle().stroke(Color(.systemBackground), lineWidth: 2))
+                            .offset(x: 2, y: 2)
                     }
-                    if let date = storage.profile.separationDate {
-                        let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
-                        Text(days > 0 ? "\(days) days until separation" : "\(abs(days)) days since separation")
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.6))
-                    }
-                }
 
-                Spacer()
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(storage.profile.displayName.isEmpty ? "Tap to set name" : storage.profile.displayName)
+                            .font(.title3.bold())
+                            .foregroundStyle(.primary)
+                        if let branch = storage.profile.branch {
+                            Text(branch.rawValue)
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.primary.opacity(0.7))
+                        }
+                        if let date = storage.profile.separationDate {
+                            let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
+                            Text(days > 0 ? "\(days) days until separation" : "\(abs(days)) days since separation")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.primary.opacity(0.6))
+                        }
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.tertiary)
+                }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Edit profile name and avatar")
 
             HStack(spacing: 12) {
                 MiniReadinessCard(

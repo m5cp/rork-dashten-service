@@ -1,52 +1,26 @@
-# Redesign Home tab with premium liquid-glass feel
+# Tidy Home label, add avatar editor, slim Profile
 
-## Overview
-Rename **Today** → **Home**, remove the Roadmap section, and rebuild the screen so a user understands their status in under 3 seconds. The new layout uses a calm, premium liquid-glass aesthetic with large typography and soft gradients — nothing busy, nothing redundant.
+**Home tab**
 
-## What changes
+- Remove the "Civilian chapter" status badge for retired/separated users — it didn't go anywhere and added clutter.
 
-**Tab rename**
-- Bottom tab labeled "Today" becomes "Home" with a house icon.
+**Profile photo & name editor**
 
-**Removed from Home**
-- The Roadmap / phase section (and any duplicate phase progress block).
-- Any redundant scroll-padding sections that made the page feel long.
+- Tap the avatar circle (or the name beside it) on the Profile tab to open a quick edit sheet.
+- In the sheet, users can:
+  - Change their display name.
+  - Upload a photo from their library, or
+  - Pick a preset avatar (icon + color combo) from a small built-in set.
+  - Remove the photo to go back to the default.
+- The chosen photo/avatar shows everywhere the profile circle appears (Profile header, Home greeting if applicable).
 
-## New Home screen — top to bottom
+**Profile tab cleanup**
 
-1. **Greeting + status hero (the 3-second answer)**
-   - Personal greeting ("Good morning, [Name]")
-   - One line that adapts to status:
-     - Active/transitioning: "**147 days** until separation"
-     - Retired/separated: "**Retired** · 4 months out"
-   - Below it, a soft status pill: "On track" / "Needs attention" / "Civilian chapter"
-   - Set on a soft gradient background with subtle liquid-glass layers — large, confident type.
+- Remove the "Spouse Name" field.
+- Remove the "Display Name" field from the Personal Info section (now edited via the avatar tap).
+- Keep "Household Size" since calculators use it — moved under a clearer "Household" section.
 
-2. **Readiness ring card**
-   - A single elegant circular ring showing overall % ready, with a short caption ("Documents, benefits, and checklist combined"). Tap to open Readiness Dashboard.
+**Visual polish**
 
-3. **Today's Focus**
-   - One single task card — the most important next action.
-   - Big check button with haptic + celebration when completed.
-   - Small "See all tasks" link to the Plan tab.
+- Subtle press animation on the avatar so it's obviously tappable, with a small pencil badge in the corner to signal "edit".
 
-4. **Streak strip**
-   - A clean 7-day dot row with today highlighted, plus current streak number. No extra chrome.
-
-5. **Daily Insight**
-   - One rotating insight card (tip, common mistake, or benefit spotlight) — glass card with a soft accent.
-
-That's it. No quick-actions row, no roadmap, no duplicate progress bars. The page fits roughly one scroll on most phones.
-
-## Visual design
-- **Liquid-glass** layered cards with translucent fills and soft inner highlights (uses iOS 26 glass effect where available, ultra-thin material fallback).
-- **Soft gradient backdrop** that shifts subtly based on time of day (dawn / day / dusk / night).
-- **Large display typography** for the hero number (days remaining or "Retired") — confident, magazine-style.
-- **Forest green + gold accents** kept consistent with the rest of the app.
-- **Micro-interactions**: gentle entrance animations, spring on tap, haptic on completion, ring fills with a smooth animation when readiness changes.
-
-## Pages affected
-- **Home tab** (formerly Today): fully redesigned as described.
-- **Tab bar**: label and icon update only.
-
-No other tabs, data, or flows are changed.

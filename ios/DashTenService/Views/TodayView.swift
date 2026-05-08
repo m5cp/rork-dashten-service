@@ -68,9 +68,9 @@ struct TodayView: View {
         return cards[dayOfYear % cards.count]
     }
 
-    private var statusPill: (text: String, color: Color) {
+    private var statusPill: (text: String, color: Color)? {
+        if isRetiredOrSeparated { return nil }
         let pct = readiness.overallPercent
-        if isRetiredOrSeparated { return ("Civilian chapter", AppTheme.gold) }
         if pct >= 75 { return ("On track", AppTheme.forestGreen) }
         if pct >= 40 { return ("Building momentum", AppTheme.gold) }
         return ("Needs attention", .orange)
@@ -256,18 +256,21 @@ struct TodayView: View {
         }
     }
 
+    @ViewBuilder
     private var statusPillView: some View {
-        HStack(spacing: 6) {
-            Circle()
-                .fill(statusPill.color)
-                .frame(width: 6, height: 6)
-            Text(statusPill.text)
-                .font(.caption.weight(.heavy))
-                .foregroundStyle(.primary)
+        if let pill = statusPill {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(pill.color)
+                    .frame(width: 6, height: 6)
+                Text(pill.text)
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(.primary)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color(.tertiarySystemGroupedBackground), in: Capsule())
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(Color(.tertiarySystemGroupedBackground), in: Capsule())
     }
 
     // MARK: - Readiness
