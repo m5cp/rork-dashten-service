@@ -1,33 +1,30 @@
-# Remove brand and company name references from DashTen content
+# Reframe retired/separated roadmap as review-first, then after-service focus
 
-Strip out every named company, third-party platform, and branded program from the app's content so it doesn't imply a partnership. Official government benefits (GI Bill, VR&E, TAP, VA, etc.) stay because they're standard veteran benefits, not partnerships.
+## What changes for already-out-of-service users
 
-## What changes for the user
+When someone selects **Retired** or **Separated** during onboarding, the Roadmap tab will open with a clear, friendly message that their transition checklist is behind them — they just need to glance back and confirm nothing slipped through — and then guide them straight into life after service.
 
-- **No more brand names in checklists, guides, or tips.** References to LinkedIn, VET TEC, COOL, Hiring Our Heroes, RecruitMilitary, Fortune 500, Google, etc. will be replaced with neutral, descriptive language.
-- **Resume & networking guidance** will say things like "professional networking site," "veteran-friendly job board," and "military-funded certification programs" instead of brand names.
-- **Career events** will be described as "veteran hiring events and career fairs" instead of named organizations.
-- **External links** will be cleaned up — only official government sites (va.gov and similar `.gov` resources) will remain. Links to LinkedIn, Hiring Our Heroes, etc. will be removed.
-- **Document checklist** item "LinkedIn Profile (Updated)" becomes "Professional Networking Profile (Updated)."
-- **Action items** like "Set up LinkedIn profile" become "Set up a professional networking profile."
-- **Certification examples** (PMP, AWS, Security+, CDL, Six Sigma) — these are industry-standard credentials, not company brands, so they stay unless you'd prefer otherwise. I'll genericize the surrounding text so it reads as examples, not endorsements.
+### New top hero message
+- Headline: "You're already out of the service."
+- Subhead: "Quickly review your transition checklist to make sure nothing was missed — then let's focus on what's next."
+- Two clear action buttons stacked under the message:
+  1. **Review Transition Checklist** — opens the pre-separation review card expanded, ready to check off anything that was done.
+  2. **Go to After-Service Actions** — jumps the user down to the "What's Next" pillars (Benefits, Career, Mindset, Growth) and post-service timeline.
 
-## Where these updates land
+### Pre-Separation Review card (refined)
+- Now framed as a *look-back*, not a to-do.
+- Copy changes to: "Tap each item you completed before leaving service. This is just a confirmation pass — most users finish in under a minute."
+- A prominent **"I completed everything"** button marks all pre-separation items done at once (already exists, made more prominent).
+- Once all items are confirmed, the card collapses into a small green "Transition review complete ✓" pill and the page auto-scrolls focus to the After-Service section.
 
-- Transition checklist items (pre-separation and post-separation roadmap)
-- Benefit action how-to steps (resume, networking, job search, education)
-- Task how-to tips
-- Document checklist
-- Insight cards ("wish I knew" tips)
-- First Year Guide and Planning Hub guidance
-- Roadmap category subtitles
-- Resume / Personal Brand / Networking tool copy
-- Search keywords (so users can still find things by typing "linkedin" — internal keywords only, not visible text)
+### After-Service section (the real focus)
+- Section header changes from "What's Next" to **"Your Focus Now"** with subhead "Benefits, career, mindset, and long-term growth."
+- The four pillar cards (Benefits, Career & Resume, Mindset & Wellness, Long-Term Growth) become the visual centerpiece — slightly larger, with richer descriptions tailored to someone already out.
+- The post-service timeline (First 30 days → Year 2+) sits below the pillars as a secondary reference.
 
-## What stays unchanged
+### Behavior
+- This new layout only applies when the user's status is Retired or Separated. Active duty / transitioning users keep their existing forward-looking roadmap.
+- All existing data, progress, and check-off logic is preserved — only the framing, copy, and order of the screen change.
 
-- All official government benefits and programs: GI Bill, Post-9/11 GI Bill, Montgomery GI Bill, VR&E (Ch 31), TAP, VA Home Loan, BAH, SGLI, FAFSA, FEIE, etc.
-- All `va.gov` and other official `.gov` links
-- Industry-standard certifications referenced as examples (PMP, Security+, CDL, etc.)
-- App layout, navigation, and all other functionality
-
+### Result
+A retired or separated user opens the Roadmap and immediately understands: "The checklist is for review. My real work now is benefits, career, mindset, and growth." No more confusion about why a transition roadmap is showing for someone already transitioned.

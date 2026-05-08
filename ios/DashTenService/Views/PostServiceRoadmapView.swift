@@ -56,19 +56,22 @@ struct PostServiceRoadmapView: View {
     @Bindable var storage: StorageService
     @State private var reviewExpanded: Bool = false
     @State private var pillarSelection: NextStepPillar?
+    @Namespace private var afterServiceAnchor
 
     private var status: PostServiceStatus {
         storage.profile.postServiceStatus ?? .separated
     }
 
     private var greeting: String {
-        status == .retired ? "Welcome to retirement" : "Welcome back, Veteran"
+        "You're already out of the service"
     }
 
     private var subhead: String {
-        status == .retired
-            ? "Your roadmap is now about pension, Tricare, family planning, and what's next."
-            : "Your roadmap is now forward-looking — benefits, career, mindset, and growth."
+        "Quickly review your transition checklist to make sure nothing was missed — then let's focus on what's next."
+    }
+
+    private var preSepAllDone: Bool {
+        !preSepItems.isEmpty && preSepGaps == 0
     }
 
     private var preSepItems: [ChecklistItem] {
@@ -85,15 +88,18 @@ struct PostServiceRoadmapView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                heroHeader
-                preSeparationReviewCard
-                pillarsSection
-                timelineSection
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 20) {
+                    heroHeader(proxy: proxy)
+                    preSeparationReviewCard
+                    pillarsSection
+                        .id("afterService")
+                    timelineSection
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 100)
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 100)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Roadmap")
@@ -105,8 +111,8 @@ struct PostServiceRoadmapView: View {
         }
     }
 
-    private var heroHeader: some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private func heroHeader(proxy: ScrollViewProxy) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 10) {
                 Image(systemName: status.icon)
                     .font(.title2.weight(.bold))
@@ -114,11 +120,63 @@ struct PostServiceRoadmapView: View {
                 Text(greeting)
                     .font(.title2.weight(.bold))
                     .foregroundStyle(.white)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Text(subhead)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.85))
+                .foregroundStyle(.white.opacity(0.9))
                 .fixedSize(horizontal: false, vertical: true)
+
+            VStack(spacing: 10) {
+                Button {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                        reviewExpanded = true
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "checklist")
+                        Text("Review Transition Checklist")
+                            .font(.subheadline.weight(.heavy))
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                    }
+                    .foregroundStyle(AppTheme.darkGreen)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 14)
+                    .frame(maxWidth: .infinity)
+                    .background(.white)
+                    .clipShape(.rect(cornerRadius: 12))
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.85)) {
+                        proxy.scrollTo("afterService", anchor: .top)
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.forward.circle.fill")
+                        Text("Go to After-Service Actions")
+                            .font(.subheadline.weight(.heavy))
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 14)
+                    .frame(maxWidth: .infinity)
+                    .background(.white.opacity(0.18))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(.white.opacity(0.4), lineWidth: 1)
+                    )
+                    .clipShape(.rect(cornerRadius: 12))
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.top, 4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
@@ -149,15 +207,16 @@ struct PostServiceRoadmapView: View {
                         .clipShape(.rect(cornerRadius: 12))
 
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("Pre-Separation Review")
+                        Text(preSepAllDone ? "Transition review complete" : "Transition Checklist Review")
                             .font(.subheadline.weight(.heavy))
                             .foregroundStyle(.primary)
-                        Text(preSepGaps == 0
-                             ? "All steps reviewed — tap to expand if you want to flag a gap"
-                             : "\(preSepGaps) item\(preSepGaps == 1 ? "" : "s") still need attention")
+                        Text(preSepAllDone
+                             ? "Nothing missed — you're set on the pre-separation work"
+                             : "Tap each item you completed before leaving service. Quick confirmation pass — most users finish in under a minute.")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer()
                     Image(systemName: "chevron.down")
@@ -183,13 +242,13 @@ struct PostServiceRoadmapView: View {
                                 storage.bulkMarkPreSeparationComplete()
                             }
                         } label: {
-                            Label("Mark all as reviewed & complete", systemImage: "checkmark.circle.fill")
-                                .font(.caption.weight(.heavy))
+                            Label("I completed everything", systemImage: "checkmark.seal.fill")
+                                .font(.subheadline.weight(.heavy))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 10)
+                                .padding(.vertical, 12)
                                 .background(AppTheme.forestGreen)
-                                .clipShape(.rect(cornerRadius: 10))
+                                .clipShape(.rect(cornerRadius: 12))
                         }
                         .buttonStyle(.plain)
                         .sensoryFeedback(.success, trigger: preSepCompleted)
@@ -250,14 +309,14 @@ struct PostServiceRoadmapView: View {
 
     private var pillarsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("What's Next")
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Your Focus Now")
                     .font(.title3.weight(.heavy))
-                Spacer()
-                Text("Your forward roadmap")
+                Text("Benefits, career, mindset, and long-term growth.")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
                 ForEach(NextStepPillar.allCases) { pillar in
