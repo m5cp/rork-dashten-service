@@ -78,9 +78,7 @@ struct PlanView: View {
     var body: some View {
         NavigationStack {
             ScrollViewReader { proxy in
-            ZStack {
-                AmbientBackdrop().ignoresSafeArea()
-                ScrollView {
+            ScrollView {
                 VStack(spacing: 20) {
                     missionBriefing
                     timelineRoadmap
@@ -90,16 +88,14 @@ struct PlanView: View {
                     documentsSection
                 }
                 .padding(.horizontal, 16)
-                .padding(.top, 8)
                 .padding(.bottom, 100)
             }
-            .scrollContentBackground(.hidden)
             .onReceive(NotificationCenter.default.publisher(for: .scrollToRoadmap)) { _ in
                 withAnimation(.spring(response: 0.5)) {
                     proxy.scrollTo("roadmap", anchor: .top)
                 }
             }
-            }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Plan")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -431,7 +427,8 @@ struct PlanView: View {
                     .foregroundStyle(.tertiary)
             }
             .padding(16)
-            .glassCard(cornerRadius: 18)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 16))
         }
         .buttonStyle(.plain)
     }
@@ -485,7 +482,8 @@ struct PlanView: View {
                 }
             }
             .padding(16)
-            .glassCard(cornerRadius: 18)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 16))
         }
     }
 

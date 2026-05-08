@@ -23,9 +23,7 @@ struct ProfileView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                AmbientBackdrop().ignoresSafeArea()
-                List {
+            List {
                 profileHeader
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
@@ -356,8 +354,6 @@ struct ProfileView: View {
                     .foregroundStyle(.primary.opacity(0.5))
                     .frame(maxWidth: .infinity)
                 }
-            }
-            .scrollContentBackground(.hidden)
             }
             .navigationTitle("Profile")
             .navigationDestination(for: PlanningRoute.self) { route in

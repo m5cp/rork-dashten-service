@@ -48,4 +48,5 @@ That's it. No quick-actions row, no roadmap, no duplicate progress bars. The pag
 ## Pages affected
 - **Home tab** (formerly Today): fully redesigned as described.
 - **Tab bar**: label and icon update only.
-- **Plan, Tools, Learn, Profile tabs**: same calm liquid-glass treatment applied (shared ambient backdrop + glass card helpers) for cohesion across the whole app.
+
+No other tabs, data, or flows are changed.
