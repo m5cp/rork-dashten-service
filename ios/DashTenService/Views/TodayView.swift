@@ -83,40 +83,36 @@ struct TodayView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                ambientBackground
-                    .ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 20) {
+                    heroCard
+                        .delayedEntrance(appeared, delay: 0.0)
 
-                ScrollView {
-                    VStack(spacing: 18) {
-                        heroCard
-                            .delayedEntrance(appeared, delay: 0.0)
+                    readinessCard
+                        .delayedEntrance(appeared, delay: 0.08)
 
-                        readinessCard
-                            .delayedEntrance(appeared, delay: 0.08)
-
-                        if let focus = focusAction {
-                            focusCard(focus)
-                                .delayedEntrance(appeared, delay: 0.16)
-                        } else {
-                            allCaughtUpCard
-                                .delayedEntrance(appeared, delay: 0.16)
-                        }
-
-                        streakStrip
-                            .delayedEntrance(appeared, delay: 0.24)
-
-                        if let card = insightCard {
-                            insightView(card)
-                                .delayedEntrance(appeared, delay: 0.32)
-                        }
+                    if let focus = focusAction {
+                        focusCard(focus)
+                            .delayedEntrance(appeared, delay: 0.16)
+                    } else {
+                        allCaughtUpCard
+                            .delayedEntrance(appeared, delay: 0.16)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
-                    .padding(.bottom, 100)
+
+                    streakStrip
+                        .delayedEntrance(appeared, delay: 0.24)
+
+                    if let card = insightCard {
+                        insightView(card)
+                            .delayedEntrance(appeared, delay: 0.32)
+                    }
                 }
-                .scrollIndicators(.hidden)
+                .padding(.horizontal, 16)
+                .padding(.top, 4)
+                .padding(.bottom, 100)
             }
+            .scrollIndicators(.hidden)
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -171,38 +167,6 @@ struct TodayView: View {
         }
     }
 
-    // MARK: - Ambient background
-
-    private var ambientBackground: some View {
-        let hour = Calendar.current.component(.hour, from: Date())
-        let palette: [Color]
-        if hour < 6 {
-            palette = [Color(red: 0.07, green: 0.10, blue: 0.16), Color(red: 0.05, green: 0.08, blue: 0.12)]
-        } else if hour < 11 {
-            palette = [Color(red: 0.94, green: 0.96, blue: 0.93), Color(red: 0.86, green: 0.92, blue: 0.88)]
-        } else if hour < 17 {
-            palette = [Color(red: 0.96, green: 0.97, blue: 0.95), Color(red: 0.88, green: 0.93, blue: 0.90)]
-        } else if hour < 20 {
-            palette = [Color(red: 0.98, green: 0.92, blue: 0.84), Color(red: 0.90, green: 0.84, blue: 0.78)]
-        } else {
-            palette = [Color(red: 0.10, green: 0.14, blue: 0.18), Color(red: 0.06, green: 0.09, blue: 0.12)]
-        }
-        return ZStack {
-            LinearGradient(colors: palette, startPoint: .top, endPoint: .bottom)
-            // Soft accent orbs
-            Circle()
-                .fill(AppTheme.forestGreen.opacity(0.12))
-                .frame(width: 320, height: 320)
-                .blur(radius: 80)
-                .offset(x: -120, y: -260)
-            Circle()
-                .fill(AppTheme.gold.opacity(0.10))
-                .frame(width: 280, height: 280)
-                .blur(radius: 80)
-                .offset(x: 140, y: -140)
-        }
-    }
-
     // MARK: - Hero
 
     private var heroCard: some View {
@@ -233,8 +197,9 @@ struct TodayView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(22)
-        .background(glassBackground(cornerRadius: 24))
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 20))
     }
 
     @ViewBuilder
@@ -302,8 +267,7 @@ struct TodayView: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(.white.opacity(0.2), lineWidth: 1))
+        .background(Color(.tertiarySystemGroupedBackground), in: Capsule())
     }
 
     // MARK: - Readiness
@@ -338,9 +302,10 @@ struct TodayView: View {
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.tertiary)
             }
-            .padding(20)
+            .padding(18)
             .frame(maxWidth: .infinity)
-            .background(glassBackground(cornerRadius: 22))
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 18))
         }
         .buttonStyle(.plain)
     }
@@ -404,9 +369,10 @@ struct TodayView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(20)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(glassBackground(cornerRadius: 22))
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 18))
     }
 
     private var allCaughtUpCard: some View {
@@ -424,9 +390,10 @@ struct TodayView: View {
             }
             Spacer()
         }
-        .padding(20)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(glassBackground(cornerRadius: 22))
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 18))
     }
 
     // MARK: - Streak strip
@@ -454,9 +421,10 @@ struct TodayView: View {
                 }
             }
         }
-        .padding(.horizontal, 18)
+        .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .background(glassBackground(cornerRadius: 18))
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 16))
     }
 
     private func dayDot(active: Bool, isToday: Bool) -> some View {
@@ -493,38 +461,9 @@ struct TodayView: View {
                 .multilineTextAlignment(.leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
-        .background(glassBackground(cornerRadius: 22))
-    }
-
-    // MARK: - Glass background
-
-    @ViewBuilder
-    private func glassBackground(cornerRadius: CGFloat) -> some View {
-        if #available(iOS 26.0, *) {
-            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .strokeBorder(
-                            LinearGradient(
-                                colors: [.white.opacity(0.4), .white.opacity(0.05)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 1
-                        )
-                )
-                .shadow(color: .black.opacity(0.06), radius: 14, y: 6)
-        } else {
-            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .strokeBorder(.white.opacity(0.25), lineWidth: 1)
-                )
-                .shadow(color: .black.opacity(0.06), radius: 14, y: 6)
-        }
+        .padding(18)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 18))
     }
 
     private func checkMilestone(old: Int, new: Int) {
