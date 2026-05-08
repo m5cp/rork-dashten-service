@@ -151,7 +151,9 @@ struct ToolboxView: View {
 
     var body: some View {
         NavigationStack(path: $navPath) {
-            ScrollView {
+            ZStack {
+                AmbientBackdrop().ignoresSafeArea()
+                ScrollView {
                 VStack(spacing: 24) {
                     if isSearching {
                         searchResultsSection
@@ -161,9 +163,11 @@ struct ToolboxView: View {
                     }
                 }
                 .padding(.horizontal, 16)
+                .padding(.top, 8)
                 .padding(.bottom, 100)
             }
-            .background(Color(.systemGroupedBackground))
+            .scrollContentBackground(.hidden)
+            }
             .navigationTitle("Tools")
             .navigationDestination(for: PlanningRoute.self) { route in
                 routeDestination(route)

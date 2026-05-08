@@ -26,7 +26,9 @@ struct LearnView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
+            ZStack {
+                AmbientBackdrop().ignoresSafeArea()
+                ScrollView {
                 VStack(spacing: 20) {
                     insightSection
 
@@ -68,9 +70,11 @@ struct LearnView: View {
                     }
                 }
                 .padding(.horizontal, 16)
+                .padding(.top, 8)
                 .padding(.bottom, 100)
             }
-            .background(Color(.systemGroupedBackground))
+            .scrollContentBackground(.hidden)
+            }
             .navigationTitle("Learn")
             .navigationDestination(for: LearnDestination.self) { dest in
                 switch dest {
