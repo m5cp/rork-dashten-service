@@ -13,7 +13,25 @@ struct SearchView: View {
     private var isSearching: Bool { !searchText.isEmpty }
 
     private var allTools: [ToolboxView.ToolEntry] {
-        moneyTools + careerTools + planningTools
+        moneyTools + careerTools + planningTools + guideEntries
+    }
+
+    private var guideEntries: [ToolboxView.ToolEntry] {
+        [
+            ToolboxView.ToolEntry(title: "Mindset Shifts", subtitle: "Reframe your thinking from military to civilian", icon: "brain.fill", color: .indigo, action: .nav(.mindsetShifts), keywords: ["mindset", "identity", "culture", "transition"]),
+            ToolboxView.ToolEntry(title: "Civilian Playbook", subtitle: "Unwritten rules of civilian life", icon: "book.closed.fill", color: .blue, action: .nav(.civilianPlaybook), keywords: ["playbook", "civilian", "norms", "rules"]),
+            ToolboxView.ToolEntry(title: "First 30 Days Guide", subtitle: "Week-by-week separation plan", icon: "flag.fill", color: AppTheme.gold, action: .nav(.firstThirtyDays), keywords: ["first 30", "separation", "checklist"]),
+            ToolboxView.ToolEntry(title: "First Year Guide", subtitle: "Month-by-month after service", icon: "calendar", color: .purple, action: .nav(.firstYearGuide), keywords: ["first year", "after service", "month"]),
+            ToolboxView.ToolEntry(title: "Career Planning", subtitle: "Resume, networking, and career path", icon: "briefcase.fill", color: .teal, action: .nav(.career), keywords: ["career", "job", "resume"]),
+            ToolboxView.ToolEntry(title: "Education Planning", subtitle: "GI Bill, VR&E, scholarships, and how to fund school", icon: "graduationcap.fill", color: .blue, action: .nav(.education), keywords: ["education", "gi bill", "vre", "yellow ribbon", "school", "college", "trade", "fafsa"]),
+            ToolboxView.ToolEntry(title: "Family & Relocation", subtitle: "Move, spouse employment, kids", icon: "house.fill", color: .pink, action: .nav(.family), keywords: ["family", "spouse", "move", "relocation"]),
+            ToolboxView.ToolEntry(title: "Financial Planning", subtitle: "Budget, insurance, taxes", icon: "dollarsign.circle.fill", color: AppTheme.gold, action: .nav(.financial), keywords: ["finance", "budget", "sgli", "vgli", "insurance"]),
+            ToolboxView.ToolEntry(title: "Self-Assessment", subtitle: "Score your readiness across categories", icon: "checkmark.seal.fill", color: AppTheme.forestGreen, action: .nav(.selfAssessment), keywords: ["assessment", "readiness", "quiz"]),
+            ToolboxView.ToolEntry(title: "Documents Vault", subtitle: "Store DD214 and key paperwork", icon: "folder.fill", color: .orange, action: .nav(.documents), keywords: ["dd214", "documents", "paperwork"]),
+            ToolboxView.ToolEntry(title: "Mentor Tracker", subtitle: "Track mentors and outreach", icon: "person.crop.circle.badge.checkmark", color: .blue, action: .nav(.mentorTracker), keywords: ["mentor", "contacts"]),
+            ToolboxView.ToolEntry(title: "Final Gear Check", subtitle: "Pre-separation final review", icon: "checklist", color: .pink, action: .nav(.finalGearCheck), keywords: ["gear check", "final", "checklist"]),
+            ToolboxView.ToolEntry(title: "Readiness Dashboard", subtitle: "Your overall readiness score", icon: "gauge.medium", color: AppTheme.forestGreen, action: .nav(.readiness), keywords: ["readiness", "dashboard", "score"]),
+        ]
     }
 
     private var moneyTools: [ToolboxView.ToolEntry] {
@@ -83,6 +101,7 @@ struct SearchView: View {
                 .padding(.bottom, 100)
             }
             .background(Color(.systemGroupedBackground))
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search tools, guides & topics")
             .navigationTitle("Search")
             .navigationDestination(for: PlanningRoute.self) { route in
                 routeDestination(route)
@@ -141,10 +160,19 @@ struct SearchView: View {
 
     private var allToolsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            categoryGroup(title: "Money", icon: "dollarsign.circle.fill", color: AppTheme.forestGreen, tools: moneyTools)
-            categoryGroup(title: "Career", icon: "briefcase.fill", color: .teal, tools: careerTools)
-            categoryGroup(title: "Planning", icon: "chart.xyaxis.line", color: .purple, tools: planningTools)
+            ForEach(Array(allToolsSectionContent.enumerated()), id: \.offset) { _, group in
+                categoryGroup(title: group.0, icon: group.1, color: group.2, tools: group.3)
+            }
         }
+    }
+
+    private var allToolsSectionContent: [(String, String, Color, [ToolboxView.ToolEntry])] {
+        [
+            ("Money", "dollarsign.circle.fill", AppTheme.forestGreen, moneyTools),
+            ("Career", "briefcase.fill", .teal, careerTools),
+            ("Planning", "chart.xyaxis.line", .purple, planningTools),
+            ("Guides", "book.fill", .indigo, guideEntries),
+        ]
     }
 
     private func categoryGroup(title: String, icon: String, color: Color, tools: [ToolboxView.ToolEntry]) -> some View {

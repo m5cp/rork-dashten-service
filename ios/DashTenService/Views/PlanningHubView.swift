@@ -405,53 +405,93 @@ struct EducationPlanningView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 GuideIntroBanner(
-                    text: "Your education benefits are one of the most valuable parts of your service. Plan carefully to maximize them.",
+                    text: "This is your step-by-step guide to using education benefits after service — what you've earned, how to fund the gaps, and the order to apply.",
                     color: .blue
                 )
 
-                GuideSection(
-                    title: "Education Benefits",
-                    icon: "graduationcap.fill",
+                EducationStepCard(
+                    step: 1,
                     color: .blue,
-                    items: [
-                        "Determine your education benefit eligibility and chapter",
-                        "Request your Certificate of Eligibility (COE)",
-                        "Research approved schools and programs",
-                        "Compare monthly housing allowance by location",
-                        "Understand the book and supply stipend",
-                        "Consider transfer of benefits to dependents",
-                        "Apply early — some programs have deadlines",
-                    ]
+                    icon: "graduationcap.fill",
+                    title: "Know what you've earned",
+                    paragraph: "Most veterans qualify for one or more federal education benefits. The right one depends on when and how long you served, and what you plan to study.",
+                    bullets: [
+                        EducationBullet(label: "Post-9/11 education benefit", body: "Covers full in-state public tuition (or a capped amount at private schools), pays a monthly housing allowance based on your school's ZIP code, and includes a yearly book stipend. Generally requires 90+ days of active duty after Sept 10, 2001."),
+                        EducationBullet(label: "Yellow Ribbon program", body: "Optional school-side add-on that helps cover tuition above the Post-9/11 cap at participating private schools or out-of-state programs. The school contributes and the VA matches it. Only available if you qualify at the 100% Post-9/11 tier."),
+                        EducationBullet(label: "Montgomery-style benefit (MGIB)", body: "Older monthly stipend program for those who paid in while serving. Often less generous than Post-9/11, but can be the better fit for short, low-cost programs."),
+                        EducationBullet(label: "Vocational Rehabilitation & Employment", body: "For veterans with a service-connected disability rating. Pays tuition, books, fees, and a subsistence allowance, and includes career counseling. Doesn't burn your Post-9/11 months."),
+                        EducationBullet(label: "Survivor & dependent benefits", body: "You may be able to transfer unused months to a spouse or child, or your family may qualify for the Survivors' & Dependents' education program if you were lost or permanently disabled in service."),
+                        EducationBullet(label: "Tuition Assistance (still serving)", body: "If you haven't separated yet, your branch's Tuition Assistance pays per-credit tuition while on active duty — use it first so you don't burn Post-9/11 months early."),
+                    ],
+                    footnote: "Action: request your Certificate of Eligibility (COE) on VA.gov before you apply to schools. The COE is the document the school uses to bill the VA on your behalf."
                 )
 
-                GuideSection(
-                    title: "Career Readiness Programs",
-                    icon: "arrow.triangle.branch",
-                    color: .purple,
-                    items: [
-                        "Check if you have a service-connected disability rating",
-                        "Complete career readiness application (Form 28-1900)",
-                        "Schedule initial counseling appointment",
-                        "Prepare your career goals and interests",
-                        "Career readiness programs can cover tuition, books, and supplies",
-                        "Career programs may be available after education benefits are exhausted",
-                    ]
-                )
-
-                GuideSection(
-                    title: "Compare Paths",
-                    icon: "arrow.triangle.swap",
+                EducationStepCard(
+                    step: 2,
                     color: .teal,
-                    items: [
-                        "College / University — 4-year degree, research focus, broad education",
-                        "Trade / Certification — Focused skills, faster completion, high demand",
-                        "Community College — 2-year programs, affordable, transfer options",
-                        "Apprenticeship — Earn while you learn, hands-on training",
-                        "Self-Employment — Start a business, use SBA resources",
-                    ]
+                    icon: "arrow.triangle.branch",
+                    title: "Pick the right path",
+                    paragraph: "More school isn't always the right answer. Pick the path that closes the gap to the career you actually want.",
+                    bullets: [
+                        EducationBullet(label: "4-year degree", body: "Best when your target career requires it (engineer, nurse, accountant). Highest tuition, longest timeline, broadest options after."),
+                        EducationBullet(label: "Community college / 2-year", body: "Cheaper, faster, often transferable to a 4-year. Great way to test a field before committing."),
+                        EducationBullet(label: "Trade school / certificate", body: "6–24 months. High pay-per-month-studied for fields like HVAC, welding, IT, commercial driving, healthcare techs."),
+                        EducationBullet(label: "Apprenticeship / on-the-job", body: "Earn while you learn. The Post-9/11 benefit pays a monthly stipend on top of your wages."),
+                        EducationBullet(label: "Self-employment / business", body: "VR&E and the Small Business Administration both have veteran tracks if you want to start something instead of going to school."),
+                    ],
+                    footnote: "Action: write down the job title you want, look up 5 real postings, and reverse-engineer the credential they actually require."
                 )
 
-                GuideDisclaimer(text: "Verify all education benefit details with official sources before making enrollment decisions.")
+                EducationStepCard(
+                    step: 3,
+                    color: AppTheme.gold,
+                    icon: "dollarsign.circle.fill",
+                    title: "Fund the gap",
+                    paragraph: "Federal benefits rarely cover 100%. Here's how to stack other sources so you don't pay out of pocket.",
+                    bullets: [
+                        EducationBullet(label: "FAFSA", body: "File the Free Application for Federal Student Aid every year, even if you think you won't qualify. It unlocks Pell Grants, work-study, and most school-based aid."),
+                        EducationBullet(label: "Veteran scholarships", body: "Many private foundations and military service organizations offer scholarships for transitioning veterans, spouses, and dependents. Apply broadly — most have low applicant counts."),
+                        EducationBullet(label: "Employer tuition reimbursement", body: "If you're already working civilian, ask HR. Many employers reimburse $5,250+/yr tax-free for relevant coursework."),
+                        EducationBullet(label: "In-state tuition rules", body: "Federal law lets recently separated veterans (and many family members) pay in-state tuition at public schools regardless of residency. Ask the school's certifying official directly."),
+                        EducationBullet(label: "State tuition waivers & grants", body: "Many states cover remaining tuition or fees for resident veterans. This is the single biggest source most veterans miss — see Step 4."),
+                    ],
+                    footnote: "Action: stack FAFSA + state benefit + federal benefit before paying anything yourself."
+                )
+
+                EducationStepCard(
+                    step: 4,
+                    color: AppTheme.forestGreen,
+                    icon: "flag.fill",
+                    title: "State-level help",
+                    paragraph: "Your home state (and the state you move to) likely adds tuition waivers, fee waivers, dependent tuition programs, or in-state-tuition rules on top of your federal benefit. These vary a lot — don't skip this step.",
+                    bullets: [
+                        EducationBullet(label: "Tuition waivers", body: "Some states cover tuition at public colleges for resident veterans who meet service criteria."),
+                        EducationBullet(label: "Dependent programs", body: "Several states pay tuition for spouses or children of disabled or deceased veterans."),
+                        EducationBullet(label: "Fee waivers & grants", body: "States often waive application, registration, or course fees that federal benefits don't cover."),
+                        EducationBullet(label: "In-state status", body: "Confirm you'll be billed at the in-state rate before you enroll — it can cut tuition in half."),
+                    ],
+                    footnote: nil,
+                    accessory: AnyView(StateBenefitsLinkButton())
+                )
+
+                EducationStepCard(
+                    step: 5,
+                    color: .purple,
+                    icon: "checklist.checked",
+                    title: "Apply & enroll",
+                    paragraph: "Once you know your benefits and your path, follow the steps in order so nothing falls through the cracks.",
+                    bullets: [
+                        EducationBullet(label: "1. Get your Certificate of Eligibility", body: "Apply on VA.gov. The COE tells you which benefit you qualify for and at what tier."),
+                        EducationBullet(label: "2. Pick a school and program", body: "Confirm the program is approved for VA benefits. The school's School Certifying Official (SCO) is your point of contact for everything."),
+                        EducationBullet(label: "3. Submit your COE to the SCO", body: "They certify your enrollment to the VA each term so tuition gets paid directly to the school."),
+                        EducationBullet(label: "4. File the FAFSA", body: "Even if you think your federal benefit covers everything. It unlocks state and school aid you may need."),
+                        EducationBullet(label: "5. Set up direct deposit", body: "Housing allowance and book stipend are paid directly to you — confirm bank info on VA.gov."),
+                        EducationBullet(label: "6. Watch the deadlines", body: "FAFSA, school admission, scholarship, and Yellow Ribbon deadlines are usually months before classes start."),
+                    ],
+                    footnote: "Common mistakes: starting school before the COE is on file, missing the in-state tuition request, and forgetting to re-certify each term."
+                )
+
+                GuideDisclaimer(text: "Eligibility, program rules, and amounts change. Always verify with VA.gov, your school's certifying official, and your state veterans office before enrolling.")
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
@@ -459,6 +499,134 @@ struct EducationPlanningView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Education Planning")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - Education Step Components
+
+private struct EducationBullet: Identifiable {
+    let id = UUID()
+    let label: String
+    let body: String
+}
+
+private struct EducationStepCard: View {
+    let step: Int
+    let color: Color
+    let icon: String
+    let title: String
+    let paragraph: String
+    let bullets: [EducationBullet]
+    var footnote: String? = nil
+    var accessory: AnyView? = nil
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .center, spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.15))
+                        .frame(width: 38, height: 38)
+                    Text("\(step)")
+                        .font(.system(size: 17, weight: .heavy, design: .rounded))
+                        .foregroundStyle(color)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("STEP \(step)")
+                        .font(.caption2.weight(.heavy))
+                        .tracking(1.2)
+                        .foregroundStyle(color)
+                    Text(title)
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: icon)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(color.opacity(0.7))
+            }
+
+            Text(paragraph)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.primary.opacity(0.85))
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(bullets) { bullet in
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 5))
+                                .foregroundStyle(color)
+                                .padding(.top, 7)
+                            Text(bullet.label)
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.primary)
+                        }
+                        Text(bullet.body)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                            .padding(.leading, 17)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+
+            if let footnote {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "lightbulb.fill")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppTheme.gold)
+                    Text(footnote)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.9))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(AppTheme.gold.opacity(0.12))
+                .clipShape(.rect(cornerRadius: 10))
+            }
+
+            if let accessory {
+                accessory
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 16))
+    }
+}
+
+private struct StateBenefitsLinkButton: View {
+    var body: some View {
+        NavigationLink(value: PlanningRoute.stateBenefits) {
+            HStack(spacing: 10) {
+                Image(systemName: "flag.fill")
+                    .font(.subheadline.weight(.bold))
+                Text("Open State-by-State Benefits")
+                    .font(.subheadline.weight(.bold))
+                Spacer()
+                Image(systemName: "arrow.up.right")
+                    .font(.caption.weight(.heavy))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity)
+            .background(
+                LinearGradient(
+                    colors: [AppTheme.forestGreen, Color(red: 0.15, green: 0.32, blue: 0.15)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .clipShape(.rect(cornerRadius: 12))
+            .shadow(color: AppTheme.forestGreen.opacity(0.25), radius: 8, y: 4)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Open state-by-state veteran benefits")
     }
 }
 

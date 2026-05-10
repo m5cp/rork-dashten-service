@@ -413,10 +413,14 @@ struct ProfileView: View {
     }
 
     private var proUpsellSubtitle: String {
-        if let price = store.offerings?.current?.availablePackages.first?.storeProduct.localizedPriceString {
-            return "Unlock 11 tools & 2 guides — \(price) lifetime"
+        let packages = store.offerings?.current?.availablePackages ?? []
+        if let annual = packages.first(where: { $0.packageType == .annual }) {
+            return "Unlock 11 tools & 2 guides — \(annual.storeProduct.localizedPriceString)/yr"
         }
-        return "Unlock 11 tools & 2 guides — one-time purchase"
+        if let monthly = packages.first(where: { $0.packageType == .monthly }) {
+            return "Unlock 11 tools & 2 guides — \(monthly.storeProduct.localizedPriceString)/mo"
+        }
+        return "Unlock 11 tools & 2 guides"
     }
 
     @ViewBuilder

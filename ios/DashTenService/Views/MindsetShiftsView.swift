@@ -3,26 +3,97 @@ import SwiftUI
 struct MindsetShiftsView: View {
     private let shifts = TransitionDataService.mindsetShifts()
 
+    private var groupedShifts: [(category: MindsetCategory, shifts: [MindsetShift])] {
+        MindsetCategory.allCases.compactMap { category in
+            let items = shifts.filter { $0.category == category }
+            return items.isEmpty ? nil : (category, items)
+        }
+    }
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 24) {
                 GuideIntroBanner(
                     text: "Transition isn't just logistical — it's mental. These shifts help you navigate the biggest changes between military and civilian life.",
                     color: .indigo
                 )
 
-                ForEach(shifts) { shift in
-                    MindsetShiftCard(shift: shift)
+                ForEach(groupedShifts, id: \.category) { group in
+                    VStack(alignment: .leading, spacing: 12) {
+                        CategoryHeader(category: group.category)
+                        VStack(spacing: 10) {
+                            ForEach(group.shifts) { shift in
+                                MindsetShiftCard(shift: shift)
+                            }
+                        }
+                    }
                 }
 
                 GuideDisclaimer(text: "Give yourself time. These shifts don't happen overnight, and that's okay.")
             }
             .padding(.horizontal, 16)
+            .padding(.top, 8)
             .padding(.bottom, 24)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Mindset Shifts")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct CategoryHeader: View {
+    let category: MindsetCategory
+
+    private var color: Color {
+        switch category {
+        case .identity: .purple
+        case .culture: .teal
+        case .communication: .blue
+        case .dailyLife: .orange
+        case .relationships: .pink
+        }
+    }
+
+    private var icon: String {
+        switch category {
+        case .identity: "person.fill"
+        case .culture: "building.2.fill"
+        case .communication: "bubble.left.and.bubble.right.fill"
+        case .dailyLife: "clock.fill"
+        case .relationships: "person.2.fill"
+        }
+    }
+
+    private var blurb: String {
+        switch category {
+        case .identity: "Who you are beyond the uniform."
+        case .culture: "How civilian workplaces actually run."
+        case .communication: "Saying it so it lands the right way."
+        case .dailyLife: "Owning your routine and your time."
+        case .relationships: "Building your civilian network."
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(color)
+                .frame(width: 30, height: 30)
+                .background(color.opacity(0.14))
+                .clipShape(.rect(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(category.rawValue)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.primary)
+                Text(blurb)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.top, 4)
     }
 }
 
@@ -65,14 +136,10 @@ struct MindsetShiftCard: View {
                         .background(color.opacity(0.12))
                         .clipShape(.rect(cornerRadius: 8))
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(shift.title)
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary)
-                        Text(shift.category.rawValue)
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(color)
-                    }
+                    Text(shift.title)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.leading)
 
                     Spacer()
 

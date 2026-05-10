@@ -10,6 +10,7 @@ struct TodayView: View {
     @State private var celebrationTitle: String = ""
     @State private var celebrationSubtitle: String = ""
     @State private var showPaywall: Bool = false
+    @State private var showSearch: Bool = false
 
     private var isRetiredOrSeparated: Bool {
         storage.profile.timeline == .separated
@@ -116,6 +117,18 @@ struct TodayView: View {
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showSearch = true
+                    } label: {
+                        Image(systemName: "magnifyingglass")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.primary)
+                            .frame(width: 36, height: 36)
+                            .background(Color(.tertiarySystemGroupedBackground), in: Circle())
+                    }
+                    .accessibilityLabel("Search the app")
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     if store.isPremium {
                         Image(systemName: "checkmark.seal.fill")
@@ -155,6 +168,9 @@ struct TodayView: View {
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView(store: store)
+        }
+        .sheet(isPresented: $showSearch) {
+            SearchView(storage: storage, store: store)
         }
         .onAppear {
             withAnimation(.spring(response: 0.7, dampingFraction: 0.85)) {
