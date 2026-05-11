@@ -280,36 +280,40 @@ struct DocumentRow: View {
                 Spacer()
             }
 
-            HStack(spacing: 6) {
+            Menu {
                 ForEach(DocumentStatus.allCases) { status in
                     Button {
                         withAnimation(.spring(response: 0.3)) {
                             onStatusChange(status)
                         }
                     } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: status.icon)
-                                .font(.caption2.weight(.semibold))
-                            Text(statusLabel(status))
-                                .font(.caption2.weight(.bold))
-                                .lineLimit(2)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 6)
-                        .background(document.status == status ? statusColorFor(status).opacity(0.15) : Color(.tertiarySystemGroupedBackground))
-                        .foregroundStyle(document.status == status ? statusColorFor(status) : .primary.opacity(0.6))
-                        .clipShape(Capsule())
-                        .overlay(
-                            Capsule()
-                                .stroke(document.status == status ? statusColorFor(status).opacity(0.5) : .clear, lineWidth: 1)
-                        )
+                        Label(statusLabel(status), systemImage: status.icon)
                     }
-                    .sensoryFeedback(.selection, trigger: document.status)
                 }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: document.status.icon)
+                        .font(.caption.weight(.bold))
+                    Text(statusLabel(document.status))
+                        .font(.subheadline.weight(.bold))
+                        .lineLimit(1)
+                    Spacer(minLength: 4)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.secondary)
+                }
+                .foregroundStyle(statusColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity)
+                .background(statusColor.opacity(0.12))
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule().stroke(statusColor.opacity(0.35), lineWidth: 1)
+                )
             }
+            .menuStyle(.borderlessButton)
+            .sensoryFeedback(.selection, trigger: document.status)
         }
         .padding(12)
         .background(Color(.tertiarySystemGroupedBackground))

@@ -192,7 +192,6 @@ struct TodayView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)
                 Spacer()
-                statusPillView
             }
 
             if !firstName.isEmpty {
