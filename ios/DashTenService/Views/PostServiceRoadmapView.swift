@@ -289,7 +289,9 @@ struct PostServiceRoadmapView: View {
                             .foregroundStyle(item.isCompleted ? .secondary : .primary)
                             .strikethrough(item.isCompleted)
                             .multilineTextAlignment(.leading)
-                        Spacer()
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Spacer(minLength: 4)
                         if !item.isCompleted {
                             Text("Gap")
                                 .font(.caption2.weight(.heavy))

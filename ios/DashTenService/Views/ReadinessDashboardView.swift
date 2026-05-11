@@ -87,57 +87,62 @@ struct ReadinessDashboardView: View {
 
     private var nextBestSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Next 3 to Boost Your Score", icon: "bolt.fill")
+            SectionHeader("Recommended Next Steps", icon: "bolt.fill")
 
             VStack(spacing: 8) {
                 ForEach(nextBestTasks) { task in
-                    Button {
-                        completeBoost(task)
-                    } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: task.icon)
-                                .font(.body.weight(.bold))
-                                .foregroundStyle(.white)
-                                .frame(width: 36, height: 36)
-                                .background(task.color)
-                                .clipShape(.rect(cornerRadius: 10))
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(task.title)
-                                    .font(.subheadline.weight(.bold))
-                                    .foregroundStyle(.primary)
-                                    .multilineTextAlignment(.leading)
-                                Text("\(task.categoryLabel) • +\(task.boostPercent)% to category")
-                                    .font(.caption2.weight(.semibold))
-                                    .foregroundStyle(.primary.opacity(0.6))
-                            }
-                            Spacer()
-                            Image(systemName: "checkmark.circle")
-                                .font(.title3)
-                                .foregroundStyle(task.color)
-                        }
-                        .padding(12)
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(.rect(cornerRadius: 12))
-                    }
-                    .buttonStyle(.plain)
-                    .sensoryFeedback(.success, trigger: task.id)
+                    boostRow(for: task)
                 }
             }
         }
     }
 
-    private func completeBoost(_ task: BoostTask) {
-        withAnimation(.spring(response: 0.35)) {
-            switch task.kind {
-            case .checklist(let id):
-                storage.toggleChecklistItem(id)
-            case .document(let id):
-                storage.updateDocumentStatus(id, status: .verified)
-            case .benefitAction(let categoryId, let actionId):
-                storage.toggleBenefitAction(categoryId: categoryId, actionId: actionId)
-            }
+    @ViewBuilder
+    private func boostRow(for task: BoostTask) -> some View {
+        switch task.kind {
+        case .benefitAction(let categoryId, _):
+            NavigationLink(value: categoryId) { boostRowLabel(task) }
+                .buttonStyle(.plain)
+        case .document:
+            NavigationLink(value: PlanningRoute.documents) { boostRowLabel(task) }
+                .buttonStyle(.plain)
+        case .checklist:
+            NavigationLink(value: PlanningRoute.roadmap) { boostRowLabel(task) }
+                .buttonStyle(.plain)
         }
+    }
+
+    private func boostRowLabel(_ task: BoostTask) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: task.icon)
+                .font(.body.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 36, height: 36)
+                .background(task.color)
+                .clipShape(.rect(cornerRadius: 10))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(task.title)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(task.actionHint)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.6))
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(task.color)
+        }
+        .padding(12)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 12))
     }
 
     private var categoryBreakdown: some View {
@@ -300,8 +305,18 @@ struct BoostTask: Identifiable {
     let icon: String
     let color: Color
     let categoryLabel: String
-    let boostPercent: Int
     let kind: Kind
+
+    var actionHint: String {
+        switch kind {
+        case .checklist:
+            return "\(categoryLabel) • Open in Roadmap"
+        case .document:
+            return "\(categoryLabel) • Open Documents"
+        case .benefitAction:
+            return "\(categoryLabel) • Open guide"
+        }
+    }
 }
 
 enum ReadinessBoost {
@@ -312,37 +327,32 @@ enum ReadinessBoost {
             let remainingChecklist = storage.checklistItems.filter { $0.readinessCategory == category && !$0.isCompleted }
             let totalChecklist = storage.checklistItems.filter { $0.readinessCategory == category }.count
             if let item = remainingChecklist.first, totalChecklist > 0 {
-                let boost = max(1, 100 / max(totalChecklist, 1))
                 tasks.append(BoostTask(
                     id: "c-\(item.id)",
                     title: item.title,
                     icon: "checkmark.square",
                     color: color(for: category),
                     categoryLabel: category.shortLabel,
-                    boostPercent: boost,
                     kind: .checklist(item.id)
                 ))
             }
         }
 
-        // Add the 3 highest-impact benefit actions across all categories
+        // Add the highest-impact benefit actions across all categories
         for benefit in storage.benefitCategories {
             if let action = benefit.actionItems.first(where: { !$0.isCompleted }) {
-                let total = max(benefit.actionItems.count, 1)
-                let boost = max(1, 100 / total)
                 tasks.append(BoostTask(
                     id: "b-\(action.id)",
                     title: action.title,
                     icon: benefit.type.icon,
                     color: benefit.type.accentColor,
                     categoryLabel: benefit.type.rawValue,
-                    boostPercent: boost,
                     kind: .benefitAction(categoryId: benefit.id, actionId: action.id)
                 ))
             }
         }
 
-        return Array(tasks.sorted(by: { $0.boostPercent > $1.boostPercent }).prefix(limit))
+        return Array(tasks.prefix(limit))
     }
 
     private static func color(for category: ReadinessCategory) -> Color {
@@ -456,7 +466,7 @@ struct CategoryDetailSheet: View {
                 Text("\(pct)% complete")
                     .font(.title3.bold())
                     .foregroundStyle(color)
-                Text("Knock these out to push your overall readiness up.")
+                Text("Tap any item to take action.")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary.opacity(0.7))
             }

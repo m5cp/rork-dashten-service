@@ -403,12 +403,18 @@ struct TaskHowToCard: View {
                         .font(.subheadline.weight(.bold))
                         .strikethrough(item.isCompleted)
                         .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(isExpanded ? nil : 2)
+                        .fixedSize(horizontal: false, vertical: true)
                     if !item.subtitle.isEmpty {
                         Text(item.subtitle)
                             .font(.caption.weight(.medium))
                             .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 Spacer()
 

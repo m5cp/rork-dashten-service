@@ -315,6 +315,46 @@ nonisolated enum BenefitCategoryType: String, Codable, CaseIterable, Identifiabl
 import SwiftUI
 
 extension BenefitCategoryType {
+    var teaser: String {
+        switch self {
+        case .healthCare: "Enroll in VA care, set up a primary doctor, and keep coverage continuous after separation."
+        case .disabilityClaims: "File for service-connected disability — tax-free monthly compensation and unlocked benefits."
+        case .educationTraining: "GI Bill, scholarships, and training programs to pay for school, certifications, and trades."
+        case .careerReset: "VR&E and career-readiness programs that cover tuition, training, and a monthly stipend."
+        case .employmentResume: "Translate your service into a civilian resume, network, and land your next role."
+        case .housingHomeLoan: "Buy a home with no down payment using your VA home loan benefit."
+        case .insurance: "Convert SGLI to VGLI on time and protect your family during transition."
+        case .familyDependents: "Health care, education, and support benefits your spouse and kids have earned."
+        case .financesBudget: "Build a transition budget, plan TSP, and avoid the post-service income shock."
+        case .recordsAdmin: "Get your DD-214, medical records, and service documents organized — once."
+        case .communityCrisis: "Veteran community, peer support, and 24/7 crisis resources when you need them."
+        }
+    }
+
+    var officialURL: String {
+        switch self {
+        case .healthCare: "https://www.va.gov/health-care/"
+        case .disabilityClaims: "https://www.va.gov/disability/"
+        case .educationTraining: "https://www.va.gov/education/"
+        case .careerReset: "https://www.va.gov/careers-employment/vocational-rehabilitation/"
+        case .employmentResume: "https://www.va.gov/careers-employment/"
+        case .housingHomeLoan: "https://www.va.gov/housing-assistance/home-loans/"
+        case .insurance: "https://www.va.gov/life-insurance/"
+        case .familyDependents: "https://www.va.gov/family-and-caregiver-benefits/"
+        case .financesBudget: "https://www.va.gov/resources/transitioning-out-of-the-military/"
+        case .recordsAdmin: "https://www.archives.gov/veterans/military-service-records"
+        case .communityCrisis: "https://www.veteranscrisisline.net/"
+        }
+    }
+
+    var sourceLabel: String {
+        switch self {
+        case .recordsAdmin: "National Archives"
+        case .communityCrisis: "Veterans Crisis Line"
+        default: "VA.gov"
+        }
+    }
+
     var accentColor: Color {
         switch self {
         case .healthCare: .red

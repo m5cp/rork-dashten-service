@@ -99,6 +99,7 @@ struct LearnView: View {
         case .family: FamilyPlanningView()
         case .financial: FinancialPlanningView()
         case .readiness: ReadinessDashboardView(storage: storage)
+        case .roadmap: RoadmapView(storage: storage)
         case .firstThirtyDays: FirstThirtyDaysView()
         case .mindsetShifts: MindsetShiftsView()
         case .civilianPlaybook: CivilianPlaybookView()
@@ -560,10 +561,10 @@ struct LearnBenefitsListView: View {
                 }
                 .contentMargins(.horizontal, 16)
 
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+                VStack(spacing: 12) {
                     ForEach(filteredCategories) { category in
                         NavigationLink(value: category.id) {
-                            BenefitCategoryCard(category: category)
+                            BenefitHeroCard(category: category)
                         }
                         .buttonStyle(.plain)
                     }

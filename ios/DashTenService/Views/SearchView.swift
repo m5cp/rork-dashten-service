@@ -248,6 +248,7 @@ struct SearchView: View {
         case .family: FamilyPlanningView()
         case .financial: FinancialPlanningView()
         case .readiness: ReadinessDashboardView(storage: storage)
+        case .roadmap: RoadmapView(storage: storage)
         case .firstThirtyDays: FirstThirtyDaysView()
         case .mindsetShifts: MindsetShiftsView()
         case .civilianPlaybook: CivilianPlaybookView()

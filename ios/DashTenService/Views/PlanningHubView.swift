@@ -130,6 +130,7 @@ enum PlanningRoute: Hashable {
     case family
     case financial
     case readiness
+    case roadmap
     case firstThirtyDays
     case mindsetShifts
     case civilianPlaybook

@@ -140,6 +140,7 @@ struct PlanView: View {
         case .family: FamilyPlanningView()
         case .financial: FinancialPlanningView()
         case .readiness: ReadinessDashboardView(storage: storage)
+        case .roadmap: RoadmapView(storage: storage)
         case .firstThirtyDays: FirstThirtyDaysView()
         case .mindsetShifts: MindsetShiftsView()
         case .civilianPlaybook: CivilianPlaybookView()
@@ -739,14 +740,20 @@ struct PlanTaskRow: View {
                     .font(.subheadline.weight(.semibold))
                     .strikethrough(item.isCompleted)
                     .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 if !item.subtitle.isEmpty {
                     Text(item.subtitle)
                         .font(.caption2.weight(.medium))
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer()
 
