@@ -29,9 +29,6 @@ struct ReadinessDashboardView: View {
         ScrollView {
             VStack(spacing: 24) {
                 overallScore
-                if !nextBestTasks.isEmpty {
-                    nextBestSection
-                }
                 categoryBreakdown
                 milestoneSection
                 shareSection

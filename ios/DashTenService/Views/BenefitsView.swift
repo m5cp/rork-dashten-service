@@ -34,6 +34,12 @@ struct BenefitsView: View {
                     BenefitDetailView(storage: storage, category: category)
                 }
             }
+            .navigationDestination(for: PlanningRoute.self) { route in
+                switch route {
+                case .stateBenefits: StateBenefitsFinderView()
+                default: EmptyView()
+                }
+            }
         }
     }
 }
@@ -141,6 +147,7 @@ struct BenefitDetailView: View {
                 mistakesSection
                 questionsSection
                 actionChecklistSection
+                stateBenefitsCallout
                 disclaimerSection
             }
             .padding(.horizontal, 16)
@@ -376,6 +383,72 @@ struct BenefitDetailView: View {
         }
     }
 
+    private var stateBenefitsCallout: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader("Your State May Add More", icon: "flag.fill")
+            CardView {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Most states stack their own benefits on top of this federal one — things like property tax exemptions, tuition waivers, hiring preferences, free hunting/fishing licenses, and DMV fee discounts. Don't leave money on the table.")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary.opacity(0.85))
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    NavigationLink(value: PlanningRoute.stateBenefits) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "map.fill")
+                                .font(.title3.weight(.bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 40, height: 40)
+                                .background(color)
+                                .clipShape(.rect(cornerRadius: 10))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Open State-by-State Benefits")
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.primary)
+                                Text("Find what your state offers")
+                                    .font(.caption.weight(.medium))
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(12)
+                        .background(color.opacity(0.08))
+                        .clipShape(.rect(cornerRadius: 12))
+                    }
+                    .buttonStyle(.plain)
+
+                    Divider()
+
+                    Text("Who to Contact Locally")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(color)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        ContactRecRow(
+                            title: "State Department of Veterans Affairs",
+                            description: "Your state's VA office runs state-funded benefit programs and can confirm what you qualify for.",
+                            color: color
+                        )
+                        ContactRecRow(
+                            title: "County Veterans Service Officer (CVSO)",
+                            description: "Free, accredited help filing claims and finding county-level benefits. Search 'CVSO + your county'.",
+                            color: color
+                        )
+                        ContactRecRow(
+                            title: "Accredited VSO (American Legion, VFW, DAV)",
+                            description: "Veteran service organizations file claims on your behalf at no cost and know local programs well.",
+                            color: color
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
     private var disclaimerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("This app is not affiliated with any government agency. Always verify eligibility, deadlines, and benefit details through official sources. Information in this app may change without notice.")
@@ -426,15 +499,7 @@ struct ActionRow: View {
                     withAnimation(.spring(response: 0.3)) { isExpanded.toggle() }
                 }
             } label: {
-                HStack(alignment: .top, spacing: 12) {
-                    Button(action: onToggle) {
-                        Image(systemName: action.isCompleted ? "checkmark.circle.fill" : "circle")
-                            .font(.title3)
-                            .foregroundStyle(action.isCompleted ? color : Color.primary.opacity(0.5))
-                    }
-                    .buttonStyle(.plain)
-                    .sensoryFeedback(.success, trigger: action.isCompleted)
-
+                HStack(alignment: .center, spacing: 12) {
                     Text(action.title)
                         .font(.subheadline.weight(.semibold))
                         .strikethrough(action.isCompleted)
@@ -443,6 +508,14 @@ struct ActionRow: View {
                         .multilineTextAlignment(.leading)
                         .lineLimit(isExpanded ? nil : 2)
                         .fixedSize(horizontal: false, vertical: true)
+
+                    Toggle("Mark complete", isOn: Binding(
+                        get: { action.isCompleted },
+                        set: { _ in onToggle() }
+                    ))
+                    .labelsHidden()
+                    .tint(color)
+                    .sensoryFeedback(.success, trigger: action.isCompleted)
 
                     if howTo != nil {
                         Image(systemName: "chevron.down")
@@ -505,6 +578,31 @@ struct ActionRow: View {
         }
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 12))
+    }
+}
+
+struct ContactRecRow: View {
+    let title: String
+    let description: String
+    let color: Color
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "person.fill.checkmark")
+                .font(.caption)
+                .foregroundStyle(color)
+                .padding(.top, 3)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.primary)
+                Text(description)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 }
 

@@ -723,18 +723,6 @@ struct PlanTaskRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Button {
-                withAnimation(.spring(response: 0.3)) {
-                    storage.toggleChecklistItem(item.id)
-                }
-            } label: {
-                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : Color(.tertiaryLabel))
-                    .symbolEffect(.bounce, value: item.isCompleted)
-            }
-            .sensoryFeedback(.success, trigger: item.isCompleted)
-
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.title)
                     .font(.subheadline.weight(.semibold))
@@ -755,7 +743,17 @@ struct PlanTaskRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer()
+            Toggle("Mark complete", isOn: Binding(
+                get: { item.isCompleted },
+                set: { _ in
+                    withAnimation(.spring(response: 0.3)) {
+                        storage.toggleChecklistItem(item.id)
+                    }
+                }
+            ))
+            .labelsHidden()
+            .tint(AppTheme.forestGreen)
+            .sensoryFeedback(.success, trigger: item.isCompleted)
 
             if isOverdue {
                 Text("Overdue")

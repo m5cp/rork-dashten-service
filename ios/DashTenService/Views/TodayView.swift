@@ -342,20 +342,7 @@ struct TodayView: View {
             }
             .foregroundStyle(AppTheme.gold)
 
-            HStack(alignment: .top, spacing: 14) {
-                Button {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                        storage.toggleChecklistItem(item.id)
-                    }
-                } label: {
-                    Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 32, weight: .regular))
-                        .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : .primary.opacity(0.35))
-                        .symbolEffect(.bounce, value: item.isCompleted)
-                }
-                .buttonStyle(.plain)
-                .sensoryFeedback(.success, trigger: item.isCompleted)
-
+            HStack(alignment: .center, spacing: 14) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.title)
                         .font(.title3.weight(.bold))
@@ -371,6 +358,17 @@ struct TodayView: View {
                     }
                 }
                 Spacer(minLength: 0)
+                Toggle("Mark complete", isOn: Binding(
+                    get: { item.isCompleted },
+                    set: { _ in
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                            storage.toggleChecklistItem(item.id)
+                        }
+                    }
+                ))
+                .labelsHidden()
+                .tint(AppTheme.forestGreen)
+                .sensoryFeedback(.success, trigger: item.isCompleted)
             }
 
             Divider().opacity(0.4)

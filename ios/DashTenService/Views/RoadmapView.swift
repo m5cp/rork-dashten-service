@@ -384,20 +384,7 @@ struct TaskHowToCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top, spacing: 12) {
-                Button {
-                    withAnimation(.spring(response: 0.3)) {
-                        storage.toggleChecklistItem(item.id)
-                    }
-                } label: {
-                    Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                        .font(.title3)
-                        .foregroundStyle(item.isCompleted ? AppTheme.forestGreen : Color.primary.opacity(0.35))
-                        .symbolEffect(.bounce, value: item.isCompleted)
-                }
-                .sensoryFeedback(.success, trigger: item.isCompleted)
-                .buttonStyle(.plain)
-
+            HStack(alignment: .center, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.title)
                         .font(.subheadline.weight(.bold))
@@ -416,7 +403,17 @@ struct TaskHowToCard: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                Spacer()
+                Toggle("Mark complete", isOn: Binding(
+                    get: { item.isCompleted },
+                    set: { _ in
+                        withAnimation(.spring(response: 0.3)) {
+                            storage.toggleChecklistItem(item.id)
+                        }
+                    }
+                ))
+                .labelsHidden()
+                .tint(AppTheme.forestGreen)
+                .sensoryFeedback(.success, trigger: item.isCompleted)
 
                 if howTo != nil {
                     Button {
