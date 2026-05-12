@@ -39,7 +39,7 @@ struct ToolboxView: View {
             ToolEntry(title: "Research TSP", subtitle: "Explore rollover options", icon: "arrow.triangle.swap", color: .blue, action: .nav(.tspRollover), keywords: ["tsp", "retirement", "401k"]),
             ToolEntry(
                 title: "TSP Growth Estimator",
-                subtitle: "Project your TSP at separation with DoW match",
+                subtitle: "Project your TSP at separation with DoD matching",
                 icon: "chart.line.uptrend.xyaxis",
                 color: AppTheme.forestGreen,
                 action: .nav(.tspGrowthEstimator),

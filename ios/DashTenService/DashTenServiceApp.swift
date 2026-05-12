@@ -17,6 +17,7 @@ struct DashTenServiceApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.locale, Locale(identifier: "en_US"))
         }
     }
 }
