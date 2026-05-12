@@ -4,6 +4,7 @@ import RevenueCat
 @main
 struct DashTenServiceApp: App {
     init() {
+        KeyboardAccessoryInstaller.install()
         #if DEBUG
         Purchases.logLevel = .debug
         Purchases.configure(withAPIKey: Config.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY)

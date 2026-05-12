@@ -1,19 +1,17 @@
-# Add a Done button to close the keyboard everywhere
+# Make the keyboard "Done" button reliably appear on every input
+
+**The problem**
+
+The current "Done" button only attaches at certain screens and doesn't always show up — for example on the Add Goal form and other inline entry forms. That leaves users stuck with no way to close the number pad.
 
 **The fix**
 
-- Add a clear "Done" button above the keyboard on every screen that asks for typing (name, profile info, calculators, notes, search, etc.).
-- Tapping "Done" instantly closes the keyboard.
-- Also: tapping anywhere outside a text field will dismiss the keyboard as a backup.
+- Replace the current keyboard "Done" setup with an app-wide accessory bar that appears above the keyboard on every text field and number pad, so a "Done" button is always visible.
+- Also let users tap anywhere outside a field to close the keyboard, and swipe down on any scrollable screen to dismiss it.
+- Audit every screen with typing (Add Goal, calculators, journal, profile edit, mentor tracker, planner, decision matrix, networking prep, pitch builder, resume translator, benefits countdown, search, plan/roadmap tasks) to confirm the Done button shows up and works.
 
-**Where it applies**
+**Visual design**
 
-- Profile editing (name, avatar info)
-- All calculators (budget, income gap, emergency fund, military comp)
-- Search bar in the app
-- Any notes / text entry inside guides, checklists, and tools
-
-**Design**
-
-- The Done button sits on the right side of a slim bar pinned just above the keyboard, matching the app's existing style — clean, bold, easy to tap.
+- "Done" button stays in the brand forest green, right-aligned above the keyboard, with a subtle divider line so it doesn't feel tacked on.
+- Smooth, native feel — no flicker when the keyboard opens or closes.
 
