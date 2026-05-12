@@ -1,6 +1,5 @@
 import SwiftUI
 import UIKit
-import ObjectiveC
 
 // MARK: - Public SwiftUI helpers
 
@@ -18,37 +17,40 @@ extension View {
 
 /// Installs a "Done" accessory bar above the keyboard for every UITextField
 /// and UITextView in the app, plus a tap-to-dismiss gesture on the key window.
-/// Call `KeyboardAccessoryInstaller.install()` once on app launch.
+///
+/// Implementation note: we previously swizzled `didMoveToWindow`, but
+/// `class_getInstanceMethod` returns inherited methods, so the swap actually
+/// happened on `UIView` itself and crashed the app on launch. Instead we now
+/// observe the `textDidBeginEditing` notifications, which fire for every
+/// `UITextField`/`UITextView` the moment the user taps into them — no
+/// swizzling, no shared-class side effects.
 enum KeyboardAccessoryInstaller {
 
     private static var didInstall = false
 
+    @MainActor
     static func install() {
         guard !didInstall else { return }
         didInstall = true
 
-        swizzle(
-            UITextField.self,
-            original: #selector(UIView.didMoveToWindow),
-            swizzled: #selector(UITextField.rork_didMoveToWindow)
+        let center = NotificationCenter.default
+        center.addObserver(
+            KeyboardObserver.shared,
+            selector: #selector(KeyboardObserver.textFieldDidBegin(_:)),
+            name: UITextField.textDidBeginEditingNotification,
+            object: nil
         )
-        swizzle(
-            UITextView.self,
-            original: #selector(UIView.didMoveToWindow),
-            swizzled: #selector(UITextView.rork_didMoveToWindow)
+        center.addObserver(
+            KeyboardObserver.shared,
+            selector: #selector(KeyboardObserver.textViewDidBegin(_:)),
+            name: UITextView.textDidBeginEditingNotification,
+            object: nil
         )
 
         installTapToDismiss()
     }
 
-    private static func swizzle(_ cls: AnyClass, original: Selector, swizzled: Selector) {
-        guard
-            let originalMethod = class_getInstanceMethod(cls, original),
-            let swizzledMethod = class_getInstanceMethod(cls, swizzled)
-        else { return }
-        method_exchangeImplementations(originalMethod, swizzledMethod)
-    }
-
+    @MainActor
     private static func installTapToDismiss() {
         // Slight delay so a window exists.
         DispatchQueue.main.async {
@@ -68,6 +70,39 @@ enum KeyboardAccessoryInstaller {
             tap.delegate = KeyboardTapTarget.shared
             window.addGestureRecognizer(tap)
         }
+    }
+}
+
+// MARK: - Begin-editing observer
+
+private final class KeyboardObserver: NSObject {
+    static let shared = KeyboardObserver()
+
+    @objc func textFieldDidBegin(_ note: Notification) {
+        guard let field = note.object as? UITextField else { return }
+        if field.inputAccessoryView != nil { return }
+        if shouldSkip(field) { return }
+        field.inputAccessoryView = KeyboardAccessoryFactory.make()
+        field.reloadInputViews()
+    }
+
+    @objc func textViewDidBegin(_ note: Notification) {
+        guard let view = note.object as? UITextView else { return }
+        if view.inputAccessoryView != nil { return }
+        view.inputAccessoryView = KeyboardAccessoryFactory.make()
+        view.reloadInputViews()
+    }
+
+    private func shouldSkip(_ field: UITextField) -> Bool {
+        // Skip text fields hosted inside a UISearchBar (system bar handles dismiss).
+        var v: UIView? = field.superview
+        while let current = v {
+            if NSStringFromClass(type(of: current)).contains("SearchBar") {
+                return true
+            }
+            v = current.superview
+        }
+        return false
     }
 }
 
@@ -110,44 +145,11 @@ private final class KeyboardTapTarget: NSObject, UIGestureRecognizerDelegate {
     }
 }
 
-// MARK: - Swizzled implementations
-
-extension UITextField {
-    @objc fileprivate func rork_didMoveToWindow() {
-        self.rork_didMoveToWindow() // calls original
-        if window != nil, inputAccessoryView == nil, !rork_shouldSkipAccessory {
-            inputAccessoryView = KeyboardAccessoryFactory.make(for: self)
-        }
-    }
-
-    fileprivate var rork_shouldSkipAccessory: Bool {
-        // Don't add to search bars or password fields handled by system UI.
-        if isSecureTextEntry { return false } // still allow on secure fields
-        // Skip if hosted inside a UISearchBar (system bar already has cancel).
-        var v: UIView? = self.superview
-        while let current = v {
-            if NSStringFromClass(type(of: current)).contains("SearchBar") {
-                return true
-            }
-            v = current.superview
-        }
-        return false
-    }
-}
-
-extension UITextView {
-    @objc fileprivate func rork_didMoveToWindow() {
-        self.rork_didMoveToWindow() // calls original
-        if window != nil, inputAccessoryView == nil {
-            inputAccessoryView = KeyboardAccessoryFactory.make(for: self)
-        }
-    }
-}
-
 // MARK: - Accessory factory
 
 private enum KeyboardAccessoryFactory {
-    static func make(for responder: UIResponder) -> UIToolbar {
+    @MainActor
+    static func make() -> UIToolbar {
         let bar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 320, height: 44))
         bar.barStyle = .default
         bar.isTranslucent = true
