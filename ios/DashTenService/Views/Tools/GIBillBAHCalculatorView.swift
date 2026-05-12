@@ -36,22 +36,7 @@ struct GIBillBAHCalculatorView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "house.fill")
-                            .foregroundStyle(.blue)
-                        Text("Estimate Your Housing Allowance")
-                            .font(.subheadline.weight(.bold))
-                    }
-                    Text("The Post-9/11 GI Bill pays a monthly housing allowance based on where you attend school and your enrollment status. Online-only students receive a flat national rate.")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.8))
-                }
-                .padding(14)
-                .background(.blue.opacity(0.06))
-                .clipShape(.rect(cornerRadius: 12))
-
+            VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Select School Location")
                         .font(.headline.weight(.bold))
@@ -94,15 +79,13 @@ struct GIBillBAHCalculatorView: View {
                     resultsSection(entry)
                 }
 
-                Text("Rates are estimates based on E-5 with dependents BAH. Actual rates vary by year and eligibility. Verify with official sources.")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                DashTenInfoFooter()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("GI Bill BAH Calculator")
+        .navigationTitle("GI Bill BAH")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -140,7 +123,6 @@ struct GIBillBAHCalculatorView: View {
             .background(.blue.opacity(0.06))
             .clipShape(.rect(cornerRadius: 12))
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private func bahRow(status: String, amount: Double, isHighlighted: Bool) -> some View {

@@ -17,13 +17,13 @@ struct JobOfferComparisonView: View {
                     offersList
                 }
 
-                taxDisclaimer
+                DashTenInfoFooter()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 100)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Job Offer Compare")
+        .navigationTitle("Offer Compare")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -111,21 +111,6 @@ struct JobOfferComparisonView: View {
                 .buttonStyle(.plain)
             }
         }
-    }
-
-    private var taxDisclaimer: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.caption)
-                .foregroundStyle(.orange)
-                .padding(.top, 2)
-            Text("This tool provides estimates only. Tax implications vary significantly. Consult a tax professional for advice specific to your situation.")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.primary.opacity(0.7))
-        }
-        .padding(12)
-        .background(.orange.opacity(0.06))
-        .clipShape(.rect(cornerRadius: 10))
     }
 
     private func formatCurrency(_ value: Double) -> String {

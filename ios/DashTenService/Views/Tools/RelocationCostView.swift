@@ -6,7 +6,6 @@ struct RelocationCostView: View {
     @State private var householdGoods: String = "Medium"
     @State private var vehicleCount: String = "1"
     @State private var temporaryHousingDays: String = "14"
-    @State private var showResults: Bool = false
 
     private let goodsSizes = ["Light", "Medium", "Heavy"]
 
@@ -54,22 +53,7 @@ struct RelocationCostView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "shippingbox.fill")
-                            .foregroundStyle(.pink)
-                        Text("Plan Your Move Budget")
-                            .font(.subheadline.weight(.bold))
-                    }
-                    Text("Civilian moves aren't covered like PCS moves. Estimate what your relocation will actually cost so you can budget accordingly.")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.8))
-                }
-                .padding(14)
-                .background(.pink.opacity(0.06))
-                .clipShape(.rect(cornerRadius: 12))
-
+            VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Move Details")
                         .font(.headline.weight(.bold))
@@ -120,31 +104,15 @@ struct RelocationCostView: View {
                     .clipShape(.rect(cornerRadius: 14))
                 }
 
-                Button {
-                    withAnimation(.spring(response: 0.4)) { showResults = true }
-                } label: {
-                    Text("Estimate Costs")
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(AppTheme.forestGreen)
-                        .clipShape(.rect(cornerRadius: 14))
-                }
+                resultsSection
 
-                if showResults {
-                    resultsSection
-                }
-
-                Text("These are rough estimates. Get actual quotes from moving companies and research housing costs in your specific area.")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                DashTenInfoFooter()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Relocation Costs")
+        .navigationTitle("Move Budget")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -189,7 +157,6 @@ struct RelocationCostView: View {
             .background(.pink.opacity(0.06))
             .clipShape(.rect(cornerRadius: 12))
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private func costLine(label: String, value: Double, icon: String) -> some View {

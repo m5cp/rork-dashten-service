@@ -9,8 +9,6 @@ struct BRSRetirementSnapshotView: View {
     @State private var yearsOfService: Double = 20
     @State private var high3BasicPay: String = ""
 
-    @State private var showResults: Bool = false
-
     private let dodAutoMatch: Double = 1.0
     private let brsMultiplier: Double = 0.02
 
@@ -73,69 +71,23 @@ struct BRSRetirementSnapshotView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                introSection
-
+            VStack(alignment: .leading, spacing: 16) {
                 tspInputSection
 
                 pensionInputSection
 
-                if showResults {
-                    combinedSnapshotSection
-                    tspResultSection
-                    pensionResultSection
-                }
+                combinedSnapshotSection
+                tspResultSection
+                pensionResultSection
 
-                Button {
-                    withAnimation(.spring(response: 0.4)) { showResults = true }
-                } label: {
-                    Text("Show My Snapshot")
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(AppTheme.forestGreen)
-                        .clipShape(.rect(cornerRadius: 14))
-                }
-
-                disclaimerFooter
+                DashTenInfoFooter()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("BRS Snapshot")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private var introSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Image(systemName: "chart.pie.fill")
-                    .foregroundStyle(AppTheme.gold)
-                Text("BRS Retirement Snapshot")
-                    .font(.subheadline.weight(.bold))
-            }
-            Text("The Blended Retirement System has two components. This tool estimates both — your TSP savings and your military pension — so you can see the full picture.")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.primary.opacity(0.8))
-
-            HStack(alignment: .top, spacing: 8) {
-                Image(systemName: "info.circle.fill")
-                    .font(.caption)
-                    .foregroundStyle(AppTheme.forestGreen)
-                    .padding(.top, 2)
-                Text("Available to service members who entered service on or after January 1, 2018, or opted in during the 2018 window.")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(AppTheme.forestGreen)
-            }
-            .padding(10)
-            .background(AppTheme.forestGreen.opacity(0.08))
-            .clipShape(.rect(cornerRadius: 8))
-        }
-        .padding(14)
-        .background(AppTheme.gold.opacity(0.08))
-        .clipShape(.rect(cornerRadius: 12))
     }
 
     private var tspInputSection: some View {
@@ -211,9 +163,10 @@ struct BRSRetirementSnapshotView: View {
                 Slider(value: $yearsOfService, in: 0...30, step: 1)
                     .tint(.purple)
                 if !pensionEligible {
-                    Text("BRS pension generally requires 20+ years of service.")
+                    Text("Pension generally vests at 20+ years of service.")
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .padding(14)
@@ -339,15 +292,11 @@ struct BRSRetirementSnapshotView: View {
                     .foregroundStyle(.secondary)
 
                 if !pensionEligible {
-                    HStack(spacing: 6) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.orange)
-                        Text("Pension typically requires 20+ years of service to vest.")
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.orange)
-                    }
-                    .padding(.top, 4)
+                    Text("Pension typically vests at 20+ years of service.")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 4)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -355,23 +304,6 @@ struct BRSRetirementSnapshotView: View {
             .background(AppTheme.gold.opacity(0.08))
             .clipShape(.rect(cornerRadius: 12))
         }
-    }
-
-    private var disclaimerFooter: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 8) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.caption)
-                    .foregroundStyle(.orange)
-                    .padding(.top, 2)
-                Text("DashTen is not affiliated with the Department of War (formerly Department of Defense) or any government agency. This is an educational estimator only — not financial, tax, or legal advice. Results are hypothetical projections. Actual benefits depend on your service record, pay grade, and applicable regulations. Consult a financial professional and your service finance office before making retirement decisions.")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.7))
-            }
-        }
-        .padding(12)
-        .background(.orange.opacity(0.06))
-        .clipShape(.rect(cornerRadius: 10))
     }
 
     private func formatCurrency(_ value: Double) -> String {

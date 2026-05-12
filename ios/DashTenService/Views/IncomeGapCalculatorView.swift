@@ -9,7 +9,6 @@ struct IncomeGapCalculatorView: View {
     @State private var disabilityCompensation: String = ""
     @State private var spouseIncome: String = ""
     @State private var otherIncome: String = ""
-    @State private var showResults: Bool = false
 
     private var currentMonthly: Double { Double(currentMonthlyIncome) ?? 0 }
     private var expectedMonthly: Double { Double(expectedMonthlyIncome) ?? 0 }
@@ -33,22 +32,7 @@ struct IncomeGapCalculatorView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "chart.line.downtrend.xyaxis")
-                                .foregroundStyle(.orange)
-                            Text("Plan for the Gap")
-                                .font(.subheadline.weight(.bold))
-                        }
-                        Text("Most service members experience an income gap during transition. This calculator helps you estimate how much savings you need to bridge that gap comfortably.")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(14)
-                    .background(.orange.opacity(0.06))
-                    .clipShape(.rect(cornerRadius: 12))
-
+                VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.down.circle.fill")
@@ -89,28 +73,12 @@ struct IncomeGapCalculatorView: View {
                         .clipShape(.rect(cornerRadius: 14))
                     }
 
-                    Button {
-                        withAnimation(.spring(response: 0.4)) { showResults = true }
-                    } label: {
-                        Text("Calculate Gap")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(AppTheme.forestGreen)
-                            .clipShape(.rect(cornerRadius: 14))
-                    }
+                    resultsSection
 
-                    if showResults {
-                        resultsSection
-                    }
-
-                    Text("This is a planning estimate. Actual income and expenses will vary.")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                    DashTenInfoFooter()
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 32)
+                .padding(.bottom, 40)
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Income Gap Planner")
@@ -158,9 +126,10 @@ struct IncomeGapCalculatorView: View {
                                 .font(.caption)
                                 .foregroundStyle(.orange)
                                 .padding(.top, 2)
-                            Text("Start saving now. Set aside \(formatCurrency(totalGapNeeded / max(1, gapMonths)))/month to build this cushion before you separate.")
+                            Text("Set aside \(formatCurrency(totalGapNeeded / max(1, gapMonths)))/month to build this cushion before you separate.")
                                 .font(.caption.weight(.bold))
                                 .foregroundStyle(.primary.opacity(0.8))
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     .padding(10)
@@ -172,7 +141,6 @@ struct IncomeGapCalculatorView: View {
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(.rect(cornerRadius: 14))
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private func formatCurrency(_ value: Double) -> String {

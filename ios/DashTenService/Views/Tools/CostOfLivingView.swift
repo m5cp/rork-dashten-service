@@ -32,22 +32,7 @@ struct CostOfLivingView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "building.2.fill")
-                            .foregroundStyle(.mint)
-                        Text("Compare Where You Live")
-                            .font(.subheadline.weight(.bold))
-                    }
-                    Text("Your duty station costs may be very different from where you're moving. Compare estimated monthly costs between military-connected cities.")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.8))
-                }
-                .padding(14)
-                .background(.mint.opacity(0.06))
-                .clipShape(.rect(cornerRadius: 12))
-
+            VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 8) {
                         Circle().fill(.teal).frame(width: 10, height: 10)
@@ -86,12 +71,10 @@ struct CostOfLivingView: View {
                     comparisonSection(a: a, b: b)
                 }
 
-                Text("Estimates based on average costs for single/small household. Actual costs vary significantly by neighborhood, lifestyle, and family size.")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                DashTenInfoFooter()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Cost of Living")

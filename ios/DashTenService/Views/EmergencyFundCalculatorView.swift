@@ -12,7 +12,6 @@ struct EmergencyFundCalculatorView: View {
     @State private var monthlyOther: String = ""
     @State private var targetMonths: Int = 3
     @State private var currentSavings: String = ""
-    @State private var showResults: Bool = false
 
     private var totalMonthlyExpenses: Double {
         [monthlyRent, monthlyUtilities, monthlyGroceries, monthlyTransport, monthlyInsurance, monthlyDebt, monthlyOther]
@@ -40,22 +39,7 @@ struct EmergencyFundCalculatorView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "shield.lefthalf.filled")
-                                .foregroundStyle(AppTheme.forestGreen)
-                            Text("Your Safety Net")
-                                .font(.subheadline.weight(.bold))
-                        }
-                        Text("Financial experts recommend 3-6 months of essential expenses saved before a major life change. During military transition, this fund is your lifeline while job searching and adjusting to civilian costs.")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(14)
-                    .background(AppTheme.forestGreen.opacity(0.06))
-                    .clipShape(.rect(cornerRadius: 12))
-
+                VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 8) {
                             Image(systemName: "list.bullet.rectangle.fill")
@@ -124,28 +108,12 @@ struct EmergencyFundCalculatorView: View {
                         .clipShape(.rect(cornerRadius: 14))
                     }
 
-                    Button {
-                        withAnimation(.spring(response: 0.4)) { showResults = true }
-                    } label: {
-                        Text("Calculate Emergency Fund")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(AppTheme.forestGreen)
-                            .clipShape(.rect(cornerRadius: 14))
-                    }
+                    resultsSection
 
-                    if showResults {
-                        resultsSection
-                    }
-
-                    Text("Adjust amounts based on your specific situation and expected civilian costs.")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                    DashTenInfoFooter()
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 32)
+                .padding(.bottom, 40)
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Emergency Fund")
@@ -216,7 +184,6 @@ struct EmergencyFundCalculatorView: View {
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(.rect(cornerRadius: 14))
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private func savingsPlanCard(months: Int, amount: Double) -> some View {

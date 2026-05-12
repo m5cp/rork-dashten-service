@@ -15,8 +15,6 @@ struct SalaryNegotiationView: View {
     @State private var offerBCommute: String = ""
     @State private var offerBBonus: String = ""
 
-    @State private var showResults: Bool = false
-
     private func totalComp(salary: String, health: String, pto: String, retirement: String, commute: String, bonus: String) -> Double {
         let sal = Double(salary) ?? 0
         let healthVal = Double(health) ?? 0
@@ -37,46 +35,17 @@ struct SalaryNegotiationView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "scalemass.fill")
-                            .foregroundStyle(.indigo)
-                        Text("Compare the Full Picture")
-                            .font(.subheadline.weight(.bold))
-                    }
-                    Text("A higher salary doesn't always mean more money. Compare total compensation including benefits, retirement, and commute costs.")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.8))
-                }
-                .padding(14)
-                .background(.indigo.opacity(0.06))
-                .clipShape(.rect(cornerRadius: 12))
-
+            VStack(alignment: .leading, spacing: 16) {
                 offerSection(title: "Offer A", color: .teal, salary: $offerASalary, health: $offerAHealthInsurance, pto: $offerAPTO, retirement: $offerARetirementMatch, commute: $offerACommute, bonus: $offerABonus)
 
                 offerSection(title: "Offer B", color: .purple, salary: $offerBSalary, health: $offerBHealthInsurance, pto: $offerBPTO, retirement: $offerBRetirementMatch, commute: $offerBCommute, bonus: $offerBBonus)
 
-                Button {
-                    withAnimation(.spring(response: 0.4)) { showResults = true }
-                } label: {
-                    Text("Compare Offers")
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(AppTheme.forestGreen)
-                        .clipShape(.rect(cornerRadius: 14))
-                }
+                comparisonResults
 
-                if showResults {
-                    comparisonResults
-                }
-
-                TaxProfessionalDisclaimer()
+                DashTenInfoFooter()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Salary Negotiation")
@@ -162,7 +131,6 @@ struct SalaryNegotiationView: View {
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(.rect(cornerRadius: 12))
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private func formatCurrency(_ value: Double) -> String {

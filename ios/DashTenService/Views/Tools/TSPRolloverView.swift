@@ -4,7 +4,6 @@ struct TSPRolloverView: View {
     @State private var tspBalance: String = ""
     @State private var monthlyContribution: String = ""
     @State private var yearsUntilRetirement: Double = 20
-    @State private var showResults: Bool = false
 
     private var balance: Double { Double(tspBalance) ?? 0 }
     private var monthly: Double { Double(monthlyContribution) ?? 0 }
@@ -18,64 +17,19 @@ struct TSPRolloverView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                taxDisclaimer
-
+            VStack(alignment: .leading, spacing: 16) {
                 inputSection
 
-                if showResults {
-                    resultsSection
-                }
+                resultsSection
 
-                Button {
-                    withAnimation(.spring(response: 0.4)) { showResults = true }
-                } label: {
-                    Text("Compare Options")
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(AppTheme.forestGreen)
-                        .clipShape(.rect(cornerRadius: 14))
-                }
-
-                TaxProfessionalDisclaimer()
+                DashTenInfoFooter()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Research TSP")
+        .navigationTitle("TSP Options")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private var taxDisclaimer: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Image(systemName: "arrow.triangle.swap")
-                    .foregroundStyle(.blue)
-                Text("Know Your Options")
-                    .font(.subheadline.weight(.bold))
-            }
-            Text("Your Thrift Savings Plan doesn't disappear when you separate. You have several options — each with different tax implications and growth potential.")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.primary.opacity(0.8))
-
-            HStack(spacing: 8) {
-                Image(systemName: "person.fill.badge.plus")
-                    .font(.caption)
-                    .foregroundStyle(AppTheme.forestGreen)
-                Text("Consult with a financial advisor about your retirement plan before making any changes.")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(AppTheme.forestGreen)
-            }
-            .padding(10)
-            .background(AppTheme.forestGreen.opacity(0.08))
-            .clipShape(.rect(cornerRadius: 8))
-        }
-        .padding(14)
-        .background(.blue.opacity(0.06))
-        .clipShape(.rect(cornerRadius: 12))
     }
 
     private var inputSection: some View {
@@ -160,22 +114,21 @@ struct TSPRolloverView: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Label("Important Considerations", systemImage: "exclamationmark.circle.fill")
+                Text("Things to Know")
                     .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.primary)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    BulletPoint(text: "Roth conversion triggers a tax event — you pay income tax on the converted amount", color: .orange)
-                    BulletPoint(text: "Traditional IRA to Roth conversions can push you into a higher tax bracket", color: .orange)
-                    BulletPoint(text: "TSP has the lowest fees of any retirement plan in the country", color: .orange)
-                    BulletPoint(text: "Some employer 401(k) plans have high fees — compare before rolling over", color: .orange)
+                    BulletPoint(text: "Roth conversions typically create a taxable event in the year of conversion.", color: AppTheme.forestGreen)
+                    BulletPoint(text: "Converting a large balance can push you into a higher tax bracket that year.", color: AppTheme.forestGreen)
+                    BulletPoint(text: "TSP expense ratios are among the lowest available.", color: AppTheme.forestGreen)
+                    BulletPoint(text: "Employer 401(k) plans vary widely on fees — compare before rolling over.", color: AppTheme.forestGreen)
                 }
             }
             .padding(14)
-            .background(.orange.opacity(0.06))
-            .clipShape(.rect(cornerRadius: 12))
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 14))
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private func projectGrowth(balance: Double, monthly: Double, rate: Double, years: Int) -> Double {

@@ -16,7 +16,6 @@ struct CivilianBudgetCalculatorView: View {
     @State private var entertainment: String = ""
     @State private var clothing: String = ""
     @State private var miscellaneous: String = ""
-    @State private var showResults: Bool = false
 
     private var income: Double { Double(monthlyIncome) ?? 0 }
 
@@ -55,22 +54,7 @@ struct CivilianBudgetCalculatorView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "creditcard.fill")
-                                .foregroundStyle(.blue)
-                            Text("Build Your Civilian Budget")
-                                .font(.subheadline.weight(.bold))
-                        }
-                        Text("As a civilian, you'll pay for things the military covered — health insurance, housing at market rate, and more. Build a realistic budget based on your expected income to avoid surprises.")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.primary.opacity(0.8))
-                    }
-                    .padding(14)
-                    .background(.blue.opacity(0.06))
-                    .clipShape(.rect(cornerRadius: 12))
-
+                VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.down.circle.fill")
@@ -125,28 +109,12 @@ struct CivilianBudgetCalculatorView: View {
                         .clipShape(.rect(cornerRadius: 14))
                     }
 
-                    Button {
-                        withAnimation(.spring(response: 0.4)) { showResults = true }
-                    } label: {
-                        Text("Calculate Budget")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(AppTheme.forestGreen)
-                            .clipShape(.rect(cornerRadius: 14))
-                    }
+                    resultsSection
 
-                    if showResults {
-                        resultsSection
-                    }
-
-                    Text("This is a planning tool. Actual costs vary by location and lifestyle.")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                    DashTenInfoFooter()
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 32)
+                .padding(.bottom, 40)
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Civilian Budget")
@@ -226,9 +194,10 @@ struct CivilianBudgetCalculatorView: View {
                             .font(.caption)
                             .foregroundStyle(.red)
                             .padding(.top, 2)
-                        Text("Your expenses exceed your income by \(formatCurrency(abs(remaining)))/month. Look for areas to cut or consider whether your salary expectations are realistic.")
+                        Text("Your expenses exceed your income by \(formatCurrency(abs(remaining)))/month. Look for areas to cut or revisit your salary target.")
                             .font(.caption.weight(.bold))
                             .foregroundStyle(.primary.opacity(0.8))
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(10)
                     .background(.red.opacity(0.06))
@@ -267,7 +236,6 @@ struct CivilianBudgetCalculatorView: View {
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(.rect(cornerRadius: 14))
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private var newCostsBanner: some View {

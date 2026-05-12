@@ -14,8 +14,6 @@ struct TSPGrowthEstimatorView: View {
     @State private var expectedReturn: Double = 7
     @State private var annualCOLA: Double = 3
 
-    @State private var showResults: Bool = false
-
     private var currentBasicPay: Double {
         MilitaryPayTables.basicPay(grade: currentGrade, yearsOfService: currentYoS) ?? 0
     }
@@ -39,9 +37,7 @@ struct TSPGrowthEstimatorView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                TSPIntroCard()
-
+            VStack(alignment: .leading, spacing: 16) {
                 TSPCurrentStatusSection(
                     category: $currentCategory,
                     grade: $currentGrade,
@@ -66,26 +62,22 @@ struct TSPGrowthEstimatorView: View {
 
                 TSPMatchTableSection(contributionPct: contributionPct)
 
-                if showResults {
-                    TSPResultsView(
-                        result: projection,
-                        currentGrade: currentGrade,
-                        projectedGrade: projectedGrade,
-                        yearsToSeparation: yearsToSeparation,
-                        expectedReturn: expectedReturn,
-                        annualCOLA: annualCOLA
-                    )
-                }
+                TSPResultsView(
+                    result: projection,
+                    currentGrade: currentGrade,
+                    projectedGrade: projectedGrade,
+                    yearsToSeparation: yearsToSeparation,
+                    expectedReturn: expectedReturn,
+                    annualCOLA: annualCOLA
+                )
 
-                calculateButton
-
-                TSPDisclaimerFooter()
+                DashTenInfoFooter()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+            .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("TSP Growth Estimator")
+        .navigationTitle("TSP Growth")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: currentCategory) { _, newCategory in
             if !newCategory.grades.contains(currentGrade), let firstGrade = newCategory.grades.first {
@@ -94,19 +86,6 @@ struct TSPGrowthEstimatorView: View {
         }
     }
 
-    private var calculateButton: some View {
-        Button {
-            withAnimation(.spring(response: 0.4)) { showResults = true }
-        } label: {
-            Text("Calculate My Estimate")
-                .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(AppTheme.forestGreen)
-                .clipShape(.rect(cornerRadius: 14))
-        }
-    }
 }
 
 #Preview {
