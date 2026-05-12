@@ -159,6 +159,7 @@ struct MentorTrackerView: View {
             }
             .navigationTitle("Add Mentor")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneToolbar()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

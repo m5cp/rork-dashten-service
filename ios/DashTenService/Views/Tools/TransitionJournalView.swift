@@ -54,6 +54,7 @@ struct TransitionJournalView: View {
             .padding(.bottom, 32)
         }
         .background(Color(.systemGroupedBackground))
+        .keyboardDoneToolbar()
         .navigationTitle("Transition Journal")
         .navigationBarTitleDisplayMode(.inline)
     }

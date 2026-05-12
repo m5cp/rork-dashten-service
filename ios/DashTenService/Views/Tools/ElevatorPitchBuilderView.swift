@@ -29,6 +29,7 @@ struct ElevatorPitchBuilderView: View {
             .padding(.bottom, 100)
         }
         .background(Color(.systemGroupedBackground))
+        .keyboardDoneToolbar()
         .navigationTitle("Elevator Pitch")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

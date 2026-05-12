@@ -520,6 +520,7 @@ struct PlanView: View {
             }
             .navigationTitle("Add Custom Task")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneToolbar()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

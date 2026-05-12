@@ -101,6 +101,7 @@ struct SearchView: View {
                 .padding(.bottom, 100)
             }
             .background(Color(.systemGroupedBackground))
+            .keyboardDoneToolbar()
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search tools, guides & topics")
             .navigationTitle("Search")
             .navigationDestination(for: PlanningRoute.self) { route in

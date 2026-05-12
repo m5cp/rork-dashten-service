@@ -151,6 +151,7 @@ struct CivilianBudgetCalculatorView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Civilian Budget")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneToolbar()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }

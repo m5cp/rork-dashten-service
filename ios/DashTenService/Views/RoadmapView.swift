@@ -148,6 +148,7 @@ struct RoadmapView: View {
             }
             .navigationTitle("Add Custom Task")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneToolbar()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

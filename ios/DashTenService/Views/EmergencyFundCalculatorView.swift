@@ -150,6 +150,7 @@ struct EmergencyFundCalculatorView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Emergency Fund")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneToolbar()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }

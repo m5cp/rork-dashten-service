@@ -120,6 +120,7 @@ struct EditProfileSheet: View {
                 .padding(.bottom, 40)
             }
             .background(Color(.systemGroupedBackground))
+            .keyboardDoneToolbar()
             .navigationTitle("Edit Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

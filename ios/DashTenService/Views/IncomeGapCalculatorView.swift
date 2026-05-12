@@ -115,6 +115,7 @@ struct IncomeGapCalculatorView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Income Gap Planner")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneToolbar()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }

@@ -42,6 +42,7 @@ struct GoalTrackerView: View {
             .padding(.bottom, 32)
         }
         .background(Color(.systemGroupedBackground))
+        .keyboardDoneToolbar()
         .navigationTitle("90-Day Goals")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

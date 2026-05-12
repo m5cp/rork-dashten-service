@@ -242,6 +242,7 @@ struct AddDeadlineSheet: View {
             }
             .navigationTitle("Add Deadline")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneToolbar()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

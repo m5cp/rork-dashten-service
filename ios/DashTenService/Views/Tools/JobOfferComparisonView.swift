@@ -225,6 +225,7 @@ struct AddJobOfferSheet: View {
             JobOfferForm(offer: $offer)
                 .navigationTitle("Add Offer")
                 .navigationBarTitleDisplayMode(.inline)
+                .keyboardDoneToolbar()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") { dismiss() }
@@ -261,6 +262,7 @@ struct EditJobOfferSheet: View {
             JobOfferForm(offer: $editedOffer)
                 .navigationTitle("Edit Offer")
                 .navigationBarTitleDisplayMode(.inline)
+                .keyboardDoneToolbar()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") { dismiss() }

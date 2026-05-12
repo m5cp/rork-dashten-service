@@ -24,6 +24,7 @@ struct ResumeTranslatorView: View {
             }
         }
         .background(Color(.systemGroupedBackground))
+        .keyboardDoneToolbar()
         .navigationTitle("Resume Translator")
         .navigationBarTitleDisplayMode(.inline)
     }

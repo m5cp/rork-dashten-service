@@ -43,6 +43,7 @@ struct MilitaryCompCalculatorView: View {
                 .padding(.bottom, 32)
             }
             .background(Color(.systemGroupedBackground))
+            .keyboardDoneToolbar()
             .navigationTitle("Compensation Calculator")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

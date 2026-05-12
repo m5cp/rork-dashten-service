@@ -160,6 +160,7 @@ struct AddNetworkingEventSheet: View {
             }
             .navigationTitle("New Event")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneToolbar()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -222,6 +223,7 @@ struct EventDetailSheet: View {
                 }
             }
             .background(Color(.systemGroupedBackground))
+            .keyboardDoneToolbar()
             .navigationTitle(eventIndex.map { storage.networkingEvents[$0].eventName } ?? "Event")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

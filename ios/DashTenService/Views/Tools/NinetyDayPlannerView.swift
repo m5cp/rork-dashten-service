@@ -27,6 +27,7 @@ struct NinetyDayPlannerView: View {
             .padding(.bottom, 100)
         }
         .background(Color(.systemGroupedBackground))
+        .keyboardDoneToolbar()
         .navigationTitle("First 90 Days")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

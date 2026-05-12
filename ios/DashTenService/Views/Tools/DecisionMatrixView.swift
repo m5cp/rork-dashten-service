@@ -264,6 +264,7 @@ struct DecisionMatrixDetailView: View {
                 }
             }
             .background(Color(.systemGroupedBackground))
+            .keyboardDoneToolbar()
             .navigationTitle(matrixIndex.map { storage.decisionMatrices[$0].title } ?? "Decision")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
