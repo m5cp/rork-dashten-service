@@ -1,38 +1,55 @@
-# Make every topic in the app searchable from one place
+# Full DashTen fix plan — 6 phases from compliance to power features
 
-## What's there today
+I'll work through this in 6 phases, smallest risk first so nothing already working breaks. You can stop me after any phase.
 
-The Search screen already finds tools and guides, but it's missing a chunk of the app — eight tools/routes aren't listed, and deeper content like specific benefits (SGLI, VGLI, TRICARE, DEERS), mindset shifts, civilian playbook entries, and learn articles can't be searched at all. So if you type "SGLI" or "imposter syndrome," you get nothing.
+---
 
-## What I'll change
+## Phase 1 — Critical fixes (App Store safety net) ✅ DONE
+- [x] Make the actual billed price ($59.99/year and $7.99/month) the biggest, most prominent number on the paywall — weekly equivalent only as small secondary text
+- [x] Make auto-renewal disclosure clearly visible above the buy button, not buried at the bottom
+- [x] Add **Account Deletion** flow inside Profile (required by Apple) — renamed "Delete Account & All Data" with clearer copy
+- [x] Add **Sign in with Apple** option if any other social sign-in exists — N/A (no social sign-in; app is local-only)
+- [x] Make sure **Restore Purchases** and **Redeem Code** appear on every paywall entry
+- [x] Confirm Privacy Policy + Terms of Use are reachable from Profile and Paywall
+- [x] Verify Privacy Manifest is complete and accurate — added FileTimestamp, SystemBootTime, DiskSpace reasons
+- [x] Remove any unused frameworks/capabilities to reduce reviewer flags — entitlements file is empty (only Live Activity uses Info.plist key), nothing to remove
 
-**Add the 8 missing tool routes**
-- [x] Roadmap, Goal Tracker, Civilian Jargon Translator, Weekly Challenges, Daily Power-Up, Networking Event Prep, Benefits Enrollment Countdown, Achievement Badges
-- [x] Each gets a title, subtitle, icon, and keywords so it shows up in results
+## Phase 2 — Quick wins (low risk, high impact)
+- [x] Trigger the paywall right after the onboarding "aha" moment, not just after dismissal (already wired in Phase A)
+- [ ] Tighten onboarding to 3–4 screens, one action per step, outcome-led copy
+- [ ] Add a friendly empty state to every list (Documents, Networking Hub, Journal, etc.)
+- [ ] Add a loading shimmer on every async screen
+- [ ] Add 44pt minimum tap targets everywhere a button is smaller today
+- [ ] Audit Dynamic Type + VoiceOver labels on the main flows
+- [ ] Confirm dark mode looks right across every screen
 
-**Make individual benefits searchable**
-- [x] Each benefit category (SGLI, VGLI, TRICARE, DEERS, GI Bill, VA Disability, etc.) becomes its own search result
-- [x] Tapping a result opens the Benefits screen scrolled/highlighted to that benefit
-- [x] Keywords cover common nicknames ("life insurance" finds SGLI, "healthcare" finds TRICARE)
+## Phase 3 — Retention loop
+- [ ] Daily streak with a guilt-free "freeze" so missing a day doesn't punish users
+- [ ] 7 / 30 / 90-day milestone celebrations with shareable cards
+- [ ] Weekly summary card on Home: missions completed, XP gained, next step
+- [ ] Monthly readiness reassessment prompt
+- [ ] In-app feedback prompt after 3 sessions
 
-**Make Learn content searchable**
-- [x] Every guide article (Mindset Shifts entries, Civilian Playbook entries, First 30 Days, First Year Guide chapters) appears as a search result
-- [x] Tapping opens directly to that article
-- [x] Article body text is included in the search so you can find a topic by phrase, not just title
+## Phase 4 — Analytics & growth
+- [ ] Add event tracking for: app open, every screen view, every onboarding step, paywall shown/dismissed/converted, redeem code, every core feature first use, subscription started/renewed/cancelled, crashes
+- [ ] App Store metadata rewrite: new title, subtitle, and 100-char keyword string optimized for veteran transition search terms
+- [ ] New screenshot copy outline focused on outcomes (job offer, VA rating, finances locked in) — not UI shots
 
-**One unified Search screen**
-- [x] The Search screen organizes results into clear sections: Tools, Guides, Benefits, Articles
-- [x] A "no results" state suggests popular searches and related topics
-- [x] Results stay fast — search filters happen instantly as you type
+## Phase 5 — Platform connections (the ones you picked)
+- [ ] **WidgetKit**: Home Screen (Small/Medium/Large) showing days-to-EAS, next mission, readiness score. Lock Screen (Circular/Rectangular/Inline) for countdown + streak. Deep-link taps into the right screen. (Widget target already exists — needs expansion)
+- [ ] **Live Activities / Dynamic Island**: countdown to separation date, today's mission progress, weekly mission status with compact/minimal/expanded views (LiveActivityService exists — needs Dynamic Island UI)
+- [ ] **App Intents / Siri Shortcuts**: "Log today's check-in", "Show my readiness score", "Open today's mission", "Track a new contact". Donate on use, surface in Spotlight. (AppIntents.swift exists — needs audit + new intents)
+- [ ] **Push Notifications**: daily reminder (smart-timed), streak protection, milestone reached, new guide unlocked, weekly summary. Full permission flow with rationale screen.
+- [ ] **HealthKit**: read Mindfulness, Sleep, Steps to feed the Wellness Check-In trend chart; nothing is ever uploaded. Clear opt-in screen explaining what's read and why.
 
-**Polish**
-- [x] Popular Searches chips updated to reflect the new searchable surface (add "SGLI", "TRICARE", "Mindset", "VA Loan")
-- [x] Results show a small tag indicating what type of thing it is (Tool / Guide / Benefit / Article) so it's obvious where you'll land
-- [x] Recently viewed items appear above results when the search box is empty
+## Phase 6 — Major upgrades (higher risk, reviewed carefully)
+- [ ] Refactor remaining services to a single DI pattern (no scattered singletons)
+- [ ] Move sensitive keys/tokens to Keychain (anything currently in UserDefaults that shouldn't be)
+- [ ] Convert any remaining `@StateObject`/`@ObservedObject` to `@Observable` + `@State`/`@Bindable`
+- [ ] Strengthen typed error handling across services with user-facing messages
+- [ ] Add a single source of truth for the paywall trigger (one service, all entry points use it)
+- [ ] Add a lightweight offline cache layer so all read-only content works without network
 
-## Where to find it
+---
 
-- Tap the magnifying glass on the Home screen — same entry point as today, just much more powerful
-- The Tools screen's inline search also picks up the new entries
-
-Build verified — everything compiles and works.
+Nothing on the DO NOT TOUCH list is changed. After each phase I build, verify, and pause for sign-off before starting the next.

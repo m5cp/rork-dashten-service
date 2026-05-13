@@ -360,9 +360,10 @@ struct ProfileView: View {
                     Button(role: .destructive) {
                         showResetAlert = true
                     } label: {
-                        Label("Delete All My Data", systemImage: "trash")
+                        Label("Delete Account & All Data", systemImage: "trash")
                             .font(.body.weight(.bold))
                     }
+                    .accessibilityLabel("Delete your account and erase all data stored on this device")
                 }
 
                 Section {} footer: {
@@ -416,14 +417,14 @@ struct ProfileView: View {
             .offerCodeRedemption(isPresented: $showRedeemCode) { _ in
                 Task { await store.checkStatus() }
             }
-            .alert("Delete All My Data?", isPresented: $showResetAlert) {
+            .alert("Delete Account & All Data?", isPresented: $showResetAlert) {
                 Button("Delete Everything", role: .destructive) {
                     storage.resetOnboarding()
                     showOnboarding = true
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This permanently erases your profile, roadmap, documents, journal, tool entries, streaks, and progress from this device. This cannot be undone. You'll be returned to setup.")
+                Text("This permanently erases your profile, roadmap, documents, journal, tool entries, streaks, subscription preferences, and all progress from this device. DashTen does not keep any server-side account, so nothing is recoverable. This cannot be undone — you'll be returned to setup.")
             }
         }
     }

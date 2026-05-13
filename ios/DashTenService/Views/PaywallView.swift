@@ -194,7 +194,7 @@ struct PaywallView: View {
 	// MARK: - Purchase
 
 	private var purchaseSection: some View {
-		VStack(spacing: 12) {
+		VStack(spacing: 14) {
 			if store.isLoading {
 				ProgressView()
 					.padding(32)
@@ -207,18 +207,25 @@ struct PaywallView: View {
 				VStack(spacing: 10) {
 					placeholderPackageButton(
 						title: "Monthly",
-						price: "$7.99 / month",
+						price: "$7.99",
+						period: "per month",
+						subprice: nil,
 						badge: nil,
 						isSelected: selectedPackageId == "monthly"
 					)
 					placeholderPackageButton(
 						title: "Annual",
-						price: "$59.99 / year · Save 37%",
+						price: "$59.99",
+						period: "per year",
+						subprice: "about $1.15 / week · save 37%",
 						badge: "Best Value",
 						isSelected: selectedPackageId == "annual"
 					)
 				}
 			}
+
+			// Auto-renewal disclosure ABOVE the CTA (App Review 3.1)
+			autoRenewalDisclosure
 
 			// CTA button
 			Button {
@@ -231,13 +238,13 @@ struct PaywallView: View {
 							.progressViewStyle(.circular)
 							.tint(.white)
 					} else {
-						Text("Start Free Trial")
+						Text("Start 3-Day Free Trial")
 							.font(.headline.weight(.bold))
 					}
 				}
 				.foregroundStyle(.white)
 				.frame(maxWidth: .infinity)
-				.padding(.vertical, 16)
+				.padding(.vertical, 18)
 				.background(
 					LinearGradient(
 						colors: [AppTheme.forestGreen, AppTheme.darkGreen],
@@ -248,66 +255,69 @@ struct PaywallView: View {
 				.clipShape(.rect(cornerRadius: 14))
 			}
 			.disabled(store.isPurchasing || selectedPackageId == nil)
-			.padding(.top, 4)
+			.frame(minHeight: 44)
 
-			Text("3-day free trial · Cancel anytime · No commitment")
+			Text("Then \(selectedRenewalSummary). Cancel anytime in Settings.")
 				.font(.caption.weight(.semibold))
 				.foregroundStyle(.secondary)
 				.multilineTextAlignment(.center)
+				.fixedSize(horizontal: false, vertical: true)
 		}
 		.padding(.horizontal, 16)
 		.padding(.bottom, 16)
 	}
 
+	private var autoRenewalDisclosure: some View {
+		HStack(alignment: .top, spacing: 10) {
+			Image(systemName: "arrow.triangle.2.circlepath")
+				.font(.caption.weight(.bold))
+				.foregroundStyle(.secondary)
+				.padding(.top, 1)
+			Text("After your 3-day free trial, your subscription will auto-renew at the price above until you cancel. Cancel at least 24 hours before the period ends to avoid charges. Manage in your App Store account at any time.")
+				.font(.caption2.weight(.semibold))
+				.foregroundStyle(.secondary)
+				.fixedSize(horizontal: false, vertical: true)
+		}
+		.padding(12)
+		.frame(maxWidth: .infinity, alignment: .leading)
+		.background(Color(.tertiarySystemGroupedBackground))
+		.clipShape(.rect(cornerRadius: 10))
+	}
+
+	private var selectedRenewalSummary: String {
+		guard let pkg = selectedPackage(from: store.offerings) else {
+			if selectedPackageId == "annual" { return "$59.99 / year auto-renews" }
+			if selectedPackageId == "monthly" { return "$7.99 / month auto-renews" }
+			return "your selected plan auto-renews"
+		}
+		let period = pkg.packageType == .annual ? "year" : "month"
+		return "\(pkg.localizedPriceString) / \(period) auto-renews"
+	}
+
 	private func packageButton(_ package: Package) -> some View {
 		let isAnnual = package.packageType == .annual
 		let isSelected = selectedPackageId == package.identifier
+		let periodText = isAnnual ? "per year" : "per month"
+		let weeklyEquivalent: String? = isAnnual
+			? "about \(weeklyEquivalentString(for: package)) / week · save 37%"
+			: nil
 
 		return Button {
 			withAnimation(.spring(response: 0.3)) {
 				selectedPackageId = package.identifier
 			}
 		} label: {
-			HStack {
-				VStack(alignment: .leading, spacing: 3) {
-					Text(isAnnual ? "Annual" : "Monthly")
-						.font(.subheadline.weight(.bold))
-						.foregroundStyle(.primary)
-					Text(package.localizedPriceString + (isAnnual ? " / year" : " / month"))
-						.font(.caption.weight(.semibold))
-						.foregroundStyle(.secondary)
-				}
-				Spacer()
-				if isAnnual {
-					Text("Save 37%")
-						.font(.caption2.weight(.heavy))
-						.foregroundStyle(.white)
-						.padding(.horizontal, 8)
-						.padding(.vertical, 4)
-						.background(AppTheme.gold)
-						.clipShape(Capsule())
-				}
-				Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-					.font(.title3)
-					.foregroundStyle(isSelected ? AppTheme.forestGreen : .secondary)
-			}
-			.padding(14)
-			.background(
-				isSelected
-					? AppTheme.forestGreen.opacity(0.08)
-					: Color(.secondarySystemGroupedBackground)
+			packageButtonContent(
+				title: isAnnual ? "Annual" : "Monthly",
+				price: package.localizedPriceString,
+				period: periodText,
+				subprice: weeklyEquivalent,
+				badge: isAnnual ? "Best Value" : nil,
+				isSelected: isSelected
 			)
-			.overlay(
-				RoundedRectangle(cornerRadius: 14)
-					.stroke(
-						isSelected ? AppTheme.forestGreen : Color.clear,
-						lineWidth: 1.5
-					)
-			)
-			.clipShape(.rect(cornerRadius: 14))
-			.contentShape(Rectangle())
 		}
 		.buttonStyle(.plain)
+		.frame(minHeight: 44)
 		.onAppear {
 			if isAnnual && selectedPackageId == nil {
 				selectedPackageId = package.identifier
@@ -315,42 +325,92 @@ struct PaywallView: View {
 		}
 	}
 
-	private func placeholderPackageButton(title: String, price: String, badge: String?, isSelected: Bool) -> some View {
+	private func weeklyEquivalentString(for package: Package) -> String {
+		let price = NSDecimalNumber(decimal: package.storeProduct.price).doubleValue
+		guard price > 0 else { return "$0" }
+		let perWeek = price / 52.0
+		let formatter = NumberFormatter()
+		formatter.numberStyle = .currency
+		formatter.locale = package.storeProduct.priceFormatter?.locale ?? Locale.current
+		formatter.maximumFractionDigits = 2
+		formatter.minimumFractionDigits = 2
+		return formatter.string(from: NSNumber(value: perWeek)) ?? String(format: "$%.2f", perWeek)
+	}
+
+	@ViewBuilder
+	private func packageButtonContent(title: String, price: String, period: String, subprice: String?, badge: String?, isSelected: Bool) -> some View {
+		HStack(spacing: 14) {
+			Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
+				.font(.title2)
+				.foregroundStyle(isSelected ? AppTheme.forestGreen : .secondary)
+
+			VStack(alignment: .leading, spacing: 4) {
+				HStack(spacing: 8) {
+					Text(title)
+						.font(.subheadline.weight(.heavy))
+						.foregroundStyle(.primary)
+					if let badge {
+						Text(badge)
+							.font(.caption2.weight(.heavy))
+							.foregroundStyle(.white)
+							.padding(.horizontal, 8)
+							.padding(.vertical, 3)
+							.background(AppTheme.gold)
+							.clipShape(Capsule())
+					}
+				}
+				if let subprice {
+					Text(subprice)
+						.font(.caption2.weight(.semibold))
+						.foregroundStyle(.secondary)
+				}
+			}
+
+			Spacer(minLength: 8)
+
+			VStack(alignment: .trailing, spacing: 0) {
+				Text(price)
+					.font(.system(size: 22, weight: .heavy, design: .rounded))
+					.foregroundStyle(.primary)
+				Text(period)
+					.font(.caption2.weight(.semibold))
+					.foregroundStyle(.secondary)
+			}
+		}
+		.padding(16)
+		.background(
+			isSelected
+				? AppTheme.forestGreen.opacity(0.08)
+				: Color(.secondarySystemGroupedBackground)
+		)
+		.overlay(
+			RoundedRectangle(cornerRadius: 14)
+				.stroke(
+					isSelected ? AppTheme.forestGreen : Color.clear,
+					lineWidth: 2
+				)
+		)
+		.clipShape(.rect(cornerRadius: 14))
+		.contentShape(Rectangle())
+	}
+
+	private func placeholderPackageButton(title: String, price: String, period: String, subprice: String?, badge: String?, isSelected: Bool) -> some View {
 		Button {
 			withAnimation(.spring(response: 0.3)) {
 				selectedPackageId = title.lowercased()
 			}
 		} label: {
-			HStack {
-				VStack(alignment: .leading, spacing: 3) {
-					Text(title)
-						.font(.subheadline.weight(.bold))
-						.foregroundStyle(.primary)
-					Text(price)
-						.font(.caption.weight(.semibold))
-						.foregroundStyle(.secondary)
-				}
-				Spacer()
-				if let badge {
-					Text(badge)
-						.font(.caption2.weight(.heavy))
-						.foregroundStyle(.white)
-						.padding(.horizontal, 8)
-						.padding(.vertical, 4)
-						.background(AppTheme.gold)
-						.clipShape(Capsule())
-				}
-				Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-					.font(.title3)
-					.foregroundStyle(isSelected ? AppTheme.forestGreen : .secondary)
-			}
-			.padding(14)
-			.background(isSelected ? AppTheme.forestGreen.opacity(0.08) : Color(.secondarySystemGroupedBackground))
-			.overlay(RoundedRectangle(cornerRadius: 14).stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5))
-			.clipShape(.rect(cornerRadius: 14))
-			.contentShape(Rectangle())
+			packageButtonContent(
+				title: title,
+				price: price,
+				period: period,
+				subprice: subprice,
+				badge: badge,
+				isSelected: isSelected
+			)
 		}
 		.buttonStyle(.plain)
+		.frame(minHeight: 44)
 		.onAppear {
 			if title == "Annual" && selectedPackageId == nil {
 				selectedPackageId = title.lowercased()
@@ -397,14 +457,11 @@ struct PaywallView: View {
 
 	private var legalSection: some View {
 		VStack(spacing: 12) {
-			Text("Subscription auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime in your App Store settings.")
-				.font(.caption2)
-				.foregroundStyle(.secondary)
-				.multilineTextAlignment(.center)
-
 			HStack(spacing: 24) {
 				Button("Terms of Use") { showTerms = true }
+					.frame(minHeight: 44)
 				Button("Privacy Policy") { showPrivacy = true }
+					.frame(minHeight: 44)
 			}
 			.font(.caption.weight(.semibold))
 			.foregroundStyle(.secondary)
