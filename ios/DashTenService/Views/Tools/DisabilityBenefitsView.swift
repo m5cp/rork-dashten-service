@@ -26,7 +26,7 @@ struct DisabilityBenefitsView: View {
 				benefitsList
 				noteCard
 
-				Text("General information only · Not affiliated with any government agency · Benefits vary by state and circumstance")
+				Text("This tool shows benefits that generally apply at different rating levels for informational purposes only. Your actual rating is determined solely by the Department of Veterans Affairs based on your medical evidence, service records, and examination results. DashTen has no affiliation with the VA and cannot predict, estimate, or advise on ratings or claims.")
 					.font(.caption2)
 					.foregroundStyle(.secondary)
 					.multilineTextAlignment(.center)
