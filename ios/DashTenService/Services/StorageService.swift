@@ -74,6 +74,33 @@ class StorageService {
     var lastDailyPowerUpDate: Date? {
         didSet { save() }
     }
+    var lastActiveDate: Date? {
+        didSet { save() }
+    }
+    var currentStreak: Int {
+        didSet { save() }
+    }
+    var bestStreak: Int {
+        didSet { save() }
+    }
+    var streakFreezesAvailable: Int {
+        didSet { save() }
+    }
+    var celebratedStreakMilestones: Set<Int> {
+        didSet { save() }
+    }
+    var sessionCount: Int {
+        didSet { save() }
+    }
+    var lastSessionDate: Date? {
+        didSet { save() }
+    }
+    var feedbackPromptShown: Bool {
+        didSet { save() }
+    }
+    var reassessmentPromptDismissedAt: Date? {
+        didSet { save() }
+    }
 
     init() {
         let stored = StorageService.loadFromDisk()
@@ -100,6 +127,15 @@ class StorageService {
         self.benefitDeadlines = stored.benefitDeadlines ?? []
         self.networkingEvents = stored.networkingEvents ?? []
         self.lastDailyPowerUpDate = stored.lastDailyPowerUpDate
+        self.lastActiveDate = stored.lastActiveDate
+        self.currentStreak = stored.currentStreak ?? 0
+        self.bestStreak = stored.bestStreak ?? 0
+        self.streakFreezesAvailable = stored.streakFreezesAvailable ?? 1
+        self.celebratedStreakMilestones = Set(stored.celebratedStreakMilestones ?? [])
+        self.sessionCount = stored.sessionCount ?? 0
+        self.lastSessionDate = stored.lastSessionDate
+        self.feedbackPromptShown = stored.feedbackPromptShown ?? false
+        self.reassessmentPromptDismissedAt = stored.reassessmentPromptDismissedAt
     }
 
     func toggleChecklistItem(_ id: String) {
@@ -107,6 +143,7 @@ class StorageService {
         checklistItems[index].isCompleted.toggle()
         if checklistItems[index].isCompleted {
             awardXP(10)
+            _ = RetentionService.recordActivity(storage: self)
         }
     }
 
@@ -199,6 +236,7 @@ class StorageService {
     func addJournalEntry(_ entry: JournalEntry) {
         journalEntries.insert(entry, at: 0)
         awardXP(10)
+        _ = RetentionService.recordActivity(storage: self)
     }
 
     func addGoal(_ goal: GoalItem) {
@@ -219,6 +257,7 @@ class StorageService {
     func addCheckIn(_ entry: WeeklyCheckInEntry) {
         weeklyCheckIns.insert(entry, at: 0)
         awardXP(15)
+        _ = RetentionService.recordActivity(storage: self)
     }
 
     func addNetworkingWeek(_ week: NetworkingWeek) {
@@ -243,6 +282,7 @@ class StorageService {
     func trackToolUsed(_ toolId: String) {
         toolsUsedIds.insert(toolId)
         awardXP(5)
+        _ = RetentionService.recordActivity(storage: self)
     }
 
     func awardXP(_ amount: Int) {
@@ -281,6 +321,15 @@ class StorageService {
         benefitDeadlines = []
         networkingEvents = []
         lastDailyPowerUpDate = nil
+        lastActiveDate = nil
+        currentStreak = 0
+        bestStreak = 0
+        streakFreezesAvailable = 1
+        celebratedStreakMilestones = []
+        sessionCount = 0
+        lastSessionDate = nil
+        feedbackPromptShown = false
+        reassessmentPromptDismissedAt = nil
     }
 
     private func save() {
@@ -293,7 +342,16 @@ class StorageService {
             toolsUsedIds: Array(toolsUsedIds), elevatorPitch: elevatorPitch, jobOffers: jobOffers,
             decisionMatrices: decisionMatrices, ninetyDayPlan: ninetyDayPlan, brandAudit: brandAudit,
             benefitDeadlines: benefitDeadlines, networkingEvents: networkingEvents,
-            lastDailyPowerUpDate: lastDailyPowerUpDate
+            lastDailyPowerUpDate: lastDailyPowerUpDate,
+            lastActiveDate: lastActiveDate,
+            currentStreak: currentStreak,
+            bestStreak: bestStreak,
+            streakFreezesAvailable: streakFreezesAvailable,
+            celebratedStreakMilestones: Array(celebratedStreakMilestones),
+            sessionCount: sessionCount,
+            lastSessionDate: lastSessionDate,
+            feedbackPromptShown: feedbackPromptShown,
+            reassessmentPromptDismissedAt: reassessmentPromptDismissedAt
         )
         guard let data = try? JSONEncoder().encode(container) else { return }
         UserDefaults.standard.set(data, forKey: userDefaultsKey)
@@ -353,8 +411,17 @@ private nonisolated struct StorageContainer: Codable, Sendable {
     let benefitDeadlines: [BenefitDeadline]?
     let networkingEvents: [NetworkingEvent]?
     let lastDailyPowerUpDate: Date?
+    let lastActiveDate: Date?
+    let currentStreak: Int?
+    let bestStreak: Int?
+    let streakFreezesAvailable: Int?
+    let celebratedStreakMilestones: [Int]?
+    let sessionCount: Int?
+    let lastSessionDate: Date?
+    let feedbackPromptShown: Bool?
+    let reassessmentPromptDismissedAt: Date?
 
-    init(profile: UserProfile, checklist: [ChecklistItem], documents: [DocumentItem], benefits: [BenefitCategory], mentors: [MentorContact] = [], lastAssessment: AssessmentResult? = nil, journalEntries: [JournalEntry]? = nil, goals: [GoalItem]? = nil, weeklyCheckIns: [WeeklyCheckInEntry]? = nil, networkingWeeks: [NetworkingWeek]? = nil, practicedQuestions: [String]? = nil, badges: [AchievementBadge]? = nil, transitionLevel: TransitionLevel? = nil, weeklyChallenges: [WeeklyChallenge]? = nil, toolsUsedIds: [String]? = nil, elevatorPitch: ElevatorPitch? = nil, jobOffers: [JobOffer]? = nil, decisionMatrices: [DecisionMatrix]? = nil, ninetyDayPlan: NinetyDayPlan? = nil, brandAudit: BrandAuditResult? = nil, benefitDeadlines: [BenefitDeadline]? = nil, networkingEvents: [NetworkingEvent]? = nil, lastDailyPowerUpDate: Date? = nil) {
+    init(profile: UserProfile, checklist: [ChecklistItem], documents: [DocumentItem], benefits: [BenefitCategory], mentors: [MentorContact] = [], lastAssessment: AssessmentResult? = nil, journalEntries: [JournalEntry]? = nil, goals: [GoalItem]? = nil, weeklyCheckIns: [WeeklyCheckInEntry]? = nil, networkingWeeks: [NetworkingWeek]? = nil, practicedQuestions: [String]? = nil, badges: [AchievementBadge]? = nil, transitionLevel: TransitionLevel? = nil, weeklyChallenges: [WeeklyChallenge]? = nil, toolsUsedIds: [String]? = nil, elevatorPitch: ElevatorPitch? = nil, jobOffers: [JobOffer]? = nil, decisionMatrices: [DecisionMatrix]? = nil, ninetyDayPlan: NinetyDayPlan? = nil, brandAudit: BrandAuditResult? = nil, benefitDeadlines: [BenefitDeadline]? = nil, networkingEvents: [NetworkingEvent]? = nil, lastDailyPowerUpDate: Date? = nil, lastActiveDate: Date? = nil, currentStreak: Int? = nil, bestStreak: Int? = nil, streakFreezesAvailable: Int? = nil, celebratedStreakMilestones: [Int]? = nil, sessionCount: Int? = nil, lastSessionDate: Date? = nil, feedbackPromptShown: Bool? = nil, reassessmentPromptDismissedAt: Date? = nil) {
         self.profile = profile
         self.checklist = checklist
         self.documents = documents
@@ -378,5 +445,14 @@ private nonisolated struct StorageContainer: Codable, Sendable {
         self.benefitDeadlines = benefitDeadlines
         self.networkingEvents = networkingEvents
         self.lastDailyPowerUpDate = lastDailyPowerUpDate
+        self.lastActiveDate = lastActiveDate
+        self.currentStreak = currentStreak
+        self.bestStreak = bestStreak
+        self.streakFreezesAvailable = streakFreezesAvailable
+        self.celebratedStreakMilestones = celebratedStreakMilestones
+        self.sessionCount = sessionCount
+        self.lastSessionDate = lastSessionDate
+        self.feedbackPromptShown = feedbackPromptShown
+        self.reassessmentPromptDismissedAt = reassessmentPromptDismissedAt
     }
 }

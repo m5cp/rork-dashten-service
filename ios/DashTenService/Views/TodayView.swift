@@ -11,6 +11,10 @@ struct TodayView: View {
     @State private var celebrationSubtitle: String = ""
     @State private var showPaywall: Bool = false
     @State private var showSearch: Bool = false
+    @State private var showFeedback: Bool = false
+    @State private var showMilestoneShare: Bool = false
+    @State private var celebratedMilestone: RetentionMilestone?
+    @State private var goToAssessment: Bool = false
 
     private var isRetiredOrSeparated: Bool {
         storage.profile.timeline == .separated
@@ -32,35 +36,8 @@ struct TodayView: View {
         storage.checklistItems.filter(\.isCompleted).count
     }
 
-    private var streakDays: Int {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        var streak = 0
-        for i in 0..<30 {
-            guard let date = calendar.date(byAdding: .day, value: -i, to: today) else { break }
-            let hasJournal = storage.journalEntries.contains { calendar.isDate($0.date, inSameDayAs: date) }
-            let hasCheckIn = storage.weeklyCheckIns.contains { calendar.isDate($0.date, inSameDayAs: date) }
-            let hasToday = i == 0 && completedTaskCount > 0
-            if hasJournal || hasCheckIn || hasToday {
-                streak += 1
-            } else if i > 0 {
-                break
-            }
-        }
-        return streak
-    }
+    private var streakDays: Int { storage.currentStreak }
 
-    private var weekActivity: [(date: Date, active: Bool, isToday: Bool)] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        return (0..<7).reversed().map { offset in
-            let date = calendar.date(byAdding: .day, value: -offset, to: today) ?? today
-            let hasJournal = storage.journalEntries.contains { calendar.isDate($0.date, inSameDayAs: date) }
-            let hasCheckIn = storage.weeklyCheckIns.contains { calendar.isDate($0.date, inSameDayAs: date) }
-            let active = hasJournal || hasCheckIn || (offset == 0 && completedTaskCount > 0)
-            return (date, active, offset == 0)
-        }
-    }
 
     private var insightCard: InsightCard? {
         let cards = TransitionDataService.insightCards()
@@ -103,8 +80,20 @@ struct TodayView: View {
                             .delayedEntrance(appeared, delay: 0.16)
                     }
 
-                    streakStrip
-                        .delayedEntrance(appeared, delay: 0.24)
+                    StreakStripView(storage: storage)
+                        .delayedEntrance(appeared, delay: 0.22)
+
+                    RetentionWeeklySummaryCard(storage: storage)
+                        .delayedEntrance(appeared, delay: 0.26)
+
+                    if RetentionService.shouldPromptReassessment(storage: storage) {
+                        ReassessmentPromptCard(
+                            storage: storage,
+                            onDismiss: { storage.reassessmentPromptDismissedAt = Date() },
+                            onTakeAssessment: { goToAssessment = true }
+                        )
+                        .delayedEntrance(appeared, delay: 0.3)
+                    }
 
                     if let card = insightCard {
                         insightView(card)
@@ -159,7 +148,12 @@ struct TodayView: View {
             .navigationDestination(for: PlanningRoute.self) { route in
                 if case .readiness = route {
                     ReadinessDashboardView(storage: storage)
+                } else if case .selfAssessment = route {
+                    SelfAssessmentView(storage: storage)
                 }
+            }
+            .navigationDestination(isPresented: $goToAssessment) {
+                SelfAssessmentView(storage: storage)
             }
         }
         .overlay {
@@ -175,11 +169,35 @@ struct TodayView: View {
         .sheet(isPresented: $showSearch) {
             SearchView(storage: storage, store: store)
         }
+        .sheet(isPresented: $showFeedback) {
+            FeedbackPromptSheet(storage: storage)
+        }
+        .sheet(isPresented: $showMilestoneShare) {
+            if let m = celebratedMilestone {
+                ShareProgressSheet(
+                    storage: storage,
+                    readinessPercent: readiness.overallPercent,
+                    streakDays: storage.currentStreak,
+                    tasksCompleted: completedTaskCount,
+                    totalTasks: storage.checklistItems.count
+                )
+                .presentationDetents([.large])
+                .interactiveDismissDisabled(false)
+                .accessibilityLabel(m.title)
+            }
+        }
         .onAppear {
             withAnimation(.spring(response: 0.7, dampingFraction: 0.85)) {
                 appeared = true
             }
             AnalyticsService.shared.log(.screenView, properties: ["name": "home"])
+            let shouldShowFeedback = RetentionService.recordSession(storage: storage)
+            checkPendingMilestone()
+            if shouldShowFeedback {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                    showFeedback = true
+                }
+            }
         }
         .onChange(of: readiness.overallPercent) { oldValue, newValue in
             checkMilestone(old: oldValue, new: newValue)
@@ -415,47 +433,6 @@ struct TodayView: View {
         .clipShape(.rect(cornerRadius: 18))
     }
 
-    // MARK: - Streak strip
-
-    private var streakStrip: some View {
-        HStack(spacing: 12) {
-            HStack(spacing: 6) {
-                Image(systemName: "flame.fill")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(AppTheme.gold)
-                Text("\(streakDays)")
-                    .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(.primary)
-                    .contentTransition(.numericText())
-                Text(streakDays == 1 ? "day" : "days")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            HStack(spacing: 6) {
-                ForEach(Array(weekActivity.enumerated()), id: \.offset) { _, day in
-                    dayDot(active: day.active, isToday: day.isToday)
-                }
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(.rect(cornerRadius: 16))
-    }
-
-    private func dayDot(active: Bool, isToday: Bool) -> some View {
-        Circle()
-            .fill(active ? AppTheme.forestGreen : Color.primary.opacity(0.08))
-            .frame(width: isToday ? 12 : 8, height: isToday ? 12 : 8)
-            .overlay(
-                Circle()
-                    .strokeBorder(isToday ? AppTheme.gold : .clear, lineWidth: 2)
-            )
-    }
-
     // MARK: - Insight
 
     private func insightView(_ card: InsightCard) -> some View {
@@ -483,6 +460,29 @@ struct TodayView: View {
         .padding(18)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 18))
+    }
+
+    private func checkPendingMilestone() {
+        for m in RetentionMilestone.allCases where storage.currentStreak >= m.rawValue {
+            // Already celebrated in storage; show share only for the latest just-hit milestone
+            _ = m
+        }
+        // Find the highest milestone reached this session that hasn't been shown via share yet
+        let reached = RetentionMilestone.allCases.last { storage.currentStreak >= $0.rawValue }
+        if let reached, storage.celebratedStreakMilestones.contains(reached.rawValue) {
+            // Show celebration overlay (one-time per session); share is optional via overlay button
+            if celebratedMilestone?.rawValue != reached.rawValue {
+                celebratedMilestone = reached
+                celebrationTitle = reached.title
+                celebrationSubtitle = reached.subtitle
+                // Only auto-show if this milestone was hit very recently (same day)
+                if let last = storage.lastActiveDate,
+                   Calendar.current.isDateInToday(last),
+                   storage.currentStreak == reached.rawValue {
+                    withAnimation(.spring) { showCelebration = true }
+                }
+            }
+        }
     }
 
     private func checkMilestone(old: Int, new: Int) {

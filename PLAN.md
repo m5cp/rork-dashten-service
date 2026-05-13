@@ -23,12 +23,12 @@ I'll work through this in 6 phases, smallest risk first so nothing already worki
 - [ ] Audit Dynamic Type + VoiceOver labels on the main flows
 - [x] Confirm dark mode looks right across every screen — verified semantic colors (.systemGroupedBackground, .secondarySystemGroupedBackground, .primary/.secondary) used throughout
 
-## Phase 3 — Retention loop
-- [ ] Daily streak with a guilt-free "freeze" so missing a day doesn't punish users
-- [ ] 7 / 30 / 90-day milestone celebrations with shareable cards
-- [ ] Weekly summary card on Home: missions completed, XP gained, next step
-- [ ] Monthly readiness reassessment prompt
-- [ ] In-app feedback prompt after 3 sessions
+## Phase 3 — Retention loop ✅ DONE
+- [x] Daily streak with a guilt-free "freeze" — `RetentionService.recordActivity` wires into checklist toggle, journal, check-in, tool use; auto-earns 1 freeze every 7 days (max 2); bridges 1 missed day automatically
+- [x] 7 / 30 / 90-day milestone celebrations with shareable cards — `RetentionMilestone` enum + celebration overlay + share via existing `ShareProgressSheet`
+- [x] Weekly summary card on Home — `RetentionWeeklySummaryCard` shows missions/XP/journal + dynamic next-step
+- [x] Monthly readiness reassessment prompt — `ReassessmentPromptCard` surfaces 30+ days after last self-assessment, deep-links to `SelfAssessmentView`, dismissible for 30 days
+- [x] In-app feedback prompt after 3 sessions — `FeedbackPromptSheet` (positive → `requestReview`, negative → App Store "Report a Problem" path)
 
 ## Phase 4 — Analytics & growth
 - [ ] Add event tracking for: app open, every screen view, every onboarding step, paywall shown/dismissed/converted, redeem code, every core feature first use, subscription started/renewed/cancelled, crashes
