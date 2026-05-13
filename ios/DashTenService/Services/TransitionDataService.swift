@@ -175,6 +175,11 @@ enum TransitionDataService {
             DocumentItem(id: "d28", name: "State Driver's License", category: .serviceRecords),
             DocumentItem(id: "d29", name: "Social Security Card", category: .serviceRecords),
             DocumentItem(id: "d30", name: "Passport (Current)", category: .serviceRecords),
+            DocumentItem(id: "d31", name: "Last Will and Testament", category: .legalEstate),
+            DocumentItem(id: "d32", name: "Spouse Will (if married)", category: .legalEstate),
+            DocumentItem(id: "d33", name: "General Power of Attorney", category: .legalEstate),
+            DocumentItem(id: "d34", name: "Medical Power of Attorney", category: .legalEstate),
+            DocumentItem(id: "d35", name: "Living Will / Advance Directive", category: .legalEstate),
         ]
     }
 
