@@ -76,6 +76,7 @@ struct PlanTabView: View {
         case .brsRetirementSnapshot: BRSRetirementSnapshotView()
         case .scraProtections: SCRAProtectionsView()
         case .financialReadiness: FinancialReadinessResourcesView()
+        case .vaFundingFee: VAFundingFeeCalculatorView()
         }
     }
 

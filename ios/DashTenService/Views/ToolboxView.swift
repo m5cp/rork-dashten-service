@@ -53,6 +53,7 @@ struct ToolboxView: View {
                 action: .nav(.brsRetirementSnapshot),
                 keywords: ["brs", "pension", "retirement", "snapshot"]
             ),
+            ToolEntry(title: "VA Funding Fee", subtitle: "Calculate your VA loan funding fee", icon: "percent", color: .blue, action: .nav(.vaFundingFee), keywords: ["va", "funding fee", "loan", "mortgage", "home", "house"]),
             ToolEntry(title: "Offer Compare", subtitle: "Side-by-side total compensation analysis", icon: "scalemass.fill", color: .indigo, action: .nav(.jobOfferCompare), keywords: ["offer", "compare", "job"]),
             ToolEntry(title: "Salary Negotiation", subtitle: "Know your worth and ask for it", icon: "hand.raised.fill", color: .pink, action: .nav(.salaryNegotiation), keywords: ["negotiate", "salary"]),
         ]
@@ -263,6 +264,7 @@ struct ToolboxView: View {
         case .brsRetirementSnapshot: BRSRetirementSnapshotView()
         case .scraProtections: SCRAProtectionsView()
         case .financialReadiness: FinancialReadinessResourcesView()
+        case .vaFundingFee: VAFundingFeeCalculatorView()
         }
     }
 
