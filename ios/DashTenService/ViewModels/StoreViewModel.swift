@@ -34,12 +34,24 @@ class StoreViewModel {
 
     func purchase(package: Package) async {
         isPurchasing = true
+        AnalyticsService.shared.log(.featureUsed, properties: [
+            "name": "purchase_attempt",
+            "package": package.identifier
+        ])
         do {
             let result = try await Purchases.shared.purchase(package: package)
             if !result.userCancelled {
-                isPremium = result.customerInfo.entitlements["premium"]?.isActive == true
+                let active = result.customerInfo.entitlements["premium"]?.isActive == true
+                isPremium = active
+                if active {
+                    AnalyticsService.shared.log(.paywallConverted, properties: ["package": package.identifier])
+                    AnalyticsService.shared.log(.subscriptionStarted, properties: ["package": package.identifier])
+                }
+            } else {
+                AnalyticsService.shared.log(.featureUsed, properties: ["name": "purchase_cancelled"])
             }
         } catch ErrorCode.purchaseCancelledError {
+            AnalyticsService.shared.log(.featureUsed, properties: ["name": "purchase_cancelled"])
         } catch ErrorCode.paymentPendingError {
         } catch {
             self.error = error.localizedDescription
@@ -48,9 +60,14 @@ class StoreViewModel {
     }
 
     func restore() async {
+        AnalyticsService.shared.log(.featureUsed, properties: ["name": "restore_tapped"])
         do {
             let info = try await Purchases.shared.restorePurchases()
-            isPremium = info.entitlements["premium"]?.isActive == true
+            let active = info.entitlements["premium"]?.isActive == true
+            isPremium = active
+            if active {
+                AnalyticsService.shared.log(.subscriptionRestored)
+            }
         } catch {
             self.error = error.localizedDescription
         }

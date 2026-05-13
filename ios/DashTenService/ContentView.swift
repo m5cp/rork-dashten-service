@@ -33,8 +33,14 @@ struct ContentView: View {
                 ProfileView(storage: storage, store: store)
             }
         }
+        .onChange(of: selectedTab) { _, newValue in
+            let names = ["home", "plan", "tools", "learn", "profile"]
+            let name = (0..<names.count).contains(newValue) ? names[newValue] : "unknown"
+            AnalyticsService.shared.log(.screenView, properties: ["name": name])
+        }
         .overlay(alignment: .bottomTrailing) {
             FloatingAICoachButton {
+                AnalyticsService.shared.log(.featureUsed, properties: ["name": "ai_coach_opened"])
                 showAICoach = true
             }
             .padding(.trailing, 18)

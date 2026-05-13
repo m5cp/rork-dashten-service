@@ -52,6 +52,9 @@ struct OnboardingView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.spring(response: 0.4), value: currentPage)
+            .onChange(of: currentPage) { _, newValue in
+                AnalyticsService.shared.log(.onboardingStepViewed, properties: ["step": String(newValue)])
+            }
 
             if currentPage > 0 {
                 bottomBar
@@ -165,6 +168,7 @@ struct OnboardingView: View {
         }
         .onAppear {
             welcomeAnimated = true
+            AnalyticsService.shared.log(.onboardingStepViewed, properties: ["step": "0"])
         }
     }
 
@@ -506,6 +510,7 @@ struct OnboardingView: View {
     }
 
     private func completeOnboarding() {
+        AnalyticsService.shared.log(.onboardingCompleted)
         storage.profile.branch = selectedBranch
         storage.profile.timeline = selectedTimeline
         storage.profile.separationDate = selectedTimeline == .separated ? nil : separationDate
@@ -522,6 +527,7 @@ struct OnboardingView: View {
     }
 
     private func skipOnboarding() {
+        AnalyticsService.shared.log(.featureUsed, properties: ["name": "onboarding_skipped", "step": String(currentPage)])
         storage.profile.hasAcceptedDisclaimer = true
         storage.profile.hasCompletedOnboarding = true
         dismiss()

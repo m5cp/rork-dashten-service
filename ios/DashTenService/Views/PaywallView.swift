@@ -50,6 +50,12 @@ struct PaywallView: View {
 			}
 			.onAppear {
 				withAnimation(.spring(response: 0.7)) { appeared = true }
+				AnalyticsService.shared.log(.paywallShown)
+			}
+			.onDisappear {
+				if !store.isPremium {
+					AnalyticsService.shared.log(.paywallDismissed)
+				}
 			}
 			.sheet(isPresented: $showTerms) { TermsOfUseView() }
 			.sheet(isPresented: $showPrivacy) { PrivacyPolicyView() }
@@ -439,6 +445,7 @@ struct PaywallView: View {
 
 	private var redeemCodeButton: some View {
 		Button {
+			AnalyticsService.shared.log(.featureUsed, properties: ["name": "redeem_code_tapped"])
 			showRedeemCode = true
 		} label: {
 			HStack(spacing: 6) {

@@ -708,7 +708,7 @@ struct PrivacyPolicyView: View {
         ("iphone", .blue, "Local-only storage", "DashTen stores all data locally on your device. No personal information is transmitted to external servers."),
         ("lock.shield.fill", AppTheme.forestGreen, "Private by design", "Your transition plan, documents checklist, and progress are private and under your complete control."),
         ("person.crop.circle.badge.xmark", .purple, "No PII collection", "We do not collect, store, or share any personally identifiable information."),
-        ("chart.bar.xaxis", .orange, "No analytics or ads", "No analytics, tracking, or advertising SDKs are included in this app."),
+        ("chart.bar.xaxis", .orange, "On-device diagnostics only", "DashTen records anonymous diagnostic events (such as which screen you opened or whether the paywall was shown) to a local log on your device. These events are not personally identifiable, never leave your device, and are not sent to any analytics, advertising, or third-party SDK. They are erased when you delete the app."),
         ("trash.fill", .red, "Delete = gone", "If you delete the app, all local data is permanently removed from your device."),
         ("link", .teal, "External links", "External links in the app will open in your browser. Those websites have their own privacy policies.")
     ]

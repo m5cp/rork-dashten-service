@@ -285,8 +285,12 @@ struct ToolboxView: View {
 
     private func handleAction(_ action: ToolAction, toolTitle: String = "") {
         if store.isToolLocked(toolTitle) {
+            AnalyticsService.shared.log(.featureUsed, properties: ["name": "locked_tool_tapped", "tool": toolTitle])
             showPaywall = true
             return
+        }
+        if !toolTitle.isEmpty {
+            AnalyticsService.shared.log(.featureUsed, properties: ["name": "tool_opened", "tool": toolTitle])
         }
         switch action {
         case .sheet(let sheet):
@@ -634,6 +638,7 @@ struct CategoryToolsView: View {
         let locked = store.isToolLocked(tool.title)
         if locked {
             Button {
+                AnalyticsService.shared.log(.featureUsed, properties: ["name": "locked_tool_tapped", "tool": tool.title])
                 showPaywall = true
             } label: {
                 ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color, isLocked: true)
