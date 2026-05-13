@@ -3,523 +3,419 @@ import StoreKit
 import RevenueCat
 
 struct PaywallView: View {
-    var store: StoreViewModel
-    @Environment(\.dismiss) private var dismiss
-    @State private var appeared: Bool = false
-    @State private var showTerms: Bool = false
-    @State private var showPrivacy: Bool = false
-    @State private var showRedeemCode: Bool = false
-    @State private var selectedPackageId: String?
+	var store: StoreViewModel
+	@Environment(\.dismiss) private var dismiss
+	@State private var appeared: Bool = false
+	@State private var showTerms: Bool = false
+	@State private var showPrivacy: Bool = false
+	@State private var showRedeemCode: Bool = false
+	@State private var selectedPackageId: String?
 
-    private let transformations: [(before: String, after: String, icon: String)] = [
-        ("Overwhelm and scattered notes", "One clear roadmap you trust", "map.fill"),
-        ("Missed enrollment deadlines", "Countdowns for every benefit", "calendar.badge.exclamationmark"),
-        ("Military jargon on your resume", "Civilian-ready language", "doc.text.fill"),
-        ("Guessing what comes next", "Week-by-week plan to day 90", "calendar.badge.clock"),
-        ("Negotiating blind", "Know your number before you ask", "hand.raised.fill")
-    ]
+	var body: some View {
+		NavigationStack {
+			ScrollView {
+				VStack(spacing: 0) {
+					headerSection
+					freeVsProSection
+					purchaseSection
+					restoreButton
+					redeemCodeButton
+					legalSection
+				}
+			}
+			.background(Color(.systemGroupedBackground))
+			.navigationBarTitleDisplayMode(.inline)
+			.toolbar {
+				ToolbarItem(placement: .cancellationAction) {
+					Button { dismiss() } label: {
+						Image(systemName: "xmark.circle.fill")
+							.font(.title3)
+							.symbolRenderingMode(.hierarchical)
+							.foregroundStyle(.secondary)
+					}
+					.accessibilityLabel("Close")
+					.frame(minWidth: 44, minHeight: 44)
+				}
+			}
+			.alert("Error", isPresented: .init(
+				get: { store.error != nil },
+				set: { if !$0 { store.error = nil } }
+			)) {
+				Button("OK") { store.error = nil }
+			} message: {
+				Text(store.error ?? "")
+			}
+			.onChange(of: store.isPremium) { _, isPremium in
+				if isPremium { dismiss() }
+			}
+			.onAppear {
+				withAnimation(.spring(response: 0.7)) { appeared = true }
+			}
+			.sheet(isPresented: $showTerms) { TermsOfUseView() }
+			.sheet(isPresented: $showPrivacy) { PrivacyPolicyView() }
+			.offerCodeRedemption(isPresented: $showRedeemCode) { _ in
+				Task { await store.checkStatus() }
+			}
+		}
+	}
 
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 0) {
-                    headerSection
-                    transformationSection
-                    featuresSection
-                    purchaseSection
-                    restoreButton
-                    redeemCodeButton
-                    legalSection
-                }
-            }
-            .background(Color(.systemGroupedBackground))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title3)
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(.secondary)
-                    }
-                    .accessibilityLabel("Close paywall")
-                    .frame(minWidth: 44, minHeight: 44)
-                }
-            }
-            .alert("Error", isPresented: .init(
-                get: { store.error != nil },
-                set: { if !$0 { store.error = nil } }
-            )) {
-                Button("OK") { store.error = nil }
-            } message: {
-                Text(store.error ?? "")
-            }
-            .onChange(of: store.isPremium) { _, isPremium in
-                if isPremium { dismiss() }
-            }
-            .onAppear {
-                withAnimation(.spring(response: 0.7)) { appeared = true }
-            }
-            .sheet(isPresented: $showTerms) {
-                TermsOfUseView()
-            }
-            .sheet(isPresented: $showPrivacy) {
-                PrivacyPolicyView()
-            }
-            .offerCodeRedemption(isPresented: $showRedeemCode) { _ in
-                Task { await store.checkStatus() }
-            }
-        }
-    }
+	// MARK: - Header
 
-    private var redeemCodeButton: some View {
-        Button {
-            showRedeemCode = true
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "gift.fill")
-                    .font(.subheadline.weight(.bold))
-                Text("Have a code? Redeem here")
-                    .font(.subheadline.weight(.bold))
-            }
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity)
-            .frame(minHeight: 44)
-        }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 8)
-        .accessibilityLabel("Redeem an offer code for a free or discounted subscription")
-    }
+	private var headerSection: some View {
+		VStack(spacing: 20) {
+			ZStack {
+				Circle()
+					.fill(LinearGradient(
+						colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+						startPoint: .topLeading,
+						endPoint: .bottomTrailing
+					))
+					.frame(width: 88, height: 88)
+				Image(systemName: "star.circle.fill")
+					.font(.system(size: 44))
+					.foregroundStyle(.white)
+			}
+			.scaleEffect(appeared ? 1 : 0.6)
+			.opacity(appeared ? 1 : 0)
 
-    private var headerSection: some View {
-        VStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [AppTheme.gold.opacity(0.3), AppTheme.forestGreen.opacity(0.15), .clear],
-                            center: .center,
-                            startRadius: 20,
-                            endRadius: 80
-                        )
-                    )
-                    .frame(width: 140, height: 140)
-                    .blur(radius: 8)
+			VStack(spacing: 8) {
+				Text("DashTen Pro")
+					.font(.largeTitle.weight(.heavy))
+					.tracking(-0.5)
+				Text("Tools to land strong — not just get out safely.")
+					.font(.subheadline.weight(.semibold))
+					.foregroundStyle(.secondary)
+					.multilineTextAlignment(.center)
+			}
+			.opacity(appeared ? 1 : 0)
+		}
+		.padding(.top, 32)
+		.padding(.bottom, 24)
+		.padding(.horizontal, 24)
+	}
 
-                Image(systemName: "arrow.up.forward.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(AppTheme.forestGreen)
-                    .symbolEffect(.pulse, options: .repeating.speed(0.5))
-            }
-            .opacity(appeared ? 1 : 0)
-            .scaleEffect(appeared ? 1 : 0.8)
-            .accessibilityHidden(true)
+	// MARK: - Free vs Pro
 
-            VStack(spacing: 8) {
-                Text("DashTen Pro")
-                    .font(.largeTitle.bold())
+	private var freeVsProSection: some View {
+		VStack(spacing: 16) {
 
-                Text("Your entire transition, handled")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            .opacity(appeared ? 1 : 0)
-            .offset(y: appeared ? 0 : 10)
+			// Free column
+			VStack(alignment: .leading, spacing: 14) {
+				HStack(spacing: 8) {
+					Image(systemName: "checkmark.shield.fill")
+						.foregroundStyle(AppTheme.forestGreen)
+					Text("Always Free")
+						.font(.headline.weight(.bold))
+						.foregroundStyle(AppTheme.forestGreen)
+				}
+				VStack(alignment: .leading, spacing: 8) {
+					ForEach(freeFeatures, id: \.self) { feature in
+						HStack(alignment: .top, spacing: 10) {
+							Image(systemName: "checkmark.circle.fill")
+								.font(.caption.weight(.bold))
+								.foregroundStyle(AppTheme.forestGreen)
+								.padding(.top, 1)
+							Text(feature)
+								.font(.subheadline.weight(.semibold))
+								.foregroundStyle(.primary)
+								.fixedSize(horizontal: false, vertical: true)
+						}
+					}
+				}
+			}
+			.padding(16)
+			.frame(maxWidth: .infinity, alignment: .leading)
+			.background(AppTheme.forestGreen.opacity(0.06))
+			.clipShape(.rect(cornerRadius: 16))
 
-            HStack(spacing: 20) {
-                PaywallStatBadge(value: "11", label: "Pro Tools")
-                PaywallStatBadge(value: "2", label: "Pro Guides")
-                PaywallStatBadge(value: "∞", label: "Updates")
-            }
-            .opacity(appeared ? 1 : 0)
-            .offset(y: appeared ? 0 : 10)
-        }
-        .padding(.top, 20)
-        .padding(.bottom, 24)
-        .padding(.horizontal, 16)
-    }
+			// Pro column
+			VStack(alignment: .leading, spacing: 14) {
+				HStack(spacing: 8) {
+					Image(systemName: "star.circle.fill")
+						.foregroundStyle(AppTheme.gold)
+					Text("Pro Features")
+						.font(.headline.weight(.bold))
+						.foregroundStyle(AppTheme.gold)
+				}
+				VStack(alignment: .leading, spacing: 8) {
+					ForEach(proFeatures, id: \.0) { icon, feature in
+						HStack(alignment: .top, spacing: 10) {
+							Image(systemName: icon)
+								.font(.caption.weight(.bold))
+								.foregroundStyle(AppTheme.gold)
+								.frame(width: 16)
+								.padding(.top, 1)
+							Text(feature)
+								.font(.subheadline.weight(.semibold))
+								.foregroundStyle(.primary)
+								.fixedSize(horizontal: false, vertical: true)
+						}
+					}
+				}
+			}
+			.padding(16)
+			.frame(maxWidth: .infinity, alignment: .leading)
+			.background(AppTheme.gold.opacity(0.06))
+			.clipShape(.rect(cornerRadius: 16))
+		}
+		.padding(.horizontal, 16)
+		.padding(.bottom, 24)
+	}
 
-    private var transformationSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 8) {
-                Image(systemName: "arrow.triangle.swap")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(AppTheme.forestGreen)
-                Text("What changes for you")
-                    .font(.headline.weight(.bold))
-            }
-            .padding(.horizontal, 20)
+	private let freeFeatures: [String] = [
+		"Personalized roadmap and countdown",
+		"Resume translator — all 6 branches",
+		"Document vault with legal & estate checklist",
+		"VA Home Loan Guide and Funding Fee Calculator",
+		"TSP Options, Growth Estimator, and BRS Snapshot",
+		"GI Bill BAH and Education Benefits calculators",
+		"SCRA Protections reference guide",
+		"State Benefits Finder",
+		"VA Healthcare Guide",
+		"Benefits by Disability Rating",
+		"Financial Readiness resources by branch",
+		"All basic financial calculators",
+		"Readiness Score, XP, and badges",
+		"Weekly missions",
+	]
 
-            VStack(spacing: 10) {
-                ForEach(Array(transformations.enumerated()), id: \.offset) { _, item in
-                    HStack(alignment: .center, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack(spacing: 6) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(.secondary)
-                                Text(item.before)
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                                    .strikethrough()
-                            }
-                            HStack(spacing: 6) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(AppTheme.forestGreen)
-                                Text(item.after)
-                                    .font(.subheadline.weight(.bold))
-                                    .foregroundStyle(.primary)
-                            }
-                        }
-                        Spacer(minLength: 0)
-                        Image(systemName: item.icon)
-                            .font(.title3)
-                            .foregroundStyle(AppTheme.forestGreen)
-                            .frame(width: 36, height: 36)
-                            .background(AppTheme.forestGreen.opacity(0.1))
-                            .clipShape(.rect(cornerRadius: 10))
-                    }
-                    .padding(14)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 14))
-                }
-            }
-            .padding(.horizontal, 16)
-        }
-        .padding(.bottom, 24)
-    }
+	private let proFeatures: [(String, String)] = [
+		("person.fill.questionmark", "Interview Prep — flashcard practice by category"),
+		("mic.fill", "Elevator Pitch Builder — 30, 60, and 90 second versions"),
+		("person.3.fill", "Networking Hub — contact and follow-up tracker"),
+		("person.crop.circle.badge.checkmark", "Personal Brand Audit — score your professional presence"),
+		("calendar.badge.clock", "First 90 Days Planner — week-by-week post-hire roadmap"),
+		("book.fill", "Transition Journal — guided daily prompts"),
+		("chart.xyaxis.line", "Wellness Check-In — track readiness over time"),
+		("map.fill", "Civilian Playbook — the unwritten rules of civilian work"),
+		("flag.fill", "First 30 Days Guide — hit the ground running"),
+	]
 
-    private var featuresSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 8) {
-                Image(systemName: "star.fill")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(AppTheme.gold)
-                Text("Everything included")
-                    .font(.headline.weight(.bold))
-            }
-            .padding(.horizontal, 20)
+	// MARK: - Purchase
 
-            VStack(spacing: 0) {
-                ForEach(Array(proFeatures.enumerated()), id: \.offset) { index, feature in
-                    HStack(spacing: 14) {
-                        Image(systemName: feature.icon)
-                            .font(.body.weight(.semibold))
-                            .foregroundStyle(AppTheme.forestGreen)
-                            .frame(width: 32, height: 32)
-                            .background(AppTheme.forestGreen.opacity(0.1))
-                            .clipShape(.rect(cornerRadius: 8))
+	private var purchaseSection: some View {
+		VStack(spacing: 12) {
+			if store.isLoading {
+				ProgressView()
+					.padding(32)
+			} else if let offering = store.offerings?.current {
+				ForEach(offering.availablePackages, id: \.identifier) { package in
+					packageButton(package)
+				}
+			} else {
+				// Fallback when offerings haven't loaded
+				VStack(spacing: 10) {
+					placeholderPackageButton(
+						title: "Monthly",
+						price: "$7.99 / month",
+						badge: nil,
+						isSelected: selectedPackageId == "monthly"
+					)
+					placeholderPackageButton(
+						title: "Annual",
+						price: "$59.99 / year · Save 37%",
+						badge: "Best Value",
+						isSelected: selectedPackageId == "annual"
+					)
+				}
+			}
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(feature.title)
-                                .font(.subheadline.weight(.bold))
-                            Text(feature.subtitle)
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.secondary)
-                        }
+			// CTA button
+			Button {
+				guard let package = selectedPackage(from: store.offerings) else { return }
+				Task { await store.purchase(package: package) }
+			} label: {
+				Group {
+					if store.isPurchasing {
+						ProgressView()
+							.progressViewStyle(.circular)
+							.tint(.white)
+					} else {
+						Text("Start Free Trial")
+							.font(.headline.weight(.bold))
+					}
+				}
+				.foregroundStyle(.white)
+				.frame(maxWidth: .infinity)
+				.padding(.vertical, 16)
+				.background(
+					LinearGradient(
+						colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+						startPoint: .leading,
+						endPoint: .trailing
+					)
+				)
+				.clipShape(.rect(cornerRadius: 14))
+			}
+			.disabled(store.isPurchasing || selectedPackageId == nil)
+			.padding(.top, 4)
 
-                        Spacer()
+			Text("3-day free trial · Cancel anytime · No commitment")
+				.font(.caption.weight(.semibold))
+				.foregroundStyle(.secondary)
+				.multilineTextAlignment(.center)
+		}
+		.padding(.horizontal, 16)
+		.padding(.bottom, 16)
+	}
 
-                        Image(systemName: "checkmark")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(AppTheme.forestGreen)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 11)
+	private func packageButton(_ package: Package) -> some View {
+		let isAnnual = package.packageType == .annual
+		let isSelected = selectedPackageId == package.identifier
 
-                    if index < proFeatures.count - 1 {
-                        Divider()
-                            .padding(.leading, 62)
-                    }
-                }
-            }
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 16))
-            .padding(.horizontal, 16)
-        }
-        .padding(.bottom, 24)
-    }
+		return Button {
+			withAnimation(.spring(response: 0.3)) {
+				selectedPackageId = package.identifier
+			}
+		} label: {
+			HStack {
+				VStack(alignment: .leading, spacing: 3) {
+					Text(isAnnual ? "Annual" : "Monthly")
+						.font(.subheadline.weight(.bold))
+						.foregroundStyle(.primary)
+					Text(package.localizedPriceString + (isAnnual ? " / year" : " / month"))
+						.font(.caption.weight(.semibold))
+						.foregroundStyle(.secondary)
+				}
+				Spacer()
+				if isAnnual {
+					Text("Save 37%")
+						.font(.caption2.weight(.heavy))
+						.foregroundStyle(.white)
+						.padding(.horizontal, 8)
+						.padding(.vertical, 4)
+						.background(AppTheme.gold)
+						.clipShape(Capsule())
+				}
+				Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+					.font(.title3)
+					.foregroundStyle(isSelected ? AppTheme.forestGreen : .secondary)
+			}
+			.padding(14)
+			.background(
+				isSelected
+					? AppTheme.forestGreen.opacity(0.08)
+					: Color(.secondarySystemGroupedBackground)
+			)
+			.overlay(
+				RoundedRectangle(cornerRadius: 14)
+					.stroke(
+						isSelected ? AppTheme.forestGreen : Color.clear,
+						lineWidth: 1.5
+					)
+			)
+			.clipShape(.rect(cornerRadius: 14))
+			.contentShape(Rectangle())
+		}
+		.buttonStyle(.plain)
+		.onAppear {
+			if isAnnual && selectedPackageId == nil {
+				selectedPackageId = package.identifier
+			}
+		}
+	}
 
-    private let proFeatures: [(icon: String, title: String, subtitle: String)] = [
-        ("doc.text.fill", "Resume Translator", "Convert military jargon to civilian language"),
-        ("person.fill.questionmark", "Interview Prep", "Practice with flashcards & coaching tips"),
-        ("mic.fill", "Elevator Pitch Builder", "Craft your 30/60/90-second intro"),
-        ("person.3.fill", "Networking Hub", "Track contacts, events, and follow-ups"),
-        ("scalemass.fill", "Job Offer Compare", "Side-by-side total compensation analysis"),
-        ("hand.raised.fill", "Salary Negotiation", "Know your worth and ask for it"),
-        ("calendar.badge.clock", "90-Day Planner", "Week-by-week post-hire plan"),
-        ("book.fill", "Transition Journal", "Daily guided prompts and reflections"),
-        ("chart.xyaxis.line", "Wellness Check-In", "Track well-being over time"),
-        ("book.closed.fill", "Civilian Playbook", "Navigate unspoken civilian norms"),
-        ("flag.fill", "First 30 Days Guide", "Week-by-week separation plan")
-    ]
+	private func placeholderPackageButton(title: String, price: String, badge: String?, isSelected: Bool) -> some View {
+		Button {
+			withAnimation(.spring(response: 0.3)) {
+				selectedPackageId = title.lowercased()
+			}
+		} label: {
+			HStack {
+				VStack(alignment: .leading, spacing: 3) {
+					Text(title)
+						.font(.subheadline.weight(.bold))
+						.foregroundStyle(.primary)
+					Text(price)
+						.font(.caption.weight(.semibold))
+						.foregroundStyle(.secondary)
+				}
+				Spacer()
+				if let badge {
+					Text(badge)
+						.font(.caption2.weight(.heavy))
+						.foregroundStyle(.white)
+						.padding(.horizontal, 8)
+						.padding(.vertical, 4)
+						.background(AppTheme.gold)
+						.clipShape(Capsule())
+				}
+				Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+					.font(.title3)
+					.foregroundStyle(isSelected ? AppTheme.forestGreen : .secondary)
+			}
+			.padding(14)
+			.background(isSelected ? AppTheme.forestGreen.opacity(0.08) : Color(.secondarySystemGroupedBackground))
+			.overlay(RoundedRectangle(cornerRadius: 14).stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5))
+			.clipShape(.rect(cornerRadius: 14))
+			.contentShape(Rectangle())
+		}
+		.buttonStyle(.plain)
+		.onAppear {
+			if title == "Annual" && selectedPackageId == nil {
+				selectedPackageId = title.lowercased()
+			}
+		}
+	}
 
-    private var sortedPackages: [Package] {
-        guard let current = store.offerings?.current else { return [] }
-        return current.availablePackages
-            .filter { $0.packageType == .annual || $0.packageType == .monthly }
-            .sorted { a, b in packageRank(a) < packageRank(b) }
-    }
+	private func selectedPackage(from offerings: Offerings?) -> Package? {
+		offerings?.current?.availablePackages.first { $0.identifier == selectedPackageId }
+	}
 
-    private func packageRank(_ package: Package) -> Int {
-        switch package.packageType {
-        case .annual: return 0
-        case .sixMonth: return 1
-        case .threeMonth: return 2
-        case .twoMonth: return 3
-        case .monthly: return 4
-        case .weekly: return 5
-        case .lifetime: return 6
-        default: return 7
-        }
-    }
+	// MARK: - Restore / Redeem / Legal
 
-    private var monthlyPackage: Package? {
-        sortedPackages.first { $0.packageType == .monthly }
-    }
+	private var restoreButton: some View {
+		Button {
+			Task { await store.restore() }
+		} label: {
+			Text("Restore Purchases")
+				.font(.subheadline.weight(.semibold))
+				.foregroundStyle(.secondary)
+				.frame(maxWidth: .infinity)
+				.frame(minHeight: 44)
+		}
+		.padding(.horizontal, 16)
+	}
 
-    private var annualPackage: Package? {
-        sortedPackages.first { $0.packageType == .annual }
-    }
+	private var redeemCodeButton: some View {
+		Button {
+			showRedeemCode = true
+		} label: {
+			HStack(spacing: 6) {
+				Image(systemName: "gift.fill")
+					.font(.caption.weight(.bold))
+				Text("Redeem a code")
+					.font(.subheadline.weight(.semibold))
+			}
+			.foregroundStyle(.secondary)
+			.frame(maxWidth: .infinity)
+			.frame(minHeight: 44)
+		}
+		.padding(.horizontal, 16)
+		.accessibilityLabel("Redeem an offer code")
+	}
 
-    private var selectedPackage: Package? {
-        if let id = selectedPackageId, let match = sortedPackages.first(where: { $0.identifier == id }) {
-            return match
-        }
-        return annualPackage ?? sortedPackages.first
-    }
+	private var legalSection: some View {
+		VStack(spacing: 12) {
+			Text("Subscription auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime in your App Store settings.")
+				.font(.caption2)
+				.foregroundStyle(.secondary)
+				.multilineTextAlignment(.center)
 
-    private var purchaseSection: some View {
-        VStack(spacing: 14) {
-            if store.isLoading {
-                ProgressView()
-                    .padding(.vertical, 20)
-            } else if !sortedPackages.isEmpty {
-                VStack(spacing: 10) {
-                    ForEach(sortedPackages, id: \.identifier) { package in
-                        packageOption(package: package)
-                    }
-                }
+			HStack(spacing: 24) {
+				Button("Terms of Use") { showTerms = true }
+				Button("Privacy Policy") { showPrivacy = true }
+			}
+			.font(.caption.weight(.semibold))
+			.foregroundStyle(.secondary)
 
-                continueButton
-
-                if store.isPurchasing {
-                    ProgressView()
-                        .tint(AppTheme.forestGreen)
-                }
-            } else {
-                VStack(spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                    Text("Unable to load pricing")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    Button("Try Again") {
-                        Task { await store.fetchOfferings() }
-                    }
-                    .font(.subheadline.weight(.bold))
-                    .frame(minHeight: 44)
-                }
-                .padding(.vertical, 16)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 14)
-    }
-
-    private func packageOption(package: Package) -> some View {
-        let isSelected = selectedPackage?.identifier == package.identifier
-        let isAnnual = package.packageType == .annual
-        let title = packageTitle(package)
-        let price = package.storeProduct.localizedPriceString
-        let savings = isAnnual ? annualSavingsString() : nil
-
-        return Button {
-            selectedPackageId = package.identifier
-        } label: {
-            HStack(alignment: .center, spacing: 14) {
-                ZStack {
-                    Circle()
-                        .stroke(isSelected ? AppTheme.forestGreen : Color.secondary.opacity(0.4), lineWidth: 2)
-                        .frame(width: 24, height: 24)
-                    if isSelected {
-                        Circle()
-                            .fill(AppTheme.forestGreen)
-                            .frame(width: 14, height: 14)
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 8) {
-                        Text(title)
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary)
-                        if let savings {
-                            Text(savings)
-                                .font(.caption2.weight(.heavy))
-                                .foregroundStyle(AppTheme.forestGreen)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(AppTheme.gold)
-                                .clipShape(Capsule())
-                        }
-                    }
-                }
-
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(price)
-                        .font(.title3.weight(.heavy))
-                        .foregroundStyle(.primary)
-                    Text(billingCycleLabel(package))
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(isSelected ? AppTheme.forestGreen.opacity(0.08) : Color(.secondarySystemGroupedBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 2)
-            )
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(title), \(price) \(billingCycleLabel(package))")
-        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
-    }
-
-    private var continueButton: some View {
-        Button {
-            guard let package = selectedPackage else { return }
-            Task { await store.purchase(package: package) }
-        } label: {
-            Text("Continue")
-                .font(.headline.weight(.bold))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
-                .background(
-                    LinearGradient(
-                        colors: [AppTheme.forestGreen, Color(red: 0.15, green: 0.32, blue: 0.15)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .clipShape(.rect(cornerRadius: 14))
-                .shadow(color: AppTheme.forestGreen.opacity(0.3), radius: 12, y: 6)
-        }
-        .disabled(store.isPurchasing || selectedPackage == nil)
-        .opacity(store.isPurchasing ? 0.7 : 1)
-        .sensoryFeedback(.impact(weight: .medium), trigger: store.isPurchasing)
-        .padding(.top, 4)
-        .accessibilityLabel("Continue with selected plan")
-    }
-
-    private func packageTitle(_ package: Package) -> String {
-        switch package.packageType {
-        case .annual: return "Yearly"
-        case .sixMonth: return "6 Months"
-        case .threeMonth: return "3 Months"
-        case .twoMonth: return "2 Months"
-        case .monthly: return "Monthly"
-        case .weekly: return "Weekly"
-        case .lifetime: return "Lifetime"
-        default: return package.storeProduct.localizedTitle
-        }
-    }
-
-    private func billingCycleLabel(_ package: Package) -> String {
-        switch package.packageType {
-        case .annual: return "per year"
-        case .sixMonth: return "per 6 mo"
-        case .threeMonth: return "per 3 mo"
-        case .twoMonth: return "per 2 mo"
-        case .monthly: return "per month"
-        case .weekly: return "per week"
-        case .lifetime: return "once"
-        default: return ""
-        }
-    }
-
-    private func annualSavingsString() -> String? {
-        guard let monthly = monthlyPackage, let annual = annualPackage else { return nil }
-        let monthlyPrice = (monthly.storeProduct.price as NSDecimalNumber).doubleValue
-        let annualPrice = (annual.storeProduct.price as NSDecimalNumber).doubleValue
-        guard monthlyPrice > 0, annualPrice > 0 else { return nil }
-        let yearlyEquivalent = monthlyPrice * 12.0
-        guard yearlyEquivalent > annualPrice else { return nil }
-        let savings = (1.0 - (annualPrice / yearlyEquivalent)) * 100.0
-        guard savings >= 1 else { return nil }
-        return "SAVE \(Int(savings.rounded()))%"
-    }
-
-private var restoreButton: some View {
-        Button {
-            Task { await store.restore() }
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "arrow.clockwise")
-                    .font(.subheadline.weight(.bold))
-                Text("Restore Purchases")
-                    .font(.subheadline.weight(.bold))
-            }
-            .foregroundStyle(AppTheme.forestGreen)
-            .frame(maxWidth: .infinity)
-            .frame(minHeight: 48)
-            .background(AppTheme.forestGreen.opacity(0.1))
-            .clipShape(.rect(cornerRadius: 12))
-        }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
-        .accessibilityLabel("Restore previous purchases")
-    }
-
-    private var legalSection: some View {
-        VStack(spacing: 8) {
-            Text("Subscriptions auto-renew at the end of each billing period unless cancelled at least 24 hours before the period ends. Payment is charged to your Apple ID. Manage or cancel anytime in your Apple ID subscription settings.")
-                .font(.caption2.weight(.medium))
-                .foregroundStyle(.tertiary)
-                .multilineTextAlignment(.center)
-
-            HStack(spacing: 16) {
-                Button("Terms of Use") { showTerms = true }
-                Button("Privacy Policy") { showPrivacy = true }
-            }
-            .font(.caption2.weight(.semibold))
-            .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 40)
-    }
+			Text("General information only · Not financial or legal advice")
+				.font(.caption2)
+				.foregroundStyle(.secondary.opacity(0.7))
+				.multilineTextAlignment(.center)
+		}
+		.padding(.horizontal, 24)
+		.padding(.top, 8)
+		.padding(.bottom, 40)
+	}
 }
-
-private struct PaywallStatBadge: View {
-    let value: String
-    let label: String
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(value)
-                .font(.title3.weight(.bold))
-                .foregroundStyle(AppTheme.forestGreen)
-            Text(label)
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .background(AppTheme.forestGreen.opacity(0.06))
-        .clipShape(.rect(cornerRadius: 12))
-    }
-}
-
