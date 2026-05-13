@@ -165,19 +165,3 @@ struct BulletPoint: View {
     }
 }
 
-struct TaxProfessionalDisclaimer: View {
-    var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.caption)
-                .foregroundStyle(.orange)
-                .padding(.top, 2)
-            Text("This tool provides estimates only. Tax laws vary by state and situation. Consult a qualified tax professional before making financial decisions.")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.primary.opacity(0.7))
-        }
-        .padding(12)
-        .background(.orange.opacity(0.06))
-        .clipShape(.rect(cornerRadius: 10))
-    }
-}
