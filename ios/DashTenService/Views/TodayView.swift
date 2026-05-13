@@ -92,6 +92,9 @@ struct TodayView: View {
                     readinessCard
                         .delayedEntrance(appeared, delay: 0.08)
 
+                    WeeklyMissionCard(storage: storage)
+                        .delayedEntrance(appeared, delay: 0.12)
+
                     if let focus = focusAction {
                         focusCard(focus)
                             .delayedEntrance(appeared, delay: 0.16)
@@ -512,4 +515,109 @@ nonisolated enum HeroStyle: Sendable {
     case standard
     case urgent
     case postSeparation
+}
+
+nonisolated extension WeeklyChallenge {
+    var progressFraction: Double {
+        isCompleted ? 1.0 : 0.0
+    }
+}
+
+struct WeeklyMissionCard: View {
+    let storage: StorageService
+
+    private var currentChallenge: WeeklyChallenge? {
+        storage.weeklyChallenges.first(where: { !$0.isCompleted })
+    }
+
+    private var completedCount: Int {
+        storage.weeklyChallenges.filter(\.isCompleted).count
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "bolt.fill")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppTheme.gold)
+                    Text("WEEKLY MISSION")
+                        .font(.system(size: 10, weight: .heavy))
+                        .foregroundStyle(AppTheme.gold)
+                        .tracking(1.5)
+                }
+                Spacer()
+                Text("\(completedCount)/3 complete")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+
+            if let challenge = currentChallenge {
+                HStack(spacing: 12) {
+                    Image(systemName: challenge.icon)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 48, height: 48)
+                        .background(LinearGradient(
+                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        ))
+                        .clipShape(.rect(cornerRadius: 14))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(challenge.title)
+                            .font(.headline.weight(.bold))
+                        Text(challenge.description)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer()
+
+                    VStack(spacing: 2) {
+                        Image(systemName: "bolt.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(AppTheme.gold)
+                        Text("+\(challenge.xpReward)")
+                            .font(.caption2.weight(.heavy))
+                            .foregroundStyle(AppTheme.gold)
+                    }
+                }
+
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AppTheme.forestGreen.opacity(0.12))
+                            .frame(height: 6)
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(LinearGradient(
+                                colors: [AppTheme.forestGreen, AppTheme.gold],
+                                startPoint: .leading, endPoint: .trailing
+                            ))
+                            .frame(width: geo.size.width * challenge.progressFraction, height: 6)
+                            .animation(.spring(response: 0.5), value: challenge.progressFraction)
+                    }
+                }
+                .frame(height: 6)
+
+            } else {
+                HStack(spacing: 10) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(AppTheme.forestGreen)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("All missions complete this week")
+                            .font(.subheadline.weight(.bold))
+                        Text("New missions arrive each week")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 16))
+    }
 }
