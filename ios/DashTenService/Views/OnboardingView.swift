@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Bindable var storage: StorageService
+    var store: StoreViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var currentPage: Int = 0
     @State private var selectedBranch: MilitaryBranch?
@@ -10,6 +11,7 @@ struct OnboardingView: View {
     @State private var separationDate: Date = Calendar.current.date(byAdding: .month, value: 12, to: Date()) ?? Date()
     @State private var selectedGoals: Set<TransitionGoal> = []
     @State private var disclaimerAccepted: Bool = false
+    @State private var showPaywall: Bool = false
 
     private let totalPages = 5
 
@@ -56,6 +58,9 @@ struct OnboardingView: View {
             }
         }
         .background(currentPage == 0 ? Color(red: 0.05, green: 0.12, blue: 0.05) : Color(.systemGroupedBackground))
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(store: store)
+        }
     }
 
     @State private var welcomeAnimated: Bool = false
@@ -529,6 +534,9 @@ struct OnboardingView: View {
         storage.profile.hasAcceptedDisclaimer = true
         storage.profile.hasCompletedOnboarding = true
         dismiss()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            showPaywall = true
+        }
     }
 
     private func skipOnboarding() {

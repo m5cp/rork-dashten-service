@@ -11,7 +11,7 @@ struct ContentView: View {
             mainTabView
                 .tint(AppTheme.forestGreen)
         } else {
-            OnboardingView(storage: storage)
+            OnboardingView(storage: storage, store: store)
         }
     }
 

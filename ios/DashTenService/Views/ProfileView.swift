@@ -402,7 +402,7 @@ struct ProfileView: View {
                 DisclaimerRisksView()
             }
             .fullScreenCover(isPresented: $showOnboarding) {
-                OnboardingView(storage: storage)
+                OnboardingView(storage: storage, store: store)
             }
             .onReceive(NotificationCenter.default.publisher(for: .openProfileSetup)) { _ in
                 showOnboarding = true
@@ -435,14 +435,7 @@ struct ProfileView: View {
     }
 
     private var proUpsellSubtitle: String {
-        let packages = store.offerings?.current?.availablePackages ?? []
-        if let annual = packages.first(where: { $0.packageType == .annual }) {
-            return "Unlock 11 tools & 2 guides — \(annual.storeProduct.localizedPriceString)/yr"
-        }
-        if let monthly = packages.first(where: { $0.packageType == .monthly }) {
-            return "Unlock 11 tools & 2 guides — \(monthly.storeProduct.localizedPriceString)/mo"
-        }
-        return "Unlock 11 tools & 2 guides"
+        "Interview Prep, Pitch Builder, Networking Hub and more"
     }
 
     @ViewBuilder
