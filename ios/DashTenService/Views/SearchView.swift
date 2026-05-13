@@ -286,6 +286,7 @@ struct SearchView: View {
         // NOTE: comment these two lines out if those tools haven't been added yet
         case .tspGrowthEstimator: TSPGrowthEstimatorView()
         case .brsRetirementSnapshot: BRSRetirementSnapshotView()
+        case .scraProtections: SCRAProtectionsView()
         }
     }
 

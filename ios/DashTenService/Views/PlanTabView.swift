@@ -74,6 +74,7 @@ struct PlanTabView: View {
         case .firstYearGuide: FirstYearGuideView()
         case .tspGrowthEstimator: TSPGrowthEstimatorView()
         case .brsRetirementSnapshot: BRSRetirementSnapshotView()
+        case .scraProtections: SCRAProtectionsView()
         }
     }
 
