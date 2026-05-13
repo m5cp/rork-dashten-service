@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MindsetShiftsView: View {
+    var highlightedShiftId: String? = nil
     private let shifts = TransitionDataService.mindsetShifts()
 
     private var groupedShifts: [(category: MindsetCategory, shifts: [MindsetShift])] {
@@ -11,33 +12,45 @@ struct MindsetShiftsView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                GuideIntroBanner(
-                    text: "Transition isn't just logistical — it's mental. These shifts help you navigate the biggest changes between military and civilian life.",
-                    color: .indigo
-                )
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    GuideIntroBanner(
+                        text: "Transition isn't just logistical — it's mental. These shifts help you navigate the biggest changes between military and civilian life.",
+                        color: .indigo
+                    )
 
-                ForEach(groupedShifts, id: \.category) { group in
-                    VStack(alignment: .leading, spacing: 12) {
-                        CategoryHeader(category: group.category)
-                        VStack(spacing: 10) {
-                            ForEach(group.shifts) { shift in
-                                MindsetShiftCard(shift: shift)
+                    ForEach(groupedShifts, id: \.category) { group in
+                        VStack(alignment: .leading, spacing: 12) {
+                            CategoryHeader(category: group.category)
+                            VStack(spacing: 10) {
+                                ForEach(group.shifts) { shift in
+                                    MindsetShiftCard(shift: shift, initiallyExpanded: shift.id == highlightedShiftId)
+                                        .id(shift.id)
+                                }
                             }
                         }
                     }
-                }
 
-                GuideDisclaimer(text: "Give yourself time. These shifts don't happen overnight, and that's okay.")
+                    GuideDisclaimer(text: "Give yourself time. These shifts don't happen overnight, and that's okay.")
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 24)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 24)
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Mindset Shifts")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                if let id = highlightedShiftId {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        withAnimation(.spring(response: 0.45)) {
+                            proxy.scrollTo(id, anchor: .top)
+                        }
+                    }
+                }
+            }
         }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Mindset Shifts")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -99,6 +112,7 @@ private struct CategoryHeader: View {
 
 struct MindsetShiftCard: View {
     let shift: MindsetShift
+    var initiallyExpanded: Bool = false
     @State private var isExpanded: Bool = false
 
     private var color: Color {
@@ -172,6 +186,11 @@ struct MindsetShiftCard: View {
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 14))
         .sensoryFeedback(.selection, trigger: isExpanded)
+        .onAppear {
+            if initiallyExpanded && !isExpanded {
+                isExpanded = true
+            }
+        }
     }
 }
 

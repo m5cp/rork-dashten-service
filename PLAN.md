@@ -1,19 +1,38 @@
-# Fix app launch crash caused by keyboard "Done" installer
+# Make every topic in the app searchable from one place
 
-**What's wrong**
+## What's there today
 
-The recent keyboard "Done" button setup hooks into the system in a way that accidentally affects every view in the app, causing it to crash immediately on launch before onboarding can show.
+The Search screen already finds tools and guides, but it's missing a chunk of the app — eight tools/routes aren't listed, and deeper content like specific benefits (SGLI, VGLI, TRICARE, DEERS), mindset shifts, civilian playbook entries, and learn articles can't be searched at all. So if you type "SGLI" or "imposter syndrome," you get nothing.
 
-**Fix**
+## What I'll change
 
-- Replace the global hook with a safe approach that only attaches the "Done" toolbar when a text field or text box actually appears on screen — without touching any shared system behavior.
-- Keep the tap-anywhere-to-dismiss behavior intact.
-- Keep the "Done" button look (forest green, semibold) unchanged.
-- No changes to onboarding, screens, or any other logic.
+**Add the 8 missing tool routes**
+- Roadmap, Goal Tracker, Civilian Jargon Translator, Weekly Challenges, Daily Power-Up, Networking Event Prep, Benefits Enrollment Countdown, Achievement Badges
+- Each gets a title, subtitle, icon, and keywords so it shows up in results
 
-**Result**
+**Make individual benefits searchable**
+- Each benefit category (SGLI, VGLI, TRICARE, DEERS, GI Bill, VA Disability, etc.) becomes its own search result
+- Tapping a result opens the Benefits screen scrolled/highlighted to that benefit
+- Keywords cover common nicknames ("life insurance" finds SGLI, "healthcare" finds TRICARE)
 
-- App opens normally again.
-- Onboarding flows through Welcome → Branch → Timeline → Goals → Disclaimer as before.
-- Typing anywhere still shows a "Done" button above the keyboard, and tapping outside still dismisses it.
+**Make Learn content searchable**
+- Every guide article (Mindset Shifts entries, Civilian Playbook entries, First 30 Days, First Year Guide chapters) appears as a search result
+- Tapping opens directly to that article
+- Article body text is included in the search so you can find a topic by phrase, not just title
 
+**One unified Search screen**
+- The Search screen organizes results into clear sections: Tools, Guides, Benefits, Articles
+- A "no results" state suggests popular searches and related topics
+- Results stay fast — search filters happen instantly as you type
+
+**Polish**
+- Popular Searches chips updated to reflect the new searchable surface (add "SGLI", "TRICARE", "Mindset", "VA Loan")
+- Results show a small tag indicating what type of thing it is (Tool / Guide / Benefit / Article) so it's obvious where you'll land
+- Recently viewed items appear above results when the search box is empty
+
+## Where to find it
+
+- Tap the magnifying glass on the Home screen — same entry point as today, just much more powerful
+- The Tools screen's inline search also picks up the new entries
+
+After you approve, I'll wire it up and run the build to confirm everything still works.

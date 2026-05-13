@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct FirstYearGuideView: View {
+    var initialQuarter: YearQuarter = .q1
     @State private var selectedQuarter: YearQuarter = .q1
     @State private var appeared: Bool = false
 
@@ -35,6 +36,7 @@ struct FirstYearGuideView: View {
         .navigationTitle("First Year Guide")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            selectedQuarter = initialQuarter
             withAnimation(.spring(response: 0.5)) { appeared = true }
         }
     }
