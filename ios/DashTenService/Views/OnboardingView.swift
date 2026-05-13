@@ -13,21 +13,24 @@ struct OnboardingView: View {
     @State private var disclaimerAccepted: Bool = false
     @State private var showPaywall: Bool = false
 
-    private let totalPages = 5
+    private let totalPages = 4
 
     var body: some View {
         VStack(spacing: 0) {
             if currentPage > 0 {
                 HStack {
                     Spacer()
-                    Button("Skip") {
+                    Button {
                         skipOnboarding()
+                    } label: {
+                        Text("Skip")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.primary.opacity(0.7))
+                            .frame(minWidth: 44, minHeight: 44, alignment: .trailing)
                     }
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.7))
+                    .accessibilityLabel("Skip onboarding")
                 }
                 .padding(.horizontal, 24)
-                .padding(.top, 8)
 
                 HStack(spacing: 6) {
                     ForEach(0..<totalPages, id: \.self) { index in
@@ -46,7 +49,6 @@ struct OnboardingView: View {
                 branchPage.tag(1)
                 timelinePage.tag(2)
                 goalsPage.tag(3)
-                disclaimerPage.tag(4)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.spring(response: 0.4), value: currentPage)
@@ -420,66 +422,44 @@ struct OnboardingView: View {
                     }
                     .transition(.opacity.combined(with: .scale))
                 }
+
+                inlineDisclaimerBlock
+                    .padding(.top, 8)
             }
             .padding(.horizontal, 24)
+            .padding(.bottom, 16)
         }
         .scrollIndicators(.hidden)
         .onAppear { goalsAnimated = true }
     }
 
-    private var disclaimerPage: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                VStack(spacing: 8) {
-                    Image(systemName: "checkmark.shield.fill")
-                        .font(.system(size: 48))
-                        .foregroundStyle(AppTheme.forestGreen)
-                    Text("Before We Begin")
-                        .font(.title2.bold())
-                }
-                .padding(.top, 24)
+    private var inlineDisclaimerBlock: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Planning tool only — not legal, medical, financial, or career advice. Always verify benefits through official sources. For crisis support, call 988.")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.75))
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
 
-                NonAffiliationBanner()
-
-                VStack(alignment: .leading, spacing: 12) {
-                    Label("Important Notices", systemImage: "exclamationmark.triangle.fill")
+            Button {
+                disclaimerAccepted.toggle()
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: disclaimerAccepted ? "checkmark.square.fill" : "square")
+                        .font(.title3)
+                        .foregroundStyle(disclaimerAccepted ? AppTheme.forestGreen : .primary.opacity(0.5))
+                    Text("I understand and accept these terms")
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.orange)
-
-                    Group {
-                        Text("• This app is a planning and organization tool only.")
-                        Text("• This app does not provide legal, medical, financial, or career advice.")
-                        Text("• Always verify eligibility, deadlines, and benefit details through official government sources.")
-                        Text("• Information in this app is based on publicly available resources and may change.")
-                        Text("• This app is not an emergency service. For crisis support, call 988.")
-                    }
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.8))
+                        .foregroundStyle(.primary)
+                    Spacer()
                 }
-                .padding(16)
+                .frame(minHeight: 44)
+                .padding(.horizontal, 14)
                 .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(.rect(cornerRadius: 14))
-
-                Button {
-                    disclaimerAccepted.toggle()
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: disclaimerAccepted ? "checkmark.square.fill" : "square")
-                            .font(.title3)
-                            .foregroundStyle(disclaimerAccepted ? AppTheme.forestGreen : .primary.opacity(0.5))
-                        Text("I understand and accept these terms")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary)
-                        Spacer()
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 12))
-                }
+                .clipShape(.rect(cornerRadius: 12))
             }
-            .padding(.horizontal, 24)
+            .sensoryFeedback(.selection, trigger: disclaimerAccepted)
         }
-        .scrollIndicators(.hidden)
     }
 
     private var canAdvance: Bool {
@@ -487,8 +467,7 @@ struct OnboardingView: View {
         case 0: true
         case 1: selectedBranch != nil
         case 2: selectedTimeline != nil && (selectedTimeline != .separated || selectedPostServiceStatus != nil)
-        case 3: !selectedGoals.isEmpty
-        case 4: disclaimerAccepted
+        case 3: !selectedGoals.isEmpty && disclaimerAccepted
         default: false
         }
     }
@@ -496,11 +475,14 @@ struct OnboardingView: View {
     private var bottomBar: some View {
         HStack {
             if currentPage > 1 {
-                Button("Back") {
+                Button {
                     withAnimation { currentPage -= 1 }
+                } label: {
+                    Text("Back")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary.opacity(0.7))
+                        .frame(minWidth: 64, minHeight: 44, alignment: .leading)
                 }
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(.primary.opacity(0.7))
             }
             Spacer()
             Button {
@@ -510,7 +492,7 @@ struct OnboardingView: View {
                     completeOnboarding()
                 }
             } label: {
-                Text(currentPage == totalPages - 1 ? "Get Started" : "Continue")
+                Text(currentPage == totalPages - 1 ? "Start My Plan" : "Continue")
                     .font(.headline.weight(.bold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)

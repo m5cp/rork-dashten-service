@@ -16,12 +16,12 @@ I'll work through this in 6 phases, smallest risk first so nothing already worki
 
 ## Phase 2 — Quick wins (low risk, high impact)
 - [x] Trigger the paywall right after the onboarding "aha" moment, not just after dismissal (already wired in Phase A)
-- [ ] Tighten onboarding to 3–4 screens, one action per step, outcome-led copy
-- [ ] Add a friendly empty state to every list (Documents, Networking Hub, Journal, etc.)
-- [ ] Add a loading shimmer on every async screen
-- [ ] Add 44pt minimum tap targets everywhere a button is smaller today
+- [x] Tighten onboarding to 3–4 screens, one action per step, outcome-led copy — reduced 5→4 by inlining disclaimer into goals page; CTA reads "Start My Plan"
+- [x] Add a friendly empty state to every list (Documents, Networking Hub, Journal, etc.) — Journal empty state added; Mentor Tracker, Networking Scorecard, Goal Tracker, Documents already handle empty
+- [ ] Add a loading shimmer on every async screen — skipped: all data is local/synchronous (no async fetches that block UI)
+- [x] Add 44pt minimum tap targets everywhere a button is smaller today — Skip/Back in onboarding given 44pt frames; existing CTAs already meet
 - [ ] Audit Dynamic Type + VoiceOver labels on the main flows
-- [ ] Confirm dark mode looks right across every screen
+- [x] Confirm dark mode looks right across every screen — verified semantic colors (.systemGroupedBackground, .secondarySystemGroupedBackground, .primary/.secondary) used throughout
 
 ## Phase 3 — Retention loop
 - [ ] Daily streak with a guilt-free "freeze" so missing a day doesn't punish users

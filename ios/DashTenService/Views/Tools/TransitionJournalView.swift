@@ -48,6 +48,8 @@ struct TransitionJournalView: View {
 
                 if !storage.journalEntries.isEmpty {
                     pastEntriesSection
+                } else if !showNewEntry {
+                    journalEmptyState
                 }
             }
             .padding(.horizontal, 16)
@@ -163,6 +165,26 @@ struct TransitionJournalView: View {
             }
         }
         .transition(.move(edge: .top).combined(with: .opacity))
+    }
+
+    private var journalEmptyState: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "book.closed.fill")
+                .font(.system(size: 40))
+                .foregroundStyle(.purple.opacity(0.5))
+            Text("No entries yet")
+                .font(.headline.weight(.bold))
+            Text("Tap New Journal Entry above to capture your first reflection. Your words stay on this device.")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 32)
+        .padding(.horizontal, 16)
+        .background(.purple.opacity(0.05))
+        .clipShape(.rect(cornerRadius: 14))
     }
 
     private var pastEntriesSection: some View {
