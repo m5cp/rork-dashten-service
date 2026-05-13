@@ -117,7 +117,7 @@ struct GIBillBAHCalculatorView: View {
                     .foregroundStyle(.blue)
                 Text("at full-time enrollment (12 months)")
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                    .foregroundStyle(.primary.opacity(0.7))
             }
             .padding(14)
             .background(.blue.opacity(0.06))
@@ -136,7 +136,7 @@ struct GIBillBAHCalculatorView: View {
                 .foregroundStyle(isHighlighted ? .blue : .primary.opacity(0.7))
             Text("/month")
                 .font(.caption2.weight(.bold))
-                .foregroundStyle(.primary.opacity(0.4))
+                .foregroundStyle(.primary.opacity(0.7))
         }
     }
 

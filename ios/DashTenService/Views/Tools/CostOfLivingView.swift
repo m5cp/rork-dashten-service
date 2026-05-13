@@ -114,7 +114,7 @@ struct CostOfLivingView: View {
                             .foregroundStyle(.teal)
                         Text("vs")
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.4))
+                            .foregroundStyle(.primary.opacity(0.7))
                         Text(formatCurrency(totalB))
                             .font(.headline.weight(.bold))
                             .foregroundStyle(.purple)
@@ -146,7 +146,7 @@ struct CostOfLivingView: View {
         return HStack {
             Image(systemName: iconName)
                 .font(.caption)
-                .foregroundStyle(.primary.opacity(0.5))
+                .foregroundStyle(.primary.opacity(0.7))
                 .frame(width: 20)
             Text(category)
                 .font(.caption.weight(.semibold))

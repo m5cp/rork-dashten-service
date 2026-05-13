@@ -146,7 +146,7 @@ struct EmergencyFundCalculatorView: View {
                             .foregroundStyle(progress >= 1.0 ? AppTheme.forestGreen : .orange)
                         Text("funded")
                             .font(.caption2.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.5))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -196,7 +196,7 @@ struct EmergencyFundCalculatorView: View {
                 .foregroundStyle(AppTheme.forestGreen)
             Text("/month")
                 .font(.caption2.weight(.semibold))
-                .foregroundStyle(.primary.opacity(0.4))
+                .foregroundStyle(.primary.opacity(0.7))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 10)

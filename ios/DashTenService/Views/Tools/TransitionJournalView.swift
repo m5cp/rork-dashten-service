@@ -78,7 +78,7 @@ struct TransitionJournalView: View {
                         .foregroundStyle(.purple)
                     Text("entries")
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
                 if let last = storage.journalEntries.first {
                     VStack(spacing: 2) {
@@ -87,7 +87,7 @@ struct TransitionJournalView: View {
                             .foregroundStyle(.purple)
                         Text("last entry")
                             .font(.caption2.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.5))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
                 }
             }
@@ -179,7 +179,7 @@ struct TransitionJournalView: View {
                         Spacer()
                         Text(entry.date, format: .dateTime.weekday(.wide))
                             .font(.caption2.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.4))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
 
                     Text(entry.prompt)

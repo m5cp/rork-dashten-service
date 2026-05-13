@@ -105,7 +105,7 @@ struct InterviewPrepView: View {
                         Spacer()
                         Text("\(currentIndex % filteredQuestions.count + 1)/\(filteredQuestions.count)")
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.5))
+                            .foregroundStyle(.primary.opacity(0.7))
                     }
 
                     Text(q.question)

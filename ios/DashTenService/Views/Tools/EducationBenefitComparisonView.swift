@@ -89,7 +89,7 @@ struct EducationBenefitComparisonView: View {
 
                 Text("Benefit amounts and eligibility change annually. Verify all details with official sources before making enrollment decisions.")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                    .foregroundStyle(.primary.opacity(0.7))
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 32)

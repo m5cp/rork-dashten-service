@@ -140,7 +140,7 @@ private struct CareerTranslateTab: View {
 
                 Text("These are starting points. Tailor every bullet to the specific job you're applying for.")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                    .foregroundStyle(.primary.opacity(0.7))
                     .padding(.top, 4)
             }
             .padding(.horizontal, 16)
@@ -384,7 +384,7 @@ private struct CareerRow: View {
 
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.4))
+                    .foregroundStyle(.primary.opacity(0.7))
             }
             .padding(12)
             .background(Color(.secondarySystemGroupedBackground))

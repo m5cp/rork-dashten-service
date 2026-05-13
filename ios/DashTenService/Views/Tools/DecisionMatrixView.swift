@@ -452,7 +452,7 @@ struct DecisionMatrixDetailView: View {
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary.opacity(0.5))
+                                    .foregroundStyle(.secondary.opacity(0.7))
                             }
                             .buttonStyle(.plain)
                             .accessibilityLabel("Remove criteria")

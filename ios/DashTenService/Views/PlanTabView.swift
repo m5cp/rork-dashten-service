@@ -103,7 +103,7 @@ struct PlanTabView: View {
 
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.4))
+                    .foregroundStyle(.primary.opacity(0.7))
             }
             .padding(16)
             .background(AppTheme.forestGreen.opacity(0.06))
@@ -172,7 +172,7 @@ struct PlanTabView: View {
 
                     Image(systemName: "chevron.right")
                         .font(.caption.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.4))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
 
                 ProgressView(value: progress)
@@ -260,7 +260,7 @@ struct PlanListRow: View {
 
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.4))
+                    .foregroundStyle(.primary.opacity(0.7))
             }
             .padding(14)
             .background(Color(.secondarySystemGroupedBackground))

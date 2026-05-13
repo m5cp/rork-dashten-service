@@ -37,7 +37,7 @@ struct MilitaryCompCalculatorView: View {
 
                     Text("This is an estimate only. Actual tax rates vary by filing status, state, deductions, and other factors. Consult a tax professional for personalized advice.")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 32)
@@ -67,7 +67,7 @@ struct MilitaryCompCalculatorView: View {
                         .foregroundStyle(AppTheme.forestGreen)
                     Text("take-home/yr")
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
 
                 VStack(spacing: 4) {
@@ -88,7 +88,7 @@ struct MilitaryCompCalculatorView: View {
                         .foregroundStyle(.blue)
                     Text("take-home/yr")
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
             }
 
@@ -166,11 +166,11 @@ struct MilitaryCompCalculatorView: View {
                 HStack {
                     Text("$25K")
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.4))
+                        .foregroundStyle(.primary.opacity(0.7))
                     Spacer()
                     Text("$200K")
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.4))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
             }
 
@@ -271,7 +271,7 @@ struct MilitaryCompCalculatorView: View {
                         .foregroundStyle(AppTheme.forestGreen)
                     Text("/month")
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
@@ -287,7 +287,7 @@ struct MilitaryCompCalculatorView: View {
                         .foregroundStyle(.blue)
                     Text("/month")
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
@@ -363,7 +363,7 @@ struct PayInputRow: View {
             HStack(spacing: 4) {
                 Text("$")
                     .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                    .foregroundStyle(.primary.opacity(0.7))
                 TextField("0", text: $value)
                     .font(.subheadline.weight(.bold))
                     .keyboardType(.numberPad)

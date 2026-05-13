@@ -174,7 +174,7 @@ struct ReadinessDashboardView: View {
 
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.bold))
-                                .foregroundStyle(.primary.opacity(0.4))
+                                .foregroundStyle(.primary.opacity(0.7))
                         }
                         .padding(14)
                         .background(Color(.secondarySystemGroupedBackground))
@@ -505,7 +505,7 @@ struct CategoryDetailSheet: View {
                         .multilineTextAlignment(.leading)
                     Text(item.phase.rawValue)
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
                 Spacer()
             }
@@ -526,7 +526,7 @@ struct CategoryDetailSheet: View {
                     .font(.subheadline.weight(.semibold))
                 Text(doc.status.rawValue)
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.5))
+                    .foregroundStyle(.primary.opacity(0.7))
             }
             Spacer()
             if doc.status != .verified {

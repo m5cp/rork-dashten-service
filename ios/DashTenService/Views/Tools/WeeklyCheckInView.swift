@@ -156,12 +156,12 @@ struct WeeklyCheckInView: View {
             HStack(spacing: 8) {
                 Text("1")
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.4))
+                    .foregroundStyle(.primary.opacity(0.7))
                 Slider(value: value, in: 1...5, step: 1)
                     .tint(color)
                 Text("5")
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.4))
+                    .foregroundStyle(.primary.opacity(0.7))
             }
         }
         .padding(12)
@@ -208,10 +208,10 @@ struct WeeklyCheckInView: View {
             } else {
                 HStack {
                     Image(systemName: "chart.xyaxis.line")
-                        .foregroundStyle(.primary.opacity(0.3))
+                        .foregroundStyle(.primary.opacity(0.7))
                     Text("Complete 2+ check-ins to see trends")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -283,7 +283,7 @@ struct TimelineRow: View {
 
                 Image(systemName: "chevron.right")
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(.primary.opacity(0.3))
+                    .foregroundStyle(.primary.opacity(0.7))
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(.vertical, 12)

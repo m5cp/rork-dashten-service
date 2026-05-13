@@ -127,7 +127,7 @@ private struct BadgeCard: View {
                 if !badge.isUnlocked {
                     Image(systemName: "lock.fill")
                         .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(Color.primary.opacity(0.3))
+                        .foregroundStyle(Color.primary.opacity(0.7))
                         .offset(x: 18, y: 18)
                 }
             }

@@ -115,7 +115,7 @@ struct MentorTrackerView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "person.badge.plus")
                             .font(.title)
-                            .foregroundStyle(.primary.opacity(0.3))
+                            .foregroundStyle(.primary.opacity(0.7))
                         Text("No mentors added yet")
                             .font(.subheadline.weight(.bold))
                         Text("Tap + to add your first mentor contact")
@@ -238,7 +238,7 @@ struct MentorCard: View {
                 if let lastContact = mentor.lastContactDate {
                     Text("Last contact: \(lastContact, format: .dateTime.month(.abbreviated).day())")
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
 
                 Spacer()

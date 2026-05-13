@@ -201,7 +201,7 @@ struct PlanningCard: View {
 
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(.primary.opacity(0.5))
+                .foregroundStyle(.primary.opacity(0.7))
         }
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground))

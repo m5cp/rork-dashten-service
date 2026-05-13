@@ -143,10 +143,10 @@ struct NetworkingScorecardView: View {
             if storage.networkingWeeks.isEmpty {
                 HStack {
                     Image(systemName: "chart.bar.xaxis")
-                        .foregroundStyle(.primary.opacity(0.3))
+                        .foregroundStyle(.primary.opacity(0.7))
                     Text("Your weekly history will appear here")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.7))
                 }
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -350,7 +350,7 @@ struct ProfileView: View {
                         Text("Built independently for the transition community")
                             .font(.caption.weight(.semibold))
                     }
-                    .foregroundStyle(.primary.opacity(0.5))
+                    .foregroundStyle(.primary.opacity(0.7))
                     .frame(maxWidth: .infinity)
                 }
             }
