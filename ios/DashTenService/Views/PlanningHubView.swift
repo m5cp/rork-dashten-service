@@ -169,6 +169,7 @@ enum PlanningRoute: Hashable {
     case scraProtections
     case financialReadiness
     case vaFundingFee
+    case vaHomeLoanGuide
 }
 
 struct PlanningCard: View {
