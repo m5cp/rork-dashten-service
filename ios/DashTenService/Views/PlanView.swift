@@ -177,6 +177,7 @@ struct PlanView: View {
         case .tspGrowthEstimator: TSPGrowthEstimatorView()
         case .brsRetirementSnapshot: BRSRetirementSnapshotView()
         case .scraProtections: SCRAProtectionsView()
+        case .financialReadiness: FinancialReadinessResourcesView()
         }
     }
 

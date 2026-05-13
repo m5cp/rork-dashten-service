@@ -79,6 +79,7 @@ struct ToolboxView: View {
             ToolEntry(title: "Education Benefits", subtitle: "Compare GI Bill options side by side", icon: "chart.bar.doc.horizontal.fill", color: .indigo, action: .nav(.educationComparison), keywords: ["education", "gi bill"]),
             ToolEntry(title: "Move Budget", subtitle: "Plan your moving costs", icon: "shippingbox.fill", color: .pink, action: .nav(.relocationCost), keywords: ["moving", "relocation", "budget"]),
             ToolEntry(title: "SCRA Protections", subtitle: "Your legal rights as a service member", icon: "shield.lefthalf.filled", color: .teal, action: .nav(.scraProtections), keywords: ["scra", "legal", "lease", "rights", "protection", "civil relief"]),
+            ToolEntry(title: "Financial Readiness Help", subtitle: "Free help by branch — ACS, FFSC, MCCS and more", icon: "person.fill.checkmark", color: AppTheme.forestGreen, action: .nav(.financialReadiness), keywords: ["acs", "ffsc", "mccs", "financial", "counselor", "help", "free", "budget"]),
         ]
     }
 
@@ -261,6 +262,7 @@ struct ToolboxView: View {
         case .tspGrowthEstimator: TSPGrowthEstimatorView()
         case .brsRetirementSnapshot: BRSRetirementSnapshotView()
         case .scraProtections: SCRAProtectionsView()
+        case .financialReadiness: FinancialReadinessResourcesView()
         }
     }
 
