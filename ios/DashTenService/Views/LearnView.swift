@@ -137,8 +137,8 @@ struct LearnView: View {
         case .brsRetirementSnapshot: BRSRetirementSnapshotView()
         case .scraProtections: SCRAProtectionsView()
         case .financialReadiness: FinancialReadinessResourcesView()
-        case .vaFundingFee: VAFundingFeeCalculatorView()
-        case .vaHomeLoanGuide: VAHomeLoanGuideView()
+        case .vaFundingFee: VAFundingFeeCalculatorView(storage: storage)
+        case .vaHomeLoanGuide: VAHomeLoanGuideView(storage: storage)
         }
     }
 

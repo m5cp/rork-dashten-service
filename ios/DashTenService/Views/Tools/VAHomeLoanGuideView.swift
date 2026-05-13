@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct VAHomeLoanGuideView: View {
+	let storage: StorageService
 	@State private var expanded: String? = "benefits"
 
 	var body: some View {
@@ -12,7 +13,7 @@ struct VAHomeLoanGuideView: View {
 				accordion("coe", "doc.badge.checkmark", .purple, "Certificate of Eligibility") { coeContent }
 				accordion("concepts", "lightbulb.fill", .orange, "Key Concepts") { conceptsContent }
 
-				NavigationLink(destination: VAFundingFeeCalculatorView()) {
+				NavigationLink(destination: VAFundingFeeCalculatorView(storage: storage)) {
 					HStack(spacing: 12) {
 						Image(systemName: "percent").font(.title3.weight(.bold)).foregroundStyle(.white)
 							.frame(width: 44, height: 44).background(.blue).clipShape(.rect(cornerRadius: 12))

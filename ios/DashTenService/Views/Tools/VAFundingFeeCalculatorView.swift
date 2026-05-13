@@ -22,6 +22,7 @@ enum DownPaymentTier: String, CaseIterable, Identifiable {
 }
 
 struct VAFundingFeeCalculatorView: View {
+	let storage: StorageService
 	@State private var loanType: VALoanType = .purchase
 	@State private var isFirstUse: Bool = true
 	@State private var downPaymentTier: DownPaymentTier = .zero
@@ -163,6 +164,19 @@ struct VAFundingFeeCalculatorView: View {
 
 	private var exemptionSection: some View {
 		VStack(alignment: .leading, spacing: 10) {
+			if storage.profile.disabilityRating > 0 && !isExempt {
+				HStack(spacing: 8) {
+					Image(systemName: "checkmark.shield.fill")
+						.foregroundStyle(AppTheme.forestGreen)
+					Text("Your profile shows a disability rating. Veterans receiving VA compensation for a service-connected disability do not pay the VA funding fee.")
+						.font(.caption.weight(.semibold))
+						.foregroundStyle(.primary.opacity(0.85))
+						.fixedSize(horizontal: false, vertical: true)
+				}
+				.padding(12)
+				.background(AppTheme.forestGreen.opacity(0.08))
+				.clipShape(.rect(cornerRadius: 10))
+			}
 			Text("Exemption").font(.headline.weight(.bold))
 			VStack(alignment: .leading, spacing: 6) {
 				exemptRow("Receiving VA compensation for a service-connected disability")
@@ -170,7 +184,10 @@ struct VAFundingFeeCalculatorView: View {
 				exemptRow("Unremarried surviving spouse of a veteran who died in service or from a service-connected disability")
 				exemptRow("Active-duty member awarded the Purple Heart on or before loan closing")
 			}
-			Toggle(isOn: $isExempt) {
+			Toggle(isOn: Binding(
+				get: { isExempt || storage.profile.disabilityRating > 0 },
+				set: { isExempt = $0 }
+			)) {
 				Text("I am exempt from the funding fee").font(.subheadline.weight(.bold))
 			}.tint(AppTheme.forestGreen)
 		}
