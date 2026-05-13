@@ -44,6 +44,8 @@ struct SearchView: View {
             ToolboxView.ToolEntry(title: "Research TSP", subtitle: "Explore rollover options", icon: "arrow.triangle.swap", color: .blue, action: .nav(.tspRollover), keywords: ["tsp", "retirement", "401k", "rollover"]),
             ToolboxView.ToolEntry(title: "TSP Growth Estimator", subtitle: "Project your TSP at separation with DoD match", icon: "chart.line.uptrend.xyaxis", color: AppTheme.forestGreen, action: .nav(.tspGrowthEstimator), keywords: ["tsp", "growth", "retirement", "match", "brs"]),
             ToolboxView.ToolEntry(title: "BRS Retirement Snapshot", subtitle: "TSP + pension combined picture", icon: "chart.pie.fill", color: AppTheme.gold, action: .nav(.brsRetirementSnapshot), keywords: ["brs", "pension", "retirement", "snapshot"]),
+            ToolboxView.ToolEntry(title: "VA Home Loan Guide", subtitle: "Eligibility, benefits, COE and homebuying steps", icon: "house.fill", color: AppTheme.forestGreen, action: .nav(.vaHomeLoanGuide), keywords: ["va", "home", "loan", "mortgage", "house", "coe", "eligibility", "no down payment", "pmi"]),
+            ToolboxView.ToolEntry(title: "VA Funding Fee", subtitle: "Calculate your VA loan funding fee", icon: "percent", color: .blue, action: .nav(.vaFundingFee), keywords: ["va", "funding fee", "loan", "mortgage", "home", "house"]),
             ToolboxView.ToolEntry(title: "Job Offer Compare", subtitle: "Side-by-side total compensation analysis", icon: "scalemass.fill", color: .indigo, action: .nav(.jobOfferCompare), keywords: ["offer", "compare", "job"]),
             ToolboxView.ToolEntry(title: "Salary Negotiation", subtitle: "Know your worth and ask for it", icon: "hand.raised.fill", color: .pink, action: .nav(.salaryNegotiation), keywords: ["negotiate", "salary"]),
         ]
@@ -70,6 +72,8 @@ struct SearchView: View {
             ToolboxView.ToolEntry(title: "Education Benefits", subtitle: "Compare GI Bill options side by side", icon: "chart.bar.doc.horizontal.fill", color: .indigo, action: .nav(.educationComparison), keywords: ["education", "gi bill"]),
             ToolboxView.ToolEntry(title: "Relocation Cost Estimator", subtitle: "Plan your moving budget", icon: "shippingbox.fill", color: .pink, action: .nav(.relocationCost), keywords: ["moving", "relocation"]),
             ToolboxView.ToolEntry(title: "State Benefits Finder", subtitle: "State-specific veteran benefits", icon: "flag.fill", color: AppTheme.forestGreen, action: .nav(.stateBenefits), keywords: ["state", "benefits", "veteran"]),
+            ToolboxView.ToolEntry(title: "SCRA Protections", subtitle: "Your legal rights as a service member", icon: "shield.lefthalf.filled", color: .teal, action: .nav(.scraProtections), keywords: ["scra", "legal", "lease", "rights", "protection", "civil relief"]),
+            ToolboxView.ToolEntry(title: "Financial Readiness Help", subtitle: "Free help by branch — ACS, FFSC, MCCS and more", icon: "person.fill.checkmark", color: AppTheme.forestGreen, action: .nav(.financialReadiness), keywords: ["acs", "ffsc", "mccs", "financial", "counselor", "help", "free", "budget"]),
         ]
     }
 
