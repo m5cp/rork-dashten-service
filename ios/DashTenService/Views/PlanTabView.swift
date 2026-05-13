@@ -78,6 +78,7 @@ struct PlanTabView: View {
         case .financialReadiness: FinancialReadinessResourcesView()
         case .vaFundingFee: VAFundingFeeCalculatorView(storage: storage)
         case .vaHomeLoanGuide: VAHomeLoanGuideView(storage: storage)
+        case .disabilityBenefits: DisabilityBenefitsView(storage: storage)
         }
     }
 
