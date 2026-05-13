@@ -143,6 +143,28 @@ struct ProfileView: View {
                 Section {
                     Stepper("Household Size: \(storage.profile.householdSize)", value: $storage.profile.householdSize, in: 1...20)
                         .font(.body.weight(.semibold))
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("VA Disability Rating")
+                                .font(.subheadline.weight(.bold))
+                            Spacer()
+                            Text(storage.profile.disabilityRating == 0 ? "None" : "\(storage.profile.disabilityRating)%")
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(AppTheme.forestGreen)
+                        }
+                        Slider(value: Binding(
+                            get: { Double(storage.profile.disabilityRating) },
+                            set: { storage.profile.disabilityRating = Int($0.rounded() / 10) * 10 }
+                        ), in: 0...100, step: 10)
+                        .tint(AppTheme.forestGreen)
+                        Text("Used to show relevant benefit information. Stored only on this device.")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(14)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(.rect(cornerRadius: 14))
                 } header: {
                     Text("Household")
                 } footer: {
