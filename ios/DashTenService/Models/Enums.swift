@@ -147,6 +147,7 @@ nonisolated enum DocumentCategory: String, Codable, CaseIterable, Identifiable, 
     case employmentDocs = "Employment Documents"
     case dependentDocs = "Dependent Documents"
     case financeTaxDocs = "Finance & Tax Documents"
+    case legalEstate = "Legal & Estate"
 
     var id: String { rawValue }
 
@@ -160,6 +161,7 @@ nonisolated enum DocumentCategory: String, Codable, CaseIterable, Identifiable, 
         case .employmentDocs: "briefcase.fill"
         case .dependentDocs: "person.2.fill"
         case .financeTaxDocs: "dollarsign.circle.fill"
+        case .legalEstate: "doc.badge.gearshape.fill"
         }
     }
 }
