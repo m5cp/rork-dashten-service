@@ -11,6 +11,7 @@ nonisolated struct UserProfile: Codable, Sendable {
     var householdSize: Int
     var spouseName: String
     var notificationsEnabled: Bool
+    var disabilityRating: Int
     var createdAt: Date
     var postServiceStatus: PostServiceStatus?
     var avatarPhotoData: Data?
@@ -27,6 +28,7 @@ nonisolated struct UserProfile: Codable, Sendable {
         householdSize = 1
         spouseName = ""
         notificationsEnabled = false
+        disabilityRating = 0
         createdAt = Date()
         postServiceStatus = nil
         avatarPhotoData = nil
@@ -36,7 +38,7 @@ nonisolated struct UserProfile: Codable, Sendable {
     private enum CodingKeys: String, CodingKey {
         case displayName, branch, timeline, separationDate, goals
         case hasCompletedOnboarding, hasAcceptedDisclaimer
-        case householdSize, spouseName, notificationsEnabled, createdAt
+        case householdSize, spouseName, notificationsEnabled, disabilityRating, createdAt
         case postServiceStatus
         case avatarPhotoData, avatarPresetId
     }
@@ -53,6 +55,7 @@ nonisolated struct UserProfile: Codable, Sendable {
         householdSize = try c.decodeIfPresent(Int.self, forKey: .householdSize) ?? 1
         spouseName = try c.decodeIfPresent(String.self, forKey: .spouseName) ?? ""
         notificationsEnabled = try c.decodeIfPresent(Bool.self, forKey: .notificationsEnabled) ?? false
+        disabilityRating = try c.decodeIfPresent(Int.self, forKey: .disabilityRating) ?? 0
         createdAt = try c.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
         postServiceStatus = try c.decodeIfPresent(PostServiceStatus.self, forKey: .postServiceStatus)
         avatarPhotoData = try c.decodeIfPresent(Data.self, forKey: .avatarPhotoData)
