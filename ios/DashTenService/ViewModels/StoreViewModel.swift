@@ -72,7 +72,6 @@ class StoreViewModel {
         "Networking Hub",
         "Personal Brand Audit",
         "Job Offer Compare",
-        "Salary Negotiation",
         "First 90 Days Planner",
         "Transition Journal",
         "Wellness Check-In",

@@ -23,7 +23,7 @@ struct JobOfferComparisonView: View {
             .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Offer Compare")
+        .navigationTitle("Job Offer Comparison")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
