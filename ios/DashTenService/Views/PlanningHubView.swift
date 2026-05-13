@@ -171,6 +171,7 @@ enum PlanningRoute: Hashable {
     case vaFundingFee
     case vaHomeLoanGuide
     case disabilityBenefits
+    case vaHealthcareGuide
 }
 
 struct PlanningCard: View {

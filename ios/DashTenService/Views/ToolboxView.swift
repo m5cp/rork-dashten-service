@@ -82,6 +82,7 @@ struct ToolboxView: View {
             ToolEntry(title: "SCRA Protections", subtitle: "Your legal rights as a service member", icon: "shield.lefthalf.filled", color: .teal, action: .nav(.scraProtections), keywords: ["scra", "legal", "lease", "rights", "protection", "civil relief"]),
             ToolEntry(title: "Financial Readiness Help", subtitle: "Free help by branch — ACS, FFSC, MCCS and more", icon: "person.fill.checkmark", color: AppTheme.forestGreen, action: .nav(.financialReadiness), keywords: ["acs", "ffsc", "mccs", "financial", "counselor", "help", "free", "budget"]),
             ToolEntry(title: "Benefits by Rating", subtitle: "See what applies at your VA disability rating", icon: "shield.lefthalf.filled", color: AppTheme.forestGreen, action: .nav(.disabilityBenefits), keywords: ["disability", "rating", "va", "benefits", "compensation", "100 percent", "exempt"]),
+            ToolEntry(title: "VA Healthcare Guide", subtitle: "How to enroll, priority groups, and what it covers", icon: "cross.circle.fill", color: .blue, action: .nav(.vaHealthcareGuide), keywords: ["va", "healthcare", "tricare", "enroll", "priority", "medical", "100 percent", "pt"]),
         ]
     }
 
@@ -268,6 +269,7 @@ struct ToolboxView: View {
         case .vaFundingFee: VAFundingFeeCalculatorView(storage: storage)
         case .vaHomeLoanGuide: VAHomeLoanGuideView(storage: storage)
         case .disabilityBenefits: DisabilityBenefitsView(storage: storage)
+        case .vaHealthcareGuide: VAHealthcareGuideView()
         }
     }
 

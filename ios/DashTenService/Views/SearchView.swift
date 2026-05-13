@@ -132,6 +132,8 @@ struct SearchView: View {
             SearchItem(id: "t.powerup", title: "Daily Power-Up", subtitle: "A daily action to keep you moving", icon: "bolt.fill", color: AppTheme.gold, kind: .tool, keywords: ["daily", "power", "motivation", "habit"], body: "Daily power up motivation habit", destination: .route(.dailyPowerUp)),
             SearchItem(id: "t.deadlines", title: "Benefits Enrollment Countdown", subtitle: "Track SGLI, VGLI, TAMP and other deadlines", icon: "hourglass", color: .red, kind: .tool, keywords: ["deadline", "sgli", "vgli", "tamp", "enrollment", "countdown"], body: "SGLI VGLI TAMP enrollment deadline countdown", destination: .route(.benefitsCountdown)),
             SearchItem(id: "t.badges", title: "Achievement Badges", subtitle: "Earn badges as you progress", icon: "rosette", color: AppTheme.gold, kind: .tool, keywords: ["achievement", "badge", "reward", "gamification"], body: "Achievement badges progress reward", destination: .route(.achievementBadges)),
+            SearchItem(id: "t.disabilityBenefits", title: "Benefits by Rating", subtitle: "See what applies at your VA disability rating", icon: "shield.lefthalf.filled", color: AppTheme.forestGreen, kind: .tool, keywords: ["disability", "rating", "va benefits", "100 percent", "compensation", "exempt"], body: "VA disability rating benefits compensation 100 percent permanent and total", destination: .route(.disabilityBenefits)),
+            SearchItem(id: "t.vaHealthcare", title: "VA Healthcare Guide", subtitle: "How to enroll, priority groups, and what it covers", icon: "cross.circle.fill", color: .blue, kind: .tool, keywords: ["va healthcare", "tricare", "enroll", "priority group", "medical", "pt"], body: "VA healthcare enrollment priority groups TRICARE permanent and total", destination: .route(.vaHealthcareGuide)),
         ]
     }
 
@@ -670,6 +672,7 @@ struct SearchView: View {
         case .vaFundingFee: VAFundingFeeCalculatorView(storage: storage)
         case .vaHomeLoanGuide: VAHomeLoanGuideView(storage: storage)
         case .disabilityBenefits: DisabilityBenefitsView(storage: storage)
+        case .vaHealthcareGuide: VAHealthcareGuideView()
         }
     }
 
