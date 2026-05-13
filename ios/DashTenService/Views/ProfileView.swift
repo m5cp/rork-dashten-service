@@ -146,7 +146,7 @@ struct ProfileView: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text("VA Disability Rating")
+                            Text("Your Current VA Rating")
                                 .font(.subheadline.weight(.bold))
                             Spacer()
                             Text(storage.profile.disabilityRating == 0 ? "None" : "\(storage.profile.disabilityRating)%")
@@ -158,7 +158,7 @@ struct ProfileView: View {
                             set: { storage.profile.disabilityRating = Int($0.rounded() / 10) * 10 }
                         ), in: 0...100, step: 10)
                         .tint(AppTheme.forestGreen)
-                        Text("Used to show relevant benefit information. Stored only on this device.")
+                        Text("Enter your current VA-assigned combined rating. Ratings are determined by the VA — this is for personalizing your benefit information only.")
                             .font(.caption2.weight(.semibold))
                             .foregroundStyle(.secondary)
                     }
