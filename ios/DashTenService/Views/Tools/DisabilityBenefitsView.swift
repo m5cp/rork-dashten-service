@@ -21,6 +21,7 @@ struct DisabilityBenefitsView: View {
 		ScrollView {
 			VStack(alignment: .leading, spacing: 20) {
 
+				howRatingsCard
 				ratingSelector
 				benefitsList
 				noteCard
@@ -37,6 +38,44 @@ struct DisabilityBenefitsView: View {
 		.background(Color(.systemGroupedBackground))
 		.navigationTitle("Benefits by Rating")
 		.navigationBarTitleDisplayMode(.inline)
+	}
+
+	private var howRatingsCard: some View {
+		VStack(alignment: .leading, spacing: 12) {
+			HStack(spacing: 8) {
+				Image(systemName: "info.circle.fill")
+					.foregroundStyle(.blue)
+				Text("How Ratings Are Determined")
+					.font(.subheadline.weight(.bold))
+			}
+			Text("VA disability ratings are determined by the Department of Veterans Affairs — not by a formula you can calculate in advance. The outcome depends on your medical records, the examiner, and how your conditions are documented.")
+				.font(.caption.weight(.semibold))
+				.foregroundStyle(.primary.opacity(0.85))
+				.fixedSize(horizontal: false, vertical: true)
+
+			Divider()
+
+			Text("Ratings do not add up the way you might expect.")
+				.font(.caption.weight(.bold))
+				.foregroundStyle(.primary)
+			Text("A 50% rating and a 30% rating do not combine to 80%. The VA applies each rating to what is left of your functional capacity — not to 100. Two conditions rated at 50% and 30% typically result in a combined rating of 65%, which rounds to 60%.")
+				.font(.caption.weight(.semibold))
+				.foregroundStyle(.primary.opacity(0.8))
+				.fixedSize(horizontal: false, vertical: true)
+
+			Divider()
+
+			Text("You may qualify at the 100% rate without a 100% rating.")
+				.font(.caption.weight(.bold))
+				.foregroundStyle(.primary)
+			Text("Total Disability based on Individual Unemployability (TDIU) allows veterans who cannot maintain employment due to service-connected conditions to receive compensation at the 100% rate, even if their combined rating is lower. This is one of the most underutilized benefits available.")
+				.font(.caption.weight(.semibold))
+				.foregroundStyle(.primary.opacity(0.8))
+				.fixedSize(horizontal: false, vertical: true)
+		}
+		.padding(14)
+		.background(.blue.opacity(0.06))
+		.clipShape(.rect(cornerRadius: 14))
 	}
 
 	private var ratingSelector: some View {
