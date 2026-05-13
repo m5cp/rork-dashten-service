@@ -66,12 +66,10 @@ class StoreViewModel {
     }
 
     static let proToolIds: Set<String> = [
-        "Resume Translator",
         "Interview Prep",
         "Elevator Pitch Builder",
         "Networking Hub",
         "Personal Brand Audit",
-        "Job Offer Compare",
         "First 90 Days Planner",
         "Transition Journal",
         "Wellness Check-In",
