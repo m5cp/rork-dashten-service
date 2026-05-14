@@ -69,6 +69,10 @@ struct ContentView: View {
         .sheet(isPresented: $showAICoach) {
             AICoachSheet(storage: storage)
         }
+        .overlay {
+            BadgeCelebrationPresenter(storage: storage)
+                .allowsHitTesting(storage.pendingBadgeIds.isEmpty == false)
+        }
         .onOpenURL { url in
             handleDeepLink(url)
         }

@@ -181,8 +181,8 @@ struct PaywallView: View {
 		"Benefits by Disability Rating",
 		"Financial Readiness resources by branch",
 		"All basic financial calculators",
-		"Readiness Score, XP, and badges",
-		"Weekly missions",
+		"Readiness Score and achievement badges",
+		"Daily Power-Up and Today’s Focus",
 	]
 
 	private let proFeatures: [(String, String)] = [

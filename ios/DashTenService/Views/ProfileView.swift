@@ -57,29 +57,27 @@ struct ProfileView: View {
                 Section {
                     NavigationLink(value: PlanningRoute.achievementBadges) {
                         HStack(spacing: 14) {
-                            ProgressRing(progress: storage.transitionLevel.progressToNextLevel, size: 44, lineWidth: 4, color: AppTheme.gold)
-                                .overlay {
-                                    Text("Lv\(storage.transitionLevel.level)")
-                                        .font(.system(size: 9, weight: .heavy))
-                                        .foregroundStyle(AppTheme.gold)
-                                }
+                            ZStack {
+                                Circle()
+                                    .fill(AppTheme.gold.opacity(0.15))
+                                    .frame(width: 44, height: 44)
+                                Image(systemName: "rosette")
+                                    .font(.title3.weight(.bold))
+                                    .foregroundStyle(AppTheme.gold)
+                            }
 
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(storage.transitionLevel.levelTitle)
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Badges")
                                     .font(.subheadline.weight(.bold))
-                                HStack(spacing: 10) {
-                                    Text("\(storage.transitionLevel.totalXPEarned) XP")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(AppTheme.gold)
-                                    Text("\(storage.badges.filter(\.isUnlocked).count)/\(storage.badges.count) badges")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(.secondary)
-                                }
+                                Text("\(storage.badges.filter(\.isUnlocked).count) of \(storage.badges.count) earned · \(readiness.overallPercent)% ready")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
                             }
                         }
                     }
                 } header: {
-                    Text("Level & Achievements")
+                    Text("Achievements")
                 }
 
                 Section {

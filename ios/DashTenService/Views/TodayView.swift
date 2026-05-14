@@ -69,7 +69,7 @@ struct TodayView: View {
                     readinessCard
                         .delayedEntrance(appeared, delay: 0.08)
 
-                    WeeklyMissionCard(storage: storage)
+                    RecentWinsCard(storage: storage)
                         .delayedEntrance(appeared, delay: 0.12)
 
                     if let focus = focusAction {
@@ -145,8 +145,8 @@ struct TodayView: View {
                     ReadinessDashboardView(storage: storage)
                 } else if case .selfAssessment = route {
                     SelfAssessmentView(storage: storage)
-                } else if case .weeklyChallenges = route {
-                    WeeklyChallengesView(storage: storage)
+                } else if case .achievementBadges = route {
+                    AchievementBadgesView(storage: storage)
                 }
             }
             .navigationDestination(isPresented: $goToAssessment) {
@@ -511,58 +511,39 @@ nonisolated enum HeroStyle: Sendable {
     case postSeparation
 }
 
-nonisolated extension WeeklyChallenge {
-    var progressFraction: Double {
-        isCompleted ? 1.0 : 0.0
-    }
-}
-
-struct WeeklyMissionCard: View {
+struct RecentWinsCard: View {
     let storage: StorageService
 
-    private var currentWeekStart: Date {
-        Calendar.current.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
+    private var unlockedBadges: [AchievementBadge] {
+        storage.badges
+            .filter { $0.isUnlocked }
+            .sorted { ($0.unlockedDate ?? .distantPast) > ($1.unlockedDate ?? .distantPast) }
     }
 
-    private var activeChallenges: [WeeklyChallenge] {
-        storage.weeklyChallenges.filter {
-            Calendar.current.isDate($0.weekStartDate, equalTo: currentWeekStart, toGranularity: .weekOfYear)
-        }
-    }
-
-    private var currentChallenge: WeeklyChallenge? {
-        activeChallenges.first(where: { !$0.isCompleted })
-    }
-
-    private var completedCount: Int {
-        activeChallenges.filter(\.isCompleted).count
-    }
-
-    private var totalCount: Int {
-        max(activeChallenges.count, 3)
-    }
+    private var totalCount: Int { storage.badges.count }
+    private var unlockedCount: Int { unlockedBadges.count }
 
     var body: some View {
-        NavigationLink(value: PlanningRoute.weeklyChallenges) {
+        NavigationLink(value: PlanningRoute.achievementBadges) {
             cardBody
         }
         .buttonStyle(.plain)
     }
 
     private var cardBody: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
                 HStack(spacing: 6) {
-                    Image(systemName: "bolt.fill")
+                    Image(systemName: "rosette")
                         .font(.caption.weight(.bold))
                         .foregroundStyle(AppTheme.gold)
-                    Text("THIS WEEK'S MISSION")
+                    Text("RECENT WINS")
                         .font(.system(size: 10, weight: .heavy))
                         .foregroundStyle(AppTheme.gold)
                         .tracking(1.5)
                 }
                 Spacer()
-                Text("\(completedCount) of \(totalCount) done")
+                Text("\(unlockedCount) of \(totalCount)")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(.secondary)
                 Image(systemName: "chevron.right")
@@ -570,74 +551,48 @@ struct WeeklyMissionCard: View {
                     .foregroundStyle(.tertiary)
             }
 
-            Text("A small weekly goal that builds momentum. Complete it to earn XP and a streak day.")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            if let challenge = currentChallenge {
+            if unlockedBadges.isEmpty {
                 HStack(spacing: 12) {
-                    Image(systemName: challenge.icon)
+                    Image(systemName: "rosette")
                         .font(.title3.weight(.bold))
                         .foregroundStyle(.white)
-                        .frame(width: 48, height: 48)
-                        .background(LinearGradient(
-                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-                            startPoint: .topLeading, endPoint: .bottomTrailing
-                        ))
-                        .clipShape(.rect(cornerRadius: 14))
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(challenge.title)
-                            .font(.headline.weight(.bold))
-                        Text(challenge.description)
-                            .font(.caption.weight(.semibold))
+                        .frame(width: 44, height: 44)
+                        .background(
+                            LinearGradient(
+                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                                startPoint: .topLeading, endPoint: .bottomTrailing
+                            )
+                        )
+                        .clipShape(.rect(cornerRadius: 12))
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Earn your first badge")
+                            .font(.subheadline.weight(.bold))
+                        Text("Complete tasks, verify documents, or use a tool to start unlocking badges.")
+                            .font(.caption2.weight(.semibold))
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-
-                    Spacer()
-
-                    VStack(spacing: 2) {
-                        Image(systemName: "bolt.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(AppTheme.gold)
-                        Text("+\(challenge.xpReward)")
-                            .font(.caption2.weight(.heavy))
-                            .foregroundStyle(AppTheme.gold)
-                    }
+                    Spacer(minLength: 0)
                 }
-
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(AppTheme.forestGreen.opacity(0.12))
-                            .frame(height: 6)
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(LinearGradient(
-                                colors: [AppTheme.forestGreen, AppTheme.gold],
-                                startPoint: .leading, endPoint: .trailing
-                            ))
-                            .frame(width: geo.size.width * challenge.progressFraction, height: 6)
-                            .animation(.spring(response: 0.5), value: challenge.progressFraction)
-                    }
-                }
-                .frame(height: 6)
-
             } else {
                 HStack(spacing: 10) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.title3)
-                        .foregroundStyle(AppTheme.forestGreen)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(activeChallenges.isEmpty ? "Tap to load this week's missions" : "All missions complete this week")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary)
-                        Text("New missions arrive each week")
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                    ForEach(Array(unlockedBadges.prefix(4))) { badge in
+                        RecentBadgeChip(badge: badge)
                     }
-                    Spacer()
+                    if unlockedCount > 4 {
+                        VStack(spacing: 4) {
+                            Text("+\(unlockedCount - 4)")
+                                .font(.subheadline.weight(.heavy))
+                                .foregroundStyle(AppTheme.forestGreen)
+                                .frame(width: 44, height: 44)
+                                .background(AppTheme.forestGreen.opacity(0.1))
+                                .clipShape(Circle())
+                            Text("more")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    Spacer(minLength: 0)
                 }
             }
         }
@@ -648,3 +603,26 @@ struct WeeklyMissionCard: View {
         .contentShape(Rectangle())
     }
 }
+
+private struct RecentBadgeChip: View {
+    let badge: AchievementBadge
+
+    var body: some View {
+        VStack(spacing: 4) {
+            ZStack {
+                Circle()
+                    .fill(AppTheme.gold.opacity(0.18))
+                    .frame(width: 44, height: 44)
+                Image(systemName: badge.icon)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(AppTheme.gold)
+            }
+            Text(badge.title)
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .frame(maxWidth: 56)
+        }
+    }
+}
+

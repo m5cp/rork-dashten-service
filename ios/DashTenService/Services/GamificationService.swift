@@ -31,7 +31,6 @@ enum GamificationService {
             AchievementBadge(id: "brand_audited", title: "Brand Builder", subtitle: "Completed personal brand audit", icon: "person.crop.circle.badge.checkmark", category: .career, requirement: .brandAudited),
             AchievementBadge(id: "ninety_plan", title: "Strategist", subtitle: "Created your 90-day plan", icon: "calendar.badge.clock", category: .milestones, requirement: .ninetyDayPlanCreated),
             AchievementBadge(id: "decision_made", title: "Decisive", subtitle: "Used the Decision Matrix", icon: "square.grid.3x3.fill", category: .getting_started, requirement: .decisionMade),
-            AchievementBadge(id: "challenge_done", title: "Challenger", subtitle: "Completed a weekly challenge", icon: "bolt.fill", category: .streak, requirement: .challengeCompleted),
         ]
     }
 
@@ -50,16 +49,4 @@ enum GamificationService {
         ]
     }
 
-    static func generateWeeklyChallenges(weekStart: Date) -> [WeeklyChallenge] {
-        let allChallenges = [
-            WeeklyChallenge(title: "Task Crusher", description: "Complete 3 checklist items", icon: "checkmark.circle.fill", xpReward: 30, requirement: .completeChecklist(count: 3), weekStartDate: weekStart),
-            WeeklyChallenge(title: "Journal Keeper", description: "Write 3 journal entries", icon: "book.fill", xpReward: 25, requirement: .journalEntries(count: 3), weekStartDate: weekStart),
-            WeeklyChallenge(title: "Tool Explorer", description: "Use 2 different tools", icon: "wrench.and.screwdriver.fill", xpReward: 20, requirement: .useTools(count: 2), weekStartDate: weekStart),
-            WeeklyChallenge(title: "Connector", description: "Add 2 networking contacts", icon: "person.3.fill", xpReward: 25, requirement: .networkContacts(count: 2), weekStartDate: weekStart),
-            WeeklyChallenge(title: "Pulse Check", description: "Complete your weekly check-in", icon: "heart.text.square.fill", xpReward: 15, requirement: .weeklyCheckIn, weekStartDate: weekStart),
-        ]
-        let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: weekStart) ?? 0
-        let startIdx = dayOfYear % allChallenges.count
-        return Array(0..<3).map { allChallenges[(startIdx + $0) % allChallenges.count] }
-    }
 }

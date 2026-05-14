@@ -102,6 +102,10 @@ class StorageService {
         didSet { save() }
     }
 
+    // Transient queue of badge IDs that were just unlocked and are waiting to be celebrated.
+    // Not persisted — consumed by the celebration overlay.
+    var pendingBadgeIds: [String] = []
+
     init() {
         let stored = StorageService.loadFromDisk()
         self.profile = stored.profile
@@ -115,7 +119,19 @@ class StorageService {
         self.weeklyCheckIns = stored.weeklyCheckIns ?? []
         self.networkingWeeks = stored.networkingWeeks ?? []
         self.practicedQuestions = Set(stored.practicedQuestions ?? [])
-        self.badges = stored.badges ?? GamificationService.defaultBadges()
+        // Merge stored badges with the canonical list — drops retired badges (e.g. challenge_done)
+        // and adds any newly-introduced badges with their default locked state.
+        let canonical = GamificationService.defaultBadges()
+        let storedMap = Dictionary(uniqueKeysWithValues: (stored.badges ?? []).map { ($0.id, $0) })
+        self.badges = canonical.map { def in
+            if let existing = storedMap[def.id] {
+                var merged = def
+                merged.isUnlocked = existing.isUnlocked
+                merged.unlockedDate = existing.unlockedDate
+                return merged
+            }
+            return def
+        }
         self.transitionLevel = stored.transitionLevel ?? TransitionLevel()
         self.weeklyChallenges = stored.weeklyChallenges ?? []
         self.toolsUsedIds = Set(stored.toolsUsedIds ?? [])
@@ -142,16 +158,16 @@ class StorageService {
         guard let index = checklistItems.firstIndex(where: { $0.id == id }) else { return }
         checklistItems[index].isCompleted.toggle()
         if checklistItems[index].isCompleted {
-            awardXP(10)
             _ = RetentionService.recordActivity(storage: self)
         }
+        recomputeBadges()
     }
 
     func updateDocumentStatus(_ id: String, status: DocumentStatus) {
         guard let index = documents.firstIndex(where: { $0.id == id }) else { return }
         documents[index].status = status
         documents[index].dateUpdated = Date()
-        if status == .verified { awardXP(15) }
+        recomputeBadges()
     }
 
     func toggleBenefitAction(categoryId: String, actionId: String) {
@@ -163,7 +179,7 @@ class StorageService {
             benefitCategories[catIndex].isStarted = true
         }
         if benefitCategories[catIndex].actionItems[actIndex].isCompleted {
-            awardXP(5)
+            recomputeBadges()
         }
     }
 
@@ -239,8 +255,8 @@ class StorageService {
 
     func addJournalEntry(_ entry: JournalEntry) {
         journalEntries.insert(entry, at: 0)
-        awardXP(10)
         _ = RetentionService.recordActivity(storage: self)
+        recomputeBadges()
     }
 
     func addGoal(_ goal: GoalItem) {
@@ -251,7 +267,7 @@ class StorageService {
         guard let index = goals.firstIndex(where: { $0.id == id }) else { return }
         goals[index].progress = min(max(progress, 0), 1.0)
         goals[index].isCompleted = progress >= 1.0
-        if goals[index].isCompleted { awardXP(25) }
+        if goals[index].isCompleted { recomputeBadges() }
     }
 
     func removeGoal(_ id: String) {
@@ -260,8 +276,8 @@ class StorageService {
 
     func addCheckIn(_ entry: WeeklyCheckInEntry) {
         weeklyCheckIns.insert(entry, at: 0)
-        awardXP(15)
         _ = RetentionService.recordActivity(storage: self)
+        recomputeBadges()
     }
 
     func addNetworkingWeek(_ week: NetworkingWeek) {
@@ -285,20 +301,98 @@ class StorageService {
 
     func trackToolUsed(_ toolId: String) {
         toolsUsedIds.insert(toolId)
-        awardXP(5)
         _ = RetentionService.recordActivity(storage: self)
+        recomputeBadges()
     }
 
-    func awardXP(_ amount: Int) {
-        transitionLevel.currentXP += amount
-        transitionLevel.totalXPEarned += amount
-    }
+    /// Legacy XP function — retained as a no-op for backward compatibility.
+    /// XP and levels were removed; badges are now the sole reward system.
+    func awardXP(_ amount: Int) { /* no-op */ }
 
     func unlockBadge(_ badgeId: String) {
         guard let index = badges.firstIndex(where: { $0.id == badgeId && !$0.isUnlocked }) else { return }
         badges[index].isUnlocked = true
         badges[index].unlockedDate = Date()
-        awardXP(20)
+        pendingBadgeIds.append(badgeId)
+    }
+
+    /// Re-evaluate every badge against current state and unlock any whose requirement is now met.
+    /// Newly unlocked badges are pushed onto `pendingBadgeIds` so the celebration overlay can show them.
+    func recomputeBadges() {
+        let readinessPct = ReadinessCalculator.calculate(
+            checklist: checklistItems,
+            documents: documents,
+            benefits: benefitCategories
+        ).overallPercent
+        let journalStreak = journalConsecutiveDayCount()
+
+        var unlocked: [String] = []
+        for index in badges.indices where !badges[index].isUnlocked {
+            if isRequirementMet(badges[index].requirement, readinessPct: readinessPct, journalStreak: journalStreak) {
+                badges[index].isUnlocked = true
+                badges[index].unlockedDate = Date()
+                unlocked.append(badges[index].id)
+            }
+        }
+        if !unlocked.isEmpty {
+            pendingBadgeIds.append(contentsOf: unlocked)
+        }
+    }
+
+    private func isRequirementMet(_ requirement: BadgeRequirement, readinessPct: Int, journalStreak: Int) -> Bool {
+        switch requirement {
+        case .firstToolUsed: return !toolsUsedIds.isEmpty
+        case .completedOnboarding: return profile.hasCompletedOnboarding
+        case .firstChecklistComplete: return checklistItems.contains(where: \.isCompleted)
+        case .resumeStarted: return toolsUsedIds.contains("resume_translator")
+        case .budgetBuilt: return toolsUsedIds.contains("civilian_budget")
+        case .emergencyFundCalculated: return toolsUsedIds.contains("emergency_fund")
+        case .compensationCompared: return toolsUsedIds.contains("military_comp")
+        case .interviewPrepDone: return !practicedQuestions.isEmpty
+        case .networkingStarted: return !mentors.isEmpty || !networkingWeeks.isEmpty
+        case .tenContactsReached: return mentors.count >= 10
+        case .journalStreak3: return journalStreak >= 3
+        case .journalStreak7: return journalStreak >= 7
+        case .journalStreak30: return journalStreak >= 30
+        case .weeklyCheckIn3: return weeklyCheckIns.count >= 3
+        case .allDocsCollected:
+            return !documents.isEmpty && documents.allSatisfy { $0.status == .verified || $0.status == .received }
+        case .readiness25: return readinessPct >= 25
+        case .readiness50: return readinessPct >= 50
+        case .readiness75: return readinessPct >= 75
+        case .readiness100: return readinessPct >= 100
+        case .fiveToolsUsed: return toolsUsedIds.count >= 5
+        case .tenToolsUsed: return toolsUsedIds.count >= 10
+        case .goalCompleted: return goals.contains(where: \.isCompleted)
+        case .threeGoalsCompleted: return goals.filter(\.isCompleted).count >= 3
+        case .pitchCrafted:
+            guard let pitch = elevatorPitch else { return false }
+            return !pitch.pitch30.isEmpty || !pitch.pitch60.isEmpty || !pitch.pitch90.isEmpty
+        case .offerCompared: return jobOffers.count >= 2
+        case .brandAudited: return brandAudit.score > 0
+        case .ninetyDayPlanCreated: return ninetyDayPlan != nil
+        case .decisionMade: return !decisionMatrices.isEmpty
+        case .challengeCompleted: return false // retired
+        }
+    }
+
+    private func journalConsecutiveDayCount() -> Int {
+        guard !journalEntries.isEmpty else { return 0 }
+        let calendar = Calendar.current
+        let days = Set(journalEntries.map { calendar.startOfDay(for: $0.date) })
+        let today = calendar.startOfDay(for: Date())
+        var streak = 0
+        var cursor = today
+        // If the user hasn't journaled today, start from yesterday — same-day streak still counts if any entry exists.
+        if !days.contains(cursor), let yesterday = calendar.date(byAdding: .day, value: -1, to: cursor) {
+            cursor = yesterday
+        }
+        while days.contains(cursor) {
+            streak += 1
+            guard let prev = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
+            cursor = prev
+        }
+        return streak
     }
 
     func resetOnboarding() {

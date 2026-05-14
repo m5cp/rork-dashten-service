@@ -16,7 +16,7 @@ struct AchievementBadgesView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                levelHeader
+                summaryHeader
                 categoryFilter
                 badgesGrid
             }
@@ -29,61 +29,47 @@ struct AchievementBadgesView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private var levelHeader: some View {
-        VStack(spacing: 16) {
-            HStack(spacing: 20) {
-                ProgressRing(progress: storage.transitionLevel.progressToNextLevel, size: 72, lineWidth: 6, color: AppTheme.gold)
-                    .overlay {
-                        VStack(spacing: 0) {
-                            Text("\(storage.transitionLevel.level)")
-                                .font(.title2.bold())
-                                .foregroundStyle(.white)
-                        }
-                    }
+    private var progress: Double {
+        guard !storage.badges.isEmpty else { return 0 }
+        return Double(unlockedCount) / Double(storage.badges.count)
+    }
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(storage.transitionLevel.levelTitle)
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(.white)
-                    Text("\(storage.transitionLevel.totalXPEarned) XP total")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.white.opacity(0.7))
-                    if storage.transitionLevel.level < 10 {
-                        ProgressView(value: storage.transitionLevel.progressToNextLevel)
-                            .tint(AppTheme.gold)
-                        Text("\(storage.transitionLevel.xpForNextLevel - storage.transitionLevel.totalXPEarned) XP to next level")
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.white.opacity(0.6))
-                    } else {
-                        Text("Max level reached!")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(AppTheme.gold)
-                    }
-                }
-                Spacer()
-            }
-
-            HStack(spacing: 16) {
-                VStack(spacing: 2) {
+    private var summaryHeader: some View {
+        HStack(spacing: 18) {
+            ZStack {
+                Circle()
+                    .stroke(Color.white.opacity(0.15), lineWidth: 7)
+                Circle()
+                    .trim(from: 0, to: min(progress, 1.0))
+                    .stroke(AppTheme.gold, style: StrokeStyle(lineWidth: 7, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .animation(.spring(response: 0.6), value: progress)
+                VStack(spacing: 0) {
                     Text("\(unlockedCount)")
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(AppTheme.gold)
-                    Text("unlocked")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .font(.title2.weight(.heavy))
+                        .foregroundStyle(.white)
+                    Text("of \(storage.badges.count)")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.7))
                 }
-                VStack(spacing: 2) {
-                    Text("\(storage.badges.count - unlockedCount)")
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(.white.opacity(0.5))
-                    Text("locked")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.white.opacity(0.6))
-                }
-                Spacer()
             }
+            .frame(width: 84, height: 84)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Your Badges")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.white)
+                Text(unlockedCount == 0
+                     ? "Take any action to earn your first badge."
+                     : "Earned by completing real tasks across your transition.")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
         }
         .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppTheme.heroMesh)
         .clipShape(.rect(cornerRadius: 20))
     }

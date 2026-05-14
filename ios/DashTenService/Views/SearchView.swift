@@ -128,7 +128,6 @@ struct SearchView: View {
             SearchItem(id: "t.financialReadiness", title: "Financial Readiness Help", subtitle: "Free help by branch — ACS, FFSC, MCCS and more", icon: "person.fill.checkmark", color: AppTheme.forestGreen, kind: .tool, keywords: ["acs", "ffsc", "mccs", "financial", "counselor", "help", "free", "budget"], body: "ACS FFSC MCCS free financial counseling", destination: .route(.financialReadiness)),
             SearchItem(id: "t.roadmap", title: "Transition Roadmap", subtitle: "Your phased path from service to civilian life", icon: "map.fill", color: .indigo, kind: .tool, keywords: ["roadmap", "timeline", "phases", "plan"], body: "Transition roadmap timeline phases", destination: .route(.roadmap)),
             SearchItem(id: "t.goals", title: "90-Day Goals", subtitle: "Set and track measurable goals", icon: "target", color: .orange, kind: .tool, keywords: ["goals", "targets", "tracker"], body: "90 day goal tracker", destination: .route(.goalTracker)),
-            SearchItem(id: "t.weekly", title: "Weekly Challenges", subtitle: "Small actions that build big momentum", icon: "flag.checkered", color: .pink, kind: .tool, keywords: ["challenge", "weekly", "momentum"], body: "Weekly challenges micro actions", destination: .route(.weeklyChallenges)),
             SearchItem(id: "t.powerup", title: "Daily Power-Up", subtitle: "A daily action to keep you moving", icon: "bolt.fill", color: AppTheme.gold, kind: .tool, keywords: ["daily", "power", "motivation", "habit"], body: "Daily power up motivation habit", destination: .route(.dailyPowerUp)),
             SearchItem(id: "t.deadlines", title: "Benefits Enrollment Countdown", subtitle: "Track SGLI, VGLI, TAMP and other deadlines", icon: "hourglass", color: .red, kind: .tool, keywords: ["deadline", "sgli", "vgli", "tamp", "enrollment", "countdown"], body: "SGLI VGLI TAMP enrollment deadline countdown", destination: .route(.benefitsCountdown)),
             SearchItem(id: "t.badges", title: "Achievement Badges", subtitle: "Earn badges as you progress", icon: "rosette", color: AppTheme.gold, kind: .tool, keywords: ["achievement", "badge", "reward", "gamification"], body: "Achievement badges progress reward", destination: .route(.achievementBadges)),
@@ -656,7 +655,6 @@ struct SearchView: View {
         case .jobOfferCompare: JobOfferComparisonView(storage: storage)
         case .decisionMatrix: DecisionMatrixView(storage: storage)
         case .ninetyDayPlanner: NinetyDayPlannerView(storage: storage)
-        case .weeklyChallenges: WeeklyChallengesView(storage: storage)
         case .dailyPowerUp: DailyPowerUpView(storage: storage)
         case .networkingEventPrep: NetworkingEventPrepView(storage: storage)
         case .personalBrandAudit: PersonalBrandAuditView(storage: storage)

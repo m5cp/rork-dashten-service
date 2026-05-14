@@ -65,10 +65,6 @@ struct RoadmapView: View {
 		}
 	}
 
-	private var totalXP: Int { storage.transitionLevel.totalXPEarned }
-	private var level: Int { storage.transitionLevel.level }
-	private var levelTitle: String { storage.transitionLevel.levelTitle }
-
 	var body: some View {
 		NavigationStack {
 			Group {
@@ -84,9 +80,6 @@ struct RoadmapView: View {
 	private var preSeparationBody: some View {
 		ScrollView {
 			VStack(spacing: 20) {
-
-				// Header bar with XP and level
-				xpHeaderCard
 
 				// Catch-up banner for late joiners
 				if !pastPhasesWithIncompleteTasks.isEmpty {
@@ -153,81 +146,6 @@ struct RoadmapView: View {
 		.navigationDestination(for: TimelinePhase.self) { phase in
 			PhaseDetailView(storage: storage, phase: phase)
 		}
-	}
-
-	// MARK: - XP Header
-
-	private var xpHeaderCard: some View {
-		HStack(spacing: 14) {
-			// Rank badge
-			VStack(spacing: 4) {
-				ZStack {
-					Circle()
-						.fill(LinearGradient(
-							colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-							startPoint: .topLeading,
-							endPoint: .bottomTrailing
-						))
-						.frame(width: 56, height: 56)
-					Text("\(level)")
-						.font(.title2.weight(.heavy))
-						.foregroundStyle(.white)
-				}
-				Text(levelTitle)
-					.font(.caption2.weight(.bold))
-					.foregroundStyle(AppTheme.forestGreen)
-			}
-
-			VStack(alignment: .leading, spacing: 6) {
-				HStack {
-					Text("Total XP")
-						.font(.caption.weight(.semibold))
-						.foregroundStyle(.secondary)
-					Spacer()
-					Text("\(totalXP) XP")
-						.font(.caption.weight(.heavy))
-						.foregroundStyle(AppTheme.gold)
-				}
-				// XP bar to next level
-				let nextThreshold = nextLevelThreshold
-				let prevThreshold = currentLevelThreshold
-				let progress = nextThreshold > prevThreshold
-					? Double(totalXP - prevThreshold) / Double(nextThreshold - prevThreshold)
-					: 1.0
-				GeometryReader { geo in
-					ZStack(alignment: .leading) {
-						RoundedRectangle(cornerRadius: 4)
-							.fill(AppTheme.forestGreen.opacity(0.15))
-							.frame(height: 8)
-						RoundedRectangle(cornerRadius: 4)
-							.fill(LinearGradient(
-								colors: [AppTheme.forestGreen, AppTheme.gold],
-								startPoint: .leading,
-								endPoint: .trailing
-							))
-							.frame(width: geo.size.width * min(progress, 1.0), height: 8)
-							.animation(.spring(response: 0.6), value: progress)
-					}
-				}
-				.frame(height: 8)
-				Text("\(nextThreshold - totalXP) XP to next level")
-					.font(.caption2.weight(.semibold))
-					.foregroundStyle(.secondary)
-			}
-		}
-		.padding(16)
-		.background(Color(.secondarySystemGroupedBackground))
-		.clipShape(.rect(cornerRadius: 16))
-	}
-
-	private var currentLevelThreshold: Int {
-		let thresholds = [0, 50, 150, 300, 500, 800, 1200, 1700, 2400, 3200]
-		return thresholds[min(level - 1, thresholds.count - 1)]
-	}
-
-	private var nextLevelThreshold: Int {
-		let thresholds = [50, 150, 300, 500, 800, 1200, 1700, 2400, 3200, 4200]
-		return thresholds[min(level - 1, thresholds.count - 1)]
 	}
 
 	// MARK: - Catch-Up Banner
@@ -505,19 +423,6 @@ struct PhaseCard: View {
 								.font(.caption2.weight(.bold))
 								.foregroundStyle(isCurrent ? .white.opacity(0.7) : .secondary)
 						}
-
-						// XP badge
-						HStack(spacing: 3) {
-							Image(systemName: "bolt.fill")
-								.font(.system(size: 8, weight: .bold))
-							Text("\(totalCount * 10) XP")
-								.font(.caption2.weight(.bold))
-						}
-						.foregroundStyle(isCurrent ? AppTheme.gold : AppTheme.gold)
-						.padding(.horizontal, 6)
-						.padding(.vertical, 2)
-						.background(AppTheme.gold.opacity(isCurrent ? 0.25 : 0.12))
-						.clipShape(Capsule())
 					}
 				}
 

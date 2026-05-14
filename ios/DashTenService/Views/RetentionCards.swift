@@ -83,14 +83,14 @@ struct RetentionWeeklySummaryCard: View {
     }
 
     private var nextStep: String {
-        if summary.missionsCompleted < summary.missionsTotal {
-            return "Finish a weekly mission to keep momentum."
-        }
         if summary.journalEntries == 0 {
             return "Write a quick journal entry — even one line counts."
         }
         if summary.tasksCompleted == 0 {
             return "Knock out one checklist task this week."
+        }
+        if summary.toolsUsed == 0 {
+            return "Try one tool from the toolbox to keep momentum."
         }
         return "Keep showing up. You're building real momentum."
     }
@@ -111,8 +111,8 @@ struct RetentionWeeklySummaryCard: View {
             .foregroundStyle(AppTheme.gold)
 
             HStack(spacing: 10) {
-                summaryStat(value: "\(summary.missionsCompleted)/\(summary.missionsTotal)", label: "missions", icon: "bolt.fill")
-                summaryStat(value: "+\(summary.xpGained)", label: "XP gained", icon: "sparkles")
+                summaryStat(value: "\(summary.tasksCompleted)", label: summary.tasksCompleted == 1 ? "task" : "tasks", icon: "checkmark.circle.fill")
+                summaryStat(value: "\(summary.toolsUsed)", label: summary.toolsUsed == 1 ? "tool" : "tools", icon: "wrench.and.screwdriver.fill")
                 summaryStat(value: "\(summary.journalEntries)", label: summary.journalEntries == 1 ? "entry" : "entries", icon: "book.fill")
             }
 

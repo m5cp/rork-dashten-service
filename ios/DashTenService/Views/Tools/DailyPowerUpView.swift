@@ -20,7 +20,7 @@ struct DailyPowerUpView: View {
             VStack(spacing: 24) {
                 quoteCard
                 priorityCard
-                levelProgress
+                badgeProgress
                 quickActions
             }
             .readableContentWidth()
@@ -122,41 +122,40 @@ struct DailyPowerUpView: View {
         .animation(.spring(response: 0.6).delay(0.15), value: appeared)
     }
 
-    private var levelProgress: some View {
-        HStack(spacing: 16) {
-            ProgressRing(progress: storage.transitionLevel.progressToNextLevel, size: 56, lineWidth: 5, color: AppTheme.gold)
-                .overlay {
-                    Text("Lv\(storage.transitionLevel.level)")
-                        .font(.caption2.weight(.heavy))
+    private var badgeProgress: some View {
+        let unlocked = storage.badges.filter(\.isUnlocked).count
+        let total = storage.badges.count
+        let pct: Double = total > 0 ? Double(unlocked) / Double(total) : 0
+        return NavigationLink(value: PlanningRoute.achievementBadges) {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(AppTheme.gold.opacity(0.15))
+                        .frame(width: 52, height: 52)
+                    Image(systemName: "rosette")
+                        .font(.title3.weight(.bold))
                         .foregroundStyle(AppTheme.gold)
                 }
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(storage.transitionLevel.levelTitle)
-                    .font(.headline.weight(.bold))
-                Text("\(storage.transitionLevel.totalXPEarned) XP earned")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                if storage.transitionLevel.level < 10 {
-                    ProgressView(value: storage.transitionLevel.progressToNextLevel)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Badges Earned")
+                        .font(.headline.weight(.bold))
+                    Text("\(unlocked) of \(total) unlocked")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    ProgressView(value: pct)
                         .tint(AppTheme.gold)
                 }
-            }
 
-            Spacer()
-
-            VStack(spacing: 2) {
-                Text("\(storage.badges.filter(\.isUnlocked).count)")
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(AppTheme.forestGreen)
-                Text("badges")
-                    .font(.caption2.weight(.bold))
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
                     .foregroundStyle(.tertiary)
             }
+            .padding(16)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 14))
         }
-        .padding(16)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(.rect(cornerRadius: 14))
+        .buttonStyle(.plain)
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 12)
         .animation(.spring(response: 0.6).delay(0.2), value: appeared)

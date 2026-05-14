@@ -33,7 +33,6 @@ nonisolated enum PlanningRoute: Hashable, Sendable {
     case jobOfferCompare
     case decisionMatrix
     case ninetyDayPlanner
-    case weeklyChallenges
     case dailyPowerUp
     case networkingEventPrep
     case personalBrandAudit

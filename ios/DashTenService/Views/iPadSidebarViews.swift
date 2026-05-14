@@ -219,7 +219,6 @@ struct PlanRouteDestination: View {
         case .jobOfferCompare: JobOfferComparisonView(storage: storage)
         case .decisionMatrix: DecisionMatrixView(storage: storage)
         case .ninetyDayPlanner: NinetyDayPlannerView(storage: storage)
-        case .weeklyChallenges: WeeklyChallengesView(storage: storage)
         case .dailyPowerUp: DailyPowerUpView(storage: storage)
         case .networkingEventPrep: NetworkingEventPrepView(storage: storage)
         case .personalBrandAudit: PersonalBrandAuditView(storage: storage)
