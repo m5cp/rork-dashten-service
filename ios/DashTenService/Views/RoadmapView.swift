@@ -385,7 +385,7 @@ struct PhaseCard: View {
 						Text(phase.rawValue)
 							.font(.headline.weight(.bold))
 							.foregroundStyle(foregroundColor)
-							.lineLimit(1)
+							.fixedSize(horizontal: false, vertical: true)
 
 						if isCurrent {
 							Text("YOU ARE HERE")
@@ -411,7 +411,7 @@ struct PhaseCard: View {
 					Text(phase.subtitle)
 						.font(.caption.weight(.semibold))
 						.foregroundStyle(subtitleColor)
-						.lineLimit(1)
+						.fixedSize(horizontal: false, vertical: true)
 
 					HStack(spacing: 10) {
 						// Mini task progress

@@ -46,7 +46,7 @@ struct ProfileView: View {
                                 Text(wellnessSubtitle)
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(.secondary)
-                                    .lineLimit(1)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                         }
                     }
@@ -72,7 +72,7 @@ struct ProfileView: View {
                                 Text("\(storage.badges.filter(\.isUnlocked).count) of \(storage.badges.count) earned · \(readiness.overallPercent)% ready")
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(.secondary)
-                                    .lineLimit(1)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                         }
                     }

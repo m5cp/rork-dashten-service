@@ -569,7 +569,6 @@ struct SearchView: View {
                         Text(item.title)
                             .font(.subheadline.weight(.bold))
                             .foregroundStyle(.primary)
-                            .lineLimit(2)
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                         if showsTag {
@@ -586,7 +585,6 @@ struct SearchView: View {
                     Text(item.subtitle)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                 }

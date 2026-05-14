@@ -423,7 +423,7 @@ private struct ToolCategoryHeroCard: View {
                     Text(subtitleOverride ?? category.subtitle)
                         .font(.caption.weight(.medium))
                         .foregroundStyle(.white.opacity(0.7))
-                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
@@ -527,13 +527,11 @@ private struct RecommendedToolCard: View {
                 Text(title)
                     .font(.subheadline.weight(.bold))
                     .foregroundStyle(.primary)
-                    .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                 Text(subtitle)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
-                    .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
             }

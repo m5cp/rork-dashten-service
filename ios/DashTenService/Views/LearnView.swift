@@ -168,7 +168,7 @@ struct LearnView: View {
                     Text(card.body)
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.secondary)
-                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(18)
                 .background(
@@ -221,8 +221,8 @@ private struct LearnHeroCard: View {
                     Text(subtitle)
                         .font(.caption.weight(.medium))
                         .foregroundStyle(.white.opacity(0.7))
-                        .lineLimit(2)
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 if let progress, progress > 0 {

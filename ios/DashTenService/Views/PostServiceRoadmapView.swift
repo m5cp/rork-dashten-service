@@ -409,7 +409,6 @@ struct PillarCard: View {
                 Text(pillar.subtitle)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.85))
-                    .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
 

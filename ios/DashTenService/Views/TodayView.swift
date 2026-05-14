@@ -327,7 +327,7 @@ struct TodayView: View {
                     Text("Documents, benefits & checklist combined")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
@@ -366,8 +366,8 @@ struct TodayView: View {
                         Text(item.subtitle)
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(.secondary)
-                            .lineLimit(3)
                             .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 Spacer(minLength: 0)

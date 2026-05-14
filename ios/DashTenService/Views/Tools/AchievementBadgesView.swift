@@ -91,7 +91,7 @@ struct AchievementBadgesView: View {
     }
 
     private var badgesGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
             ForEach(filteredBadges) { badge in
                 BadgeCard(badge: badge)
             }
@@ -120,18 +120,19 @@ private struct BadgeCard: View {
             }
 
             Text(badge.title)
-                .font(.caption.weight(.bold))
+                .font(.subheadline.weight(.bold))
                 .multilineTextAlignment(.center)
-                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(badge.isUnlocked ? Color.primary : Color.primary.opacity(0.4))
 
             Text(badge.subtitle)
-                .font(.system(size: 9, weight: .semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(10)
+        .padding(14)
+        .frame(maxHeight: .infinity, alignment: .top)
         .frame(maxWidth: .infinity)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 14))

@@ -847,14 +847,12 @@ struct PlanTaskRow: View {
                     .strikethrough(item.isCompleted)
                     .foregroundStyle(item.isCompleted ? .secondary : .primary)
                     .multilineTextAlignment(.leading)
-                    .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
 
                 if !item.subtitle.isEmpty {
                     Text(item.subtitle)
                         .font(.caption2.weight(.medium))
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                 }
