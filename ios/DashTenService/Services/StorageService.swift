@@ -98,9 +98,16 @@ class StorageService {
     var feedbackPromptShown: Bool {
         didSet { save() }
     }
+    var feedbackPromptLastShownAt: Date? {
+        didSet { save() }
+    }
     var reassessmentPromptDismissedAt: Date? {
         didSet { save() }
     }
+
+    /// Transient: set true when a positive event eligible for a rating prompt occurs.
+    /// Observed by the home screen to show the sheet, then cleared.
+    var pendingFeedbackPrompt: Bool = false
 
     // Transient queue of badge IDs that were just unlocked and are waiting to be celebrated.
     // Not persisted — consumed by the celebration overlay.
@@ -151,16 +158,38 @@ class StorageService {
         self.sessionCount = stored.sessionCount ?? 0
         self.lastSessionDate = stored.lastSessionDate
         self.feedbackPromptShown = stored.feedbackPromptShown ?? false
+        self.feedbackPromptLastShownAt = stored.feedbackPromptLastShownAt
         self.reassessmentPromptDismissedAt = stored.reassessmentPromptDismissedAt
     }
 
     func toggleChecklistItem(_ id: String) {
         guard let index = checklistItems.firstIndex(where: { $0.id == id }) else { return }
+        let togglePhase = checklistItems[index].phase
+        let wasPhaseDoneBefore = phaseIsFullyComplete(togglePhase)
         checklistItems[index].isCompleted.toggle()
         if checklistItems[index].isCompleted {
             _ = RetentionService.recordActivity(storage: self)
+            // Detect: did this completion finish an entire roadmap phase?
+            if !wasPhaseDoneBefore && phaseIsFullyComplete(togglePhase) {
+                tryQueueFeedbackPrompt()
+            }
         }
         recomputeBadges()
+    }
+
+    private func phaseIsFullyComplete(_ phase: TimelinePhase) -> Bool {
+        let items = checklistItems.filter { $0.phase == phase }
+        guard !items.isEmpty else { return false }
+        return items.allSatisfy(\.isCompleted)
+    }
+
+    /// Queue a rating prompt if at least 30 days have passed since the last one.
+    func tryQueueFeedbackPrompt() {
+        if let last = feedbackPromptLastShownAt {
+            let days = Calendar.current.dateComponents([.day], from: last, to: Date()).day ?? 0
+            if days < 30 { return }
+        }
+        pendingFeedbackPrompt = true
     }
 
     func updateDocumentStatus(_ id: String, status: DocumentStatus) {
@@ -336,6 +365,7 @@ class StorageService {
         }
         if !unlocked.isEmpty {
             pendingBadgeIds.append(contentsOf: unlocked)
+            tryQueueFeedbackPrompt()
         }
     }
 
@@ -427,7 +457,9 @@ class StorageService {
         sessionCount = 0
         lastSessionDate = nil
         feedbackPromptShown = false
+        feedbackPromptLastShownAt = nil
         reassessmentPromptDismissedAt = nil
+        pendingFeedbackPrompt = false
     }
 
     private func save() {
@@ -449,6 +481,7 @@ class StorageService {
             sessionCount: sessionCount,
             lastSessionDate: lastSessionDate,
             feedbackPromptShown: feedbackPromptShown,
+            feedbackPromptLastShownAt: feedbackPromptLastShownAt,
             reassessmentPromptDismissedAt: reassessmentPromptDismissedAt
         )
         guard let data = try? JSONEncoder().encode(container) else { return }
@@ -517,9 +550,10 @@ private nonisolated struct StorageContainer: Codable, Sendable {
     let sessionCount: Int?
     let lastSessionDate: Date?
     let feedbackPromptShown: Bool?
+    let feedbackPromptLastShownAt: Date?
     let reassessmentPromptDismissedAt: Date?
 
-    init(profile: UserProfile, checklist: [ChecklistItem], documents: [DocumentItem], benefits: [BenefitCategory], mentors: [MentorContact] = [], lastAssessment: AssessmentResult? = nil, journalEntries: [JournalEntry]? = nil, goals: [GoalItem]? = nil, weeklyCheckIns: [WeeklyCheckInEntry]? = nil, networkingWeeks: [NetworkingWeek]? = nil, practicedQuestions: [String]? = nil, badges: [AchievementBadge]? = nil, transitionLevel: TransitionLevel? = nil, weeklyChallenges: [WeeklyChallenge]? = nil, toolsUsedIds: [String]? = nil, elevatorPitch: ElevatorPitch? = nil, jobOffers: [JobOffer]? = nil, decisionMatrices: [DecisionMatrix]? = nil, ninetyDayPlan: NinetyDayPlan? = nil, brandAudit: BrandAuditResult? = nil, benefitDeadlines: [BenefitDeadline]? = nil, networkingEvents: [NetworkingEvent]? = nil, lastDailyPowerUpDate: Date? = nil, lastActiveDate: Date? = nil, currentStreak: Int? = nil, bestStreak: Int? = nil, streakFreezesAvailable: Int? = nil, celebratedStreakMilestones: [Int]? = nil, sessionCount: Int? = nil, lastSessionDate: Date? = nil, feedbackPromptShown: Bool? = nil, reassessmentPromptDismissedAt: Date? = nil) {
+    init(profile: UserProfile, checklist: [ChecklistItem], documents: [DocumentItem], benefits: [BenefitCategory], mentors: [MentorContact] = [], lastAssessment: AssessmentResult? = nil, journalEntries: [JournalEntry]? = nil, goals: [GoalItem]? = nil, weeklyCheckIns: [WeeklyCheckInEntry]? = nil, networkingWeeks: [NetworkingWeek]? = nil, practicedQuestions: [String]? = nil, badges: [AchievementBadge]? = nil, transitionLevel: TransitionLevel? = nil, weeklyChallenges: [WeeklyChallenge]? = nil, toolsUsedIds: [String]? = nil, elevatorPitch: ElevatorPitch? = nil, jobOffers: [JobOffer]? = nil, decisionMatrices: [DecisionMatrix]? = nil, ninetyDayPlan: NinetyDayPlan? = nil, brandAudit: BrandAuditResult? = nil, benefitDeadlines: [BenefitDeadline]? = nil, networkingEvents: [NetworkingEvent]? = nil, lastDailyPowerUpDate: Date? = nil, lastActiveDate: Date? = nil, currentStreak: Int? = nil, bestStreak: Int? = nil, streakFreezesAvailable: Int? = nil, celebratedStreakMilestones: [Int]? = nil, sessionCount: Int? = nil, lastSessionDate: Date? = nil, feedbackPromptShown: Bool? = nil, feedbackPromptLastShownAt: Date? = nil, reassessmentPromptDismissedAt: Date? = nil) {
         self.profile = profile
         self.checklist = checklist
         self.documents = documents
@@ -551,6 +585,7 @@ private nonisolated struct StorageContainer: Codable, Sendable {
         self.sessionCount = sessionCount
         self.lastSessionDate = lastSessionDate
         self.feedbackPromptShown = feedbackPromptShown
+        self.feedbackPromptLastShownAt = feedbackPromptLastShownAt
         self.reassessmentPromptDismissedAt = reassessmentPromptDismissedAt
     }
 }

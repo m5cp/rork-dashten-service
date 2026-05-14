@@ -51,6 +51,9 @@ nonisolated struct UserProfile: Codable, Sendable {
     var avatarPresetId: String?
     var themePreference: ThemePreference
     var ninetyDayTemplate: String?
+    /// Manual override for the Plan tab's current phase. When `nil`, the phase is auto-detected
+    /// from `timeline`, `postServiceStatus`, and `separationDate`.
+    var manualPhaseOverride: TimelinePhase?
 
     init() {
         displayName = ""
@@ -70,6 +73,7 @@ nonisolated struct UserProfile: Codable, Sendable {
         avatarPresetId = nil
         themePreference = .system
         ninetyDayTemplate = nil
+        manualPhaseOverride = nil
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -80,6 +84,7 @@ nonisolated struct UserProfile: Codable, Sendable {
         case avatarPhotoData, avatarPresetId
         case themePreference
         case ninetyDayTemplate
+        case manualPhaseOverride
     }
 
     init(from decoder: Decoder) throws {
@@ -101,5 +106,6 @@ nonisolated struct UserProfile: Codable, Sendable {
         avatarPresetId = try c.decodeIfPresent(String.self, forKey: .avatarPresetId)
         themePreference = try c.decodeIfPresent(ThemePreference.self, forKey: .themePreference) ?? .system
         ninetyDayTemplate = try c.decodeIfPresent(String.self, forKey: .ninetyDayTemplate)
+        manualPhaseOverride = try c.decodeIfPresent(TimelinePhase.self, forKey: .manualPhaseOverride)
     }
 }

@@ -90,6 +90,8 @@ enum RetentionService {
             if !storage.celebratedStreakMilestones.contains(m.rawValue) {
                 storage.celebratedStreakMilestones.insert(m.rawValue)
                 AnalyticsService.shared.log(.milestoneReached, properties: ["streak": String(m.rawValue)])
+                // Streak milestones are strong positive moments — eligible for a rating prompt.
+                storage.tryQueueFeedbackPrompt()
                 return m
             }
         }

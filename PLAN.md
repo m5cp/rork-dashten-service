@@ -1,35 +1,27 @@
-# Remove weekly missions and XP — badges only, with a celebration moment
+# Fix retired-user phase detection + smarter rating prompt
 
-## What's changing
+## What's wrong today
+The Plan screen always says "18–24 Months Out" — even for retired users with every pre-separation task done. That phase logic ignores whether you've already separated, and there's no way to override it.
 
-**Out:** Weekly missions, XP points, levels (Recruit → Launched), progress bars to next level, all "earn XP" copy.
+The rating prompt currently fires after 3 sessions and never again. It doesn't wait for a positive moment, and it can't return later.
 
-**In:** A cleaner badge-only reward system. Badges still unlock automatically from real actions you already take — completing checklist items, verifying documents, collecting all docs, hitting readiness milestones, finishing goals, using tools, journaling streaks, crafting your pitch, comparing offers, building the 90-day plan, networking, and more. The "Challenger" badge (which required a weekly challenge) will be retired.
+## Fixes
 
-## What you'll see
+**Smarter phase detection on the Plan tab**
+- If you marked yourself as Separated / Retired in onboarding (or set a past separation date), the Plan screen will now show a post-service phase (First 30 / First 90 / First Year / Year 2+) instead of "18–24 Months Out."
+- The big hero card, the "Recommended Tasks" section, and the timeline preview will all reflect the correct phase.
 
-- **Home (Today):** The "This Week's Mission" card is gone. Replaced with a clean "Recent Wins" strip showing your most recently earned badges + a tap-through to all badges.
-- **Profile:** The Level ring and "XP earned" line are removed. Replaced with a simple badge count ("12 of 28 badges earned") and your readiness percentage.
-- **Roadmap:** XP header bar removed — the roadmap focuses purely on your transition steps. Each step still shows a small badge indicator when completing it unlocks one.
-- **Badges screen:** No more XP/level header. Cleaner grid with category filters, locked/unlocked counts, and tap-to-see how each one is earned.
-- **Paywall:** "Readiness Score, XP, and badges" and "Weekly missions" feature lines updated to honest descriptions of what Pro actually unlocks.
-- **Search & sidebar:** Weekly Challenges entry removed everywhere it appears.
-- **Daily Power-Up:** Quote/action card stays, the "XP earned" line is removed.
+**Manual phase confirmation button**
+- A small "Change phase" control appears on the Plan hero card.
+- Tap it to pick the phase you're actually in — useful if dates are off, you retired early, or you just want to skip ahead.
+- Your choice is saved and overrides the auto-detected phase everywhere on the Plan tab.
+- A "Use auto-detect" reset option is included.
 
-## The celebration moment
+**Rating prompt tied to wins, throttled to ~30 days**
+- The prompt only appears after a clearly positive moment: a streak milestone (7/30/90 days), a badge earned, a roadmap phase fully completed, or readiness crossing 50% / 75% / 100%.
+- After it shows (or you dismiss it), it won't reappear for at least 30 days, regardless of trigger.
+- Uses Apple's built-in review request — Apple additionally caps to 3 prompts/year automatically, so it can never feel spammy.
+- "Not now" simply resets the 30-day window; "Could be better" still routes to feedback without nagging for a rating.
 
-When you earn any badge, a full-screen celebration appears:
-
-- Confetti bursts from the badge
-- The badge icon scales in with a spring animation and gold glow
-- Badge title + "how you earned it" subtitle
-- Subtle haptic tap, then a stronger success haptic on reveal
-- Tap anywhere or "Continue" to dismiss
-- If multiple badges unlock at once (e.g. finishing a goal that also crosses 50% readiness), they queue and play one after the other
-
-## Data & migration
-
-- XP, levels, and weekly challenge data are quietly retired — existing user data still loads without crashing, but those values are no longer shown or tracked.
-- All your earned badges stay.
-- The retired "Challenger" badge is removed from the list; if someone already had it, it's silently dropped.
-
+## Result
+A retired user sees their real post-service phase the moment they open Plan, with a manual override if anything ever looks off. The rating ask shows up only when you've just done something great, and only every 30+ days.

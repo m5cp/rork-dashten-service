@@ -8,12 +8,32 @@ struct PlanView: View {
     @State private var newItemCategory: ReadinessCategory = .admin
     @State private var exportedPDFURL: URL?
     @State private var isExporting: Bool = false
+    @State private var showPhasePicker: Bool = false
 
     private var readiness: ReadinessCalculator.ReadinessScore {
         ReadinessCalculator.calculate(checklist: storage.checklistItems, documents: storage.documents, benefits: storage.benefitCategories)
     }
 
-    private var currentPhase: TimelinePhase {
+    private var isPostService: Bool {
+        if storage.profile.timeline == .separated { return true }
+        if storage.profile.postServiceStatus != nil { return true }
+        if let sep = storage.profile.separationDate, sep < Date() { return true }
+        return false
+    }
+
+    private var visiblePhases: [TimelinePhase] {
+        isPostService ? TimelinePhase.postServicePhases : TimelinePhase.preSeparationPhases
+    }
+
+    private var autoDetectedPhase: TimelinePhase {
+        if isPostService {
+            guard let sepDate = storage.profile.separationDate else { return .firstThirty }
+            let monthsSince = Calendar.current.dateComponents([.month], from: sepDate, to: Date()).month ?? 0
+            if monthsSince < 1 { return .firstThirty }
+            if monthsSince < 3 { return .firstNinety }
+            if monthsSince < 12 { return .firstYear }
+            return .yearTwoPlus
+        }
         guard let sepDate = storage.profile.separationDate else { return .eighteenToTwentyFour }
         let months = Calendar.current.dateComponents([.month], from: Date(), to: sepDate).month ?? 0
         if months > 18 { return .eighteenToTwentyFour }
@@ -21,9 +41,15 @@ struct PlanView: View {
         if months > 6 { return .sixMonths }
         if months > 3 { return .ninetyDays }
         if months > 0 { return .thirtyDays }
-        let monthsSince = Calendar.current.dateComponents([.month], from: sepDate, to: Date()).month ?? 0
-        if monthsSince <= 3 { return .firstNinety }
-        return .firstYear
+        return .thirtyDays
+    }
+
+    private var currentPhase: TimelinePhase {
+        if let override = storage.profile.manualPhaseOverride,
+           visiblePhases.contains(override) {
+            return override
+        }
+        return autoDetectedPhase
     }
 
     private var currentPhaseTasks: [ChecklistItem] {
@@ -31,9 +57,9 @@ struct PlanView: View {
     }
 
     private var overdueTasks: [ChecklistItem] {
-        let allPhases = TimelinePhase.allCases
-        guard let currentIdx = allPhases.firstIndex(of: currentPhase) else { return [] }
-        let earlierPhases = Set(allPhases.prefix(currentIdx))
+        let phases = visiblePhases
+        guard let currentIdx = phases.firstIndex(of: currentPhase) else { return [] }
+        let earlierPhases = Set(phases.prefix(currentIdx))
         return storage.checklistItems.filter { !$0.isCompleted && earlierPhases.contains($0.phase) }
     }
 
@@ -123,6 +149,9 @@ struct PlanView: View {
             .sheet(isPresented: $showAddItem) {
                 addItemSheet
             }
+            .sheet(isPresented: $showPhasePicker) {
+                phasePickerSheet
+            }
             .navigationDestination(for: TimelinePhase.self) { phase in
                 PhaseDetailView(storage: storage, phase: phase)
             }
@@ -198,6 +227,27 @@ struct PlanView: View {
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.white.opacity(0.85))
                         .fixedSize(horizontal: false, vertical: true)
+
+                    Button {
+                        showPhasePicker = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: storage.profile.manualPhaseOverride == nil ? "slider.horizontal.3" : "checkmark.circle.fill")
+                                .font(.caption2.weight(.bold))
+                            Text(storage.profile.manualPhaseOverride == nil ? "Change phase" : "Phase set manually")
+                                .font(.caption.weight(.heavy))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(.white.opacity(0.18))
+                        .overlay(
+                            Capsule().stroke(.white.opacity(0.35), lineWidth: 1)
+                        )
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.top, 4)
                 }
 
                 Spacer()
@@ -467,12 +517,12 @@ struct PlanView: View {
             }
 
             VStack(spacing: 0) {
-                ForEach(Array(TimelinePhase.allCases.enumerated()), id: \.element.id) { index, phase in
+                ForEach(Array(visiblePhases.enumerated()), id: \.element.id) { index, phase in
                     let items = storage.checklistItems.filter { $0.phase == phase }
                     let completed = items.filter(\.isCompleted).count
                     let total = items.count
                     let isCurrent = phase == currentPhase
-                    let isLast = index == TimelinePhase.allCases.count - 1
+                    let isLast = index == visiblePhases.count - 1
                     let isPast = isPhaseCompleted(phase)
 
                     NavigationLink(value: phase) {
@@ -495,10 +545,71 @@ struct PlanView: View {
     }
 
     private func isPhaseCompleted(_ phase: TimelinePhase) -> Bool {
-        let allPhases = TimelinePhase.allCases
-        guard let currentIdx = allPhases.firstIndex(of: currentPhase),
-              let phaseIdx = allPhases.firstIndex(of: phase) else { return false }
+        let phases = visiblePhases
+        guard let currentIdx = phases.firstIndex(of: currentPhase),
+              let phaseIdx = phases.firstIndex(of: phase) else { return false }
         return phaseIdx < currentIdx
+    }
+
+    // MARK: - Phase Picker Sheet
+
+    private var phasePickerSheet: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Text("Pick the phase you're actually in. This overrides the auto-detected phase across the Plan tab.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                Section("Phase") {
+                    ForEach(visiblePhases) { phase in
+                        Button {
+                            storage.profile.manualPhaseOverride = phase
+                            showPhasePicker = false
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: phase.icon)
+                                    .foregroundStyle(AppTheme.forestGreen)
+                                    .frame(width: 24)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(phase.rawValue)
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.primary)
+                                    Text(phase.subtitle)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                if phase == currentPhase {
+                                    Image(systemName: "checkmark")
+                                        .font(.subheadline.weight(.bold))
+                                        .foregroundStyle(AppTheme.forestGreen)
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                if storage.profile.manualPhaseOverride != nil {
+                    Section {
+                        Button(role: .destructive) {
+                            storage.profile.manualPhaseOverride = nil
+                            showPhasePicker = false
+                        } label: {
+                            Label("Use auto-detect", systemImage: "arrow.counterclockwise")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Current Phase")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { showPhasePicker = false }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 
     // MARK: - Add Item Sheet

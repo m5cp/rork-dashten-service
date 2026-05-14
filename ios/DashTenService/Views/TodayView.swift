@@ -185,16 +185,15 @@ struct TodayView: View {
                 appeared = true
             }
             AnalyticsService.shared.log(.screenView, properties: ["name": "home"])
-            let shouldShowFeedback = RetentionService.recordSession(storage: storage)
+            _ = RetentionService.recordSession(storage: storage)
             checkPendingMilestone()
-            if shouldShowFeedback {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                    showFeedback = true
-                }
-            }
+            checkPendingFeedback()
         }
         .onChange(of: readiness.overallPercent) { oldValue, newValue in
             checkMilestone(old: oldValue, new: newValue)
+        }
+        .onChange(of: storage.pendingFeedbackPrompt) { _, newValue in
+            if newValue { checkPendingFeedback() }
         }
     }
 
@@ -488,8 +487,21 @@ struct TodayView: View {
                     ? "You've completed your entire transition plan."
                     : "Major milestone hit. Keep going."
                 withAnimation(.spring) { showCelebration = true }
+                // Big readiness milestones (50/75/100) are great moments to ask for a rating.
+                if t >= 50 {
+                    storage.tryQueueFeedbackPrompt()
+                }
                 return
             }
+        }
+    }
+
+    private func checkPendingFeedback() {
+        guard storage.pendingFeedbackPrompt else { return }
+        // Avoid stacking on top of a celebration overlay or another sheet.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            guard storage.pendingFeedbackPrompt else { return }
+            showFeedback = true
         }
     }
 }

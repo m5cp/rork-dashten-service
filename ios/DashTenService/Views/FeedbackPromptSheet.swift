@@ -26,6 +26,8 @@ struct FeedbackPromptSheet: View {
         .presentationDragIndicator(.visible)
         .onAppear {
             storage.feedbackPromptShown = true
+            storage.feedbackPromptLastShownAt = Date()
+            storage.pendingFeedbackPrompt = false
             AnalyticsService.shared.log(.featureUsed, properties: ["name": "feedback_prompt_shown"])
         }
     }
