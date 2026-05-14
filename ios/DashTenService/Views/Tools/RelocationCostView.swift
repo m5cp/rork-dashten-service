@@ -32,9 +32,10 @@ struct RelocationCostView: View {
     }
     private var setupCost: Double { 1000 + Double(familySize) * 150 }
     private var additionalTotal: Double {
-        (Double(securityDeposit) ?? 0) + (Double(householdItems) ?? 0) +
-        (Double(schoolTransfer) ?? 0) + (Double(vehicleRegistration) ?? 0) +
-        (Double(petRelocation) ?? 0) + (Double(movingOutExpenses) ?? 0)
+        let a: Double = (Double(securityDeposit) ?? 0) + (Double(householdItems) ?? 0)
+        let b: Double = (Double(schoolTransfer) ?? 0) + (Double(vehicleRegistration) ?? 0)
+        let c: Double = (Double(petRelocation) ?? 0) + (Double(movingOutExpenses) ?? 0)
+        return a + b + c
     }
     private var totalEstimate: Double { movingCost + vehicleTransport + tempHousing + travelCost + setupCost + additionalTotal }
     private var monthlySavingsGoal: Double { monthsUntilMove > 0 ? totalEstimate / monthsUntilMove : 0 }
