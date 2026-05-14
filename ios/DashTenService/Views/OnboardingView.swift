@@ -56,7 +56,23 @@ struct OnboardingView: View {
                 AnalyticsService.shared.log(.onboardingStepViewed, properties: ["step": String(newValue)])
             }
 
+            if currentPage == 3 {
+                inlineDisclaimerBlock
+                    .padding(.horizontal, 24)
+                    .padding(.top, 4)
+                    .padding(.bottom, 4)
+                    .background(Color(.systemGroupedBackground))
+            }
+
             if currentPage > 0 {
+                if currentPage == 3 && !disclaimerAccepted {
+                    Text("Accept the disclaimer above to continue")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.bottom, 2)
+                        .transition(.opacity)
+                }
                 bottomBar
                     .padding(.horizontal, 24)
                     .padding(.bottom, 16)
@@ -423,9 +439,6 @@ struct OnboardingView: View {
                     }
                     .transition(.opacity.combined(with: .scale))
                 }
-
-                inlineDisclaimerBlock
-                    .padding(.top, 8)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 16)

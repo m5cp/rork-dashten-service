@@ -17,8 +17,10 @@ struct ContentView: View {
             }
         }
         .environment(paywall)
+        .preferredColorScheme(storage.profile.themePreference.colorScheme)
         .sheet(isPresented: $paywall.isPresented) {
             PaywallView(store: store)
+                .preferredColorScheme(storage.profile.themePreference.colorScheme)
         }
     }
 

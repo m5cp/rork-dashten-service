@@ -2,9 +2,8 @@ import SwiftUI
 
 struct InterviewPrepView: View {
     let storage: StorageService
-    @State private var currentIndex: Int = 0
-    @State private var showAnswer: Bool = false
     @State private var filterCategory: String = "All"
+    @State private var expandedQuestionId: String? = nil
 
     private let questions: [InterviewQuestion] = [
         InterviewQuestion(id: "q1", question: "Tell me about yourself.", category: "General", tip: "Use the Present-Past-Future formula: What you do now → What you've done → What you want to do next. Keep it under 2 minutes. Focus on relevant experience, not your entire military career."),
@@ -46,8 +45,6 @@ struct InterviewPrepView: View {
                 progressHeader
 
                 filterChips
-
-                flashcardSection
 
                 questionList
             }
@@ -95,119 +92,109 @@ struct InterviewPrepView: View {
         .contentMargins(.horizontal, 0)
     }
 
-    private var flashcardSection: some View {
-        Group {
-            if !filteredQuestions.isEmpty {
-                let q = filteredQuestions[currentIndex % filteredQuestions.count]
-                VStack(alignment: .leading, spacing: 14) {
-                    HStack {
-                        StatusBadge(text: q.category, color: .blue)
-                        Spacer()
-                        Text("\(currentIndex % filteredQuestions.count + 1)/\(filteredQuestions.count)")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.7))
-                    }
+    private var questionList: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("All Questions")
+                    .font(.headline.weight(.bold))
+                Spacer()
+                Text("Tap to reveal tip")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
 
-                    Text(q.question)
-                        .font(.title3.weight(.bold))
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    if showAnswer {
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 6) {
-                                Image(systemName: "lightbulb.fill")
-                                    .foregroundStyle(AppTheme.gold)
-                                Text("Coaching Tip")
-                                    .font(.subheadline.weight(.bold))
-                                    .foregroundStyle(AppTheme.gold)
-                            }
-                            Text(q.tip)
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.primary.opacity(0.8))
-                        }
-                        .padding(12)
-                        .background(AppTheme.gold.opacity(0.08))
-                        .clipShape(.rect(cornerRadius: 10))
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-
-                    HStack(spacing: 12) {
-                        Button {
-                            withAnimation(.spring(response: 0.3)) { showAnswer.toggle() }
-                        } label: {
-                            Text(showAnswer ? "Hide Tip" : "Show Tip")
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .background(.blue)
-                                .clipShape(.rect(cornerRadius: 10))
-                        }
-
-                        Button {
-                            storage.togglePracticedQuestion(q.id)
-                        } label: {
-                            Image(systemName: storage.practicedQuestions.contains(q.id) ? "checkmark.circle.fill" : "circle")
-                                .font(.title3)
-                                .foregroundStyle(storage.practicedQuestions.contains(q.id) ? AppTheme.forestGreen : .primary.opacity(0.4))
-                        }
-                        .sensoryFeedback(.success, trigger: storage.practicedQuestions.contains(q.id))
-                        .accessibilityLabel(storage.practicedQuestions.contains(q.id) ? "Mark as not practiced" : "Mark as practiced")
-
-                        Button {
-                            withAnimation(.spring(response: 0.3)) {
-                                showAnswer = false
-                                currentIndex += 1
-                            }
-                        } label: {
-                            Image(systemName: "arrow.right.circle.fill")
-                                .font(.title3)
-                                .foregroundStyle(.blue)
-                        }
-                    }
-                }
-                .padding(16)
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(.rect(cornerRadius: 16))
+            ForEach(filteredQuestions, id: \.id) { q in
+                questionRow(q)
             }
         }
     }
 
-    private var questionList: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("All Questions")
-                .font(.headline.weight(.bold))
+    @ViewBuilder
+    private func questionRow(_ q: InterviewQuestion) -> some View {
+        let isExpanded = expandedQuestionId == q.id
+        let isPracticed = storage.practicedQuestions.contains(q.id)
 
-            ForEach(filteredQuestions, id: \.id) { q in
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    expandedQuestionId = isExpanded ? nil : q.id
+                }
+            } label: {
                 HStack(spacing: 12) {
-                    Image(systemName: storage.practicedQuestions.contains(q.id) ? "checkmark.circle.fill" : "circle")
-                        .font(.body)
-                        .foregroundStyle(storage.practicedQuestions.contains(q.id) ? AppTheme.forestGreen : .primary.opacity(0.3))
+                    Button {
+                        storage.togglePracticedQuestion(q.id)
+                    } label: {
+                        Image(systemName: isPracticed ? "checkmark.circle.fill" : "circle")
+                            .font(.title3)
+                            .foregroundStyle(isPracticed ? AppTheme.forestGreen : .primary.opacity(0.35))
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.plain)
+                    .sensoryFeedback(.success, trigger: isPracticed)
+                    .accessibilityLabel(isPracticed ? "Mark as not practiced" : "Mark as practiced")
 
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 3) {
                         Text(q.question)
-                            .font(.caption.weight(.bold))
+                            .font(.subheadline.weight(.bold))
                             .foregroundStyle(.primary)
-                            .strikethrough(storage.practicedQuestions.contains(q.id))
+                            .strikethrough(isPracticed)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
                         Text(q.category)
                             .font(.caption2.weight(.bold))
                             .foregroundStyle(.blue)
                     }
-                    Spacer()
+                    Spacer(minLength: 4)
+                    Image(systemName: "chevron.down")
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(.secondary)
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
                 }
-                .padding(12)
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(.rect(cornerRadius: 10))
-                .onTapGesture {
-                    if let idx = filteredQuestions.firstIndex(where: { $0.id == q.id }) {
-                        withAnimation(.spring(response: 0.3)) {
-                            currentIndex = idx
-                            showAnswer = false
-                        }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 14)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 10) {
+                    Divider().opacity(0.4)
+                    HStack(spacing: 6) {
+                        Image(systemName: "lightbulb.fill")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(AppTheme.gold)
+                        Text("Coaching Tip")
+                            .font(.caption.weight(.heavy))
+                            .foregroundStyle(AppTheme.gold)
+                            .tracking(0.6)
                     }
+                    Text(q.tip)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.85))
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Button {
+                        storage.togglePracticedQuestion(q.id)
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: isPracticed ? "checkmark.circle.fill" : "checkmark.circle")
+                            Text(isPracticed ? "Practiced — tap to undo" : "Mark as practiced")
+                        }
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(isPracticed ? AppTheme.forestGreen : .white)
+                        .frame(maxWidth: .infinity, minHeight: 38)
+                        .background(isPracticed ? AppTheme.forestGreen.opacity(0.12) : AppTheme.forestGreen)
+                        .clipShape(.rect(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
                 }
+                .padding(.horizontal, 14)
+                .padding(.bottom, 14)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 12))
     }
 }
 

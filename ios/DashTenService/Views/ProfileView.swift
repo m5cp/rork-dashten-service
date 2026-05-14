@@ -316,6 +316,16 @@ struct ProfileView: View {
                 }
 
                 Section("App") {
+                    Picker(selection: $storage.profile.themePreference) {
+                        ForEach(ThemePreference.allCases) { theme in
+                            Label(theme.label, systemImage: theme.icon).tag(theme)
+                        }
+                    } label: {
+                        Label("Appearance", systemImage: "circle.lefthalf.filled")
+                            .font(.body.weight(.semibold))
+                    }
+                    .pickerStyle(.menu)
+
                     Button {
                         showAbout = true
                     } label: {

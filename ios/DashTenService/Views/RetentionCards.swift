@@ -18,49 +18,57 @@ struct StreakStripView: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            HStack(spacing: 6) {
-                Image(systemName: "flame.fill")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(AppTheme.gold)
-                Text("\(storage.currentStreak)")
-                    .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(.primary)
-                    .contentTransition(.numericText())
-                Text(storage.currentStreak == 1 ? "day" : "days")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
-
-            if storage.streakFreezesAvailable > 0 {
-                HStack(spacing: 4) {
-                    Image(systemName: "snowflake")
-                        .font(.caption2.weight(.bold))
-                    Text("×\(storage.streakFreezesAvailable)")
-                        .font(.caption2.weight(.heavy))
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 12) {
+                HStack(spacing: 6) {
+                    Image(systemName: "flame.fill")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppTheme.gold)
+                    Text("\(storage.currentStreak)")
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(.primary)
+                        .contentTransition(.numericText())
+                    Text(storage.currentStreak == 1 ? "day streak" : "day streak")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
                 }
-                .foregroundStyle(.cyan)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.cyan.opacity(0.12), in: Capsule())
-                .accessibilityLabel("\(storage.streakFreezesAvailable) streak freeze available")
-            }
 
-            Spacer()
+                if storage.streakFreezesAvailable > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "snowflake")
+                            .font(.caption2.weight(.bold))
+                        Text("×\(storage.streakFreezesAvailable)")
+                            .font(.caption2.weight(.heavy))
+                    }
+                    .foregroundStyle(.cyan)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.cyan.opacity(0.12), in: Capsule())
+                    .accessibilityLabel("\(storage.streakFreezesAvailable) streak freeze available")
+                }
 
-            HStack(spacing: 6) {
-                ForEach(Array(weekActivity.enumerated()), id: \.offset) { _, day in
-                    Circle()
-                        .fill(day.active ? AppTheme.forestGreen : Color.primary.opacity(0.08))
-                        .frame(width: day.isToday ? 12 : 8, height: day.isToday ? 12 : 8)
-                        .overlay(
-                            Circle().strokeBorder(day.isToday ? AppTheme.gold : .clear, lineWidth: 2)
-                        )
+                Spacer()
+
+                HStack(spacing: 6) {
+                    ForEach(Array(weekActivity.enumerated()), id: \.offset) { _, day in
+                        Circle()
+                            .fill(day.active ? AppTheme.forestGreen : Color.primary.opacity(0.08))
+                            .frame(width: day.isToday ? 12 : 8, height: day.isToday ? 12 : 8)
+                            .overlay(
+                                Circle().strokeBorder(day.isToday ? AppTheme.gold : .clear, lineWidth: 2)
+                            )
+                    }
                 }
             }
+
+            Text("Open the app or complete any task each day to grow your streak. Snowflakes protect a missed day.")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 16))
     }

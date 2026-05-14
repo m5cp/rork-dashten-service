@@ -39,13 +39,13 @@ struct WellnessView: View {
                 checkInCard
                     .delayedEntrance(appeared, delay: 0.12)
 
+                breathingCard
+                    .delayedEntrance(appeared, delay: 0.18)
+
                 if let shift = currentShift {
                     mindsetCard(shift)
-                        .delayedEntrance(appeared, delay: 0.18)
+                        .delayedEntrance(appeared, delay: 0.24)
                 }
-
-                breathingCard
-                    .delayedEntrance(appeared, delay: 0.24)
 
                 privacyFooter
                     .delayedEntrance(appeared, delay: 0.3)

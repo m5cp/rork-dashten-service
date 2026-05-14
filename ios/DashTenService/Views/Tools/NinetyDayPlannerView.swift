@@ -6,11 +6,15 @@ struct NinetyDayPlannerView: View {
     @State private var newGoal: String = ""
     @State private var newPerson: String = ""
     @State private var newWin: String = ""
+    @State private var showTemplateSheet: Bool = false
+    @State private var showRegenerateAlert: Bool = false
 
-    private var plan: NinetyDayPlan {
-        if let existing = storage.ninetyDayPlan { return existing }
-        let p = NinetyDayPlan()
-        return p
+    private var currentTemplate: NinetyDayTemplate {
+        if let raw = storage.profile.ninetyDayTemplate,
+           let t = NinetyDayTemplate(rawValue: raw) {
+            return t
+        }
+        return NinetyDayPlanGenerator.suggestedTemplate(profile: storage.profile)
     }
 
     private var weekIndex: Int? {
@@ -20,6 +24,7 @@ struct NinetyDayPlannerView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
+                templateBanner
                 phaseSelector
                 weekContent
             }
@@ -30,13 +35,89 @@ struct NinetyDayPlannerView: View {
         .keyboardDoneToolbar()
         .navigationTitle("First 90 Days")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button {
+                        showTemplateSheet = true
+                    } label: {
+                        Label("Switch template", systemImage: "rectangle.stack.fill")
+                    }
+                    Button(role: .destructive) {
+                        showRegenerateAlert = true
+                    } label: {
+                        Label("Regenerate plan", systemImage: "arrow.triangle.2.circlepath")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .font(.subheadline.weight(.bold))
+                }
+                .accessibilityLabel("Plan options")
+            }
+        }
+        .sheet(isPresented: $showTemplateSheet) {
+            TemplatePickerSheet(storage: storage, currentTemplate: currentTemplate)
+                .presentationDetents([.medium, .large])
+        }
+        .alert("Regenerate plan?", isPresented: $showRegenerateAlert) {
+            Button("Regenerate", role: .destructive) { regenerate() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This replaces all weeks with fresh suggestions for the \(currentTemplate.title) template. Your existing entries will be lost.")
+        }
         .onAppear {
             if storage.ninetyDayPlan == nil {
-                storage.ninetyDayPlan = NinetyDayPlan()
+                seedInitialPlan()
                 storage.unlockBadge("ninety_plan")
             }
             storage.trackToolUsed("ninety_day_planner")
         }
+    }
+
+    // MARK: - Template banner
+
+    private var templateBanner: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                Image(systemName: currentTemplate.icon)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 34, height: 34)
+                    .background(AppTheme.forestGreen)
+                    .clipShape(.rect(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("YOUR TEMPLATE")
+                        .font(.caption2.weight(.heavy))
+                        .tracking(1.2)
+                        .foregroundStyle(.secondary)
+                    Text(currentTemplate.title)
+                        .font(.subheadline.weight(.heavy))
+                }
+                Spacer()
+                Button {
+                    showTemplateSheet = true
+                } label: {
+                    Text("Change")
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(AppTheme.forestGreen)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(AppTheme.forestGreen.opacity(0.12))
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+
+            Text(currentTemplate.subtitle)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 14))
     }
 
     private var phaseSelector: some View {
@@ -84,11 +165,9 @@ struct NinetyDayPlannerView: View {
     private var weekContent: some View {
         VStack(spacing: 16) {
             weekHeader
-
             goalsSection
             peopleSection
             winsSection
-
             weekTips
         }
     }
@@ -241,6 +320,103 @@ struct NinetyDayPlannerView: View {
         .background(AppTheme.gold.opacity(0.06))
         .clipShape(.rect(cornerRadius: 12))
     }
+
+    // MARK: - Actions
+
+    private func seedInitialPlan() {
+        let template = NinetyDayPlanGenerator.suggestedTemplate(profile: storage.profile)
+        storage.ninetyDayPlan = NinetyDayPlanGenerator.generate(profile: storage.profile, template: template)
+        storage.profile.ninetyDayTemplate = template.rawValue
+    }
+
+    private func regenerate() {
+        storage.ninetyDayPlan = NinetyDayPlanGenerator.generate(profile: storage.profile, template: currentTemplate)
+    }
+}
+
+// MARK: - Template picker
+
+private struct TemplatePickerSheet: View {
+    @Bindable var storage: StorageService
+    let currentTemplate: NinetyDayTemplate
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 12) {
+                    ForEach(NinetyDayTemplate.allCases) { template in
+                        Button {
+                            apply(template)
+                        } label: {
+                            HStack(spacing: 14) {
+                                Image(systemName: template.icon)
+                                    .font(.title3.weight(.bold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 44, height: 44)
+                                    .background(template == currentTemplate ? AppTheme.forestGreen : Color.gray.opacity(0.5))
+                                    .clipShape(.rect(cornerRadius: 12))
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack(spacing: 6) {
+                                        Text(template.title)
+                                            .font(.subheadline.weight(.heavy))
+                                            .foregroundStyle(.primary)
+                                        if template == currentTemplate {
+                                            Text("Current")
+                                                .font(.caption2.weight(.heavy))
+                                                .foregroundStyle(.white)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(AppTheme.forestGreen, in: Capsule())
+                                        }
+                                    }
+                                    Text(template.subtitle)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.leading)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                Spacer(minLength: 4)
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .padding(14)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .clipShape(.rect(cornerRadius: 14))
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    Text("Switching a template replaces all weeks with fresh suggestions. You can still edit, add, or remove anything.")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, 8)
+                        .padding(.horizontal, 12)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Choose a template")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+    }
+
+    private func apply(_ template: NinetyDayTemplate) {
+        storage.profile.ninetyDayTemplate = template.rawValue
+        storage.ninetyDayPlan = NinetyDayPlanGenerator.generate(profile: storage.profile, template: template)
+        dismiss()
+    }
 }
 
 private struct PhaseTab: View {
@@ -299,6 +475,7 @@ private struct PlanSection: View {
                         .foregroundStyle(color)
                     Text(item)
                         .font(.subheadline.weight(.medium))
+                        .fixedSize(horizontal: false, vertical: true)
                     Spacer()
                     Button {
                         onDelete(item)

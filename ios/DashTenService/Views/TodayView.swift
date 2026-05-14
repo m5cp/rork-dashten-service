@@ -83,9 +83,6 @@ struct TodayView: View {
                     StreakStripView(storage: storage)
                         .delayedEntrance(appeared, delay: 0.22)
 
-                    RetentionWeeklySummaryCard(storage: storage)
-                        .delayedEntrance(appeared, delay: 0.26)
-
                     if RetentionService.shouldPromptReassessment(storage: storage) {
                         ReassessmentPromptCard(
                             storage: storage,
@@ -538,16 +535,21 @@ struct WeeklyMissionCard: View {
                     Image(systemName: "bolt.fill")
                         .font(.caption.weight(.bold))
                         .foregroundStyle(AppTheme.gold)
-                    Text("WEEKLY MISSION")
+                    Text("THIS WEEK'S MISSION")
                         .font(.system(size: 10, weight: .heavy))
                         .foregroundStyle(AppTheme.gold)
                         .tracking(1.5)
                 }
                 Spacer()
-                Text("\(completedCount)/3 complete")
+                Text("\(completedCount) of 3 done")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(.secondary)
             }
+
+            Text("A small weekly goal that builds momentum. Complete it to earn XP and a streak day.")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
             if let challenge = currentChallenge {
                 HStack(spacing: 12) {

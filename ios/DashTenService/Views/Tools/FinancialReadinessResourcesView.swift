@@ -115,13 +115,13 @@ struct FinancialReadinessResourcesView: View {
 			topics: ["Budget counseling", "Financial goal planning", "Transition information"])
 		case .nationalGuard: return BranchInfo(name: "National Guard Financial Readiness", location: "State Joint Force Headquarters",
 			description: "National Guard members can access financial resources through their State Joint Force Headquarters and reintegration programs.",
-			topics: ["Reintegration financial workshops", "Federal phone counseling", "SCRA information during activation"])
+			topics: ["Reintegration financial workshops", "Federal phone counseling", "SCRA (Servicemembers Civil Relief Act) information during activation"])
 		case .reserve: return BranchInfo(name: "Reserve Financial Readiness", location: "Reserve centers and federal counseling services",
 			description: "Reserve members access counseling through federal 24-hour phone services and installation resources when on active orders.",
-			topics: ["Federal phone counseling", "Reintegration workshops", "SCRA information", "TSP information"])
+			topics: ["Federal phone counseling", "Reintegration workshops", "SCRA (Servicemembers Civil Relief Act) information", "TSP information"])
 		case .spouseFamily: return BranchInfo(name: "Military Family Financial Resources", location: "Installation family support centers",
 			description: "Military spouses and family members have access to the same installation financial counseling services as the service member.",
-			topics: ["Individual counseling", "PCS budgeting", "Employment and career planning", "SCRA spousal information"])
+			topics: ["Individual counseling", "PCS budgeting", "Employment and career planning", "SCRA (Servicemembers Civil Relief Act) spousal information"])
 		case .veteran: return BranchInfo(name: "Veteran Financial Resources", location: "VA facilities and Veterans Service Organizations",
 			description: "Veterans have access to financial guidance through VA financial counselors, Veterans Service Organizations, and government-affiliated agencies.",
 			topics: ["VA benefits information", "VSO claims assistance", "Government-approved housing counseling"])

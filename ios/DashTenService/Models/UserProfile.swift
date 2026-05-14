@@ -1,4 +1,37 @@
 import Foundation
+import SwiftUI
+
+nonisolated enum ThemePreference: String, Codable, CaseIterable, Identifiable, Sendable {
+    case system
+    case light
+    case dark
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .system: "System"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .system: "iphone"
+        case .light: "sun.max.fill"
+        case .dark: "moon.fill"
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+}
 
 nonisolated struct UserProfile: Codable, Sendable {
     var displayName: String
@@ -16,6 +49,8 @@ nonisolated struct UserProfile: Codable, Sendable {
     var postServiceStatus: PostServiceStatus?
     var avatarPhotoData: Data?
     var avatarPresetId: String?
+    var themePreference: ThemePreference
+    var ninetyDayTemplate: String?
 
     init() {
         displayName = ""
@@ -33,6 +68,8 @@ nonisolated struct UserProfile: Codable, Sendable {
         postServiceStatus = nil
         avatarPhotoData = nil
         avatarPresetId = nil
+        themePreference = .system
+        ninetyDayTemplate = nil
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -41,6 +78,8 @@ nonisolated struct UserProfile: Codable, Sendable {
         case householdSize, spouseName, notificationsEnabled, disabilityRating, createdAt
         case postServiceStatus
         case avatarPhotoData, avatarPresetId
+        case themePreference
+        case ninetyDayTemplate
     }
 
     init(from decoder: Decoder) throws {
@@ -60,5 +99,7 @@ nonisolated struct UserProfile: Codable, Sendable {
         postServiceStatus = try c.decodeIfPresent(PostServiceStatus.self, forKey: .postServiceStatus)
         avatarPhotoData = try c.decodeIfPresent(Data.self, forKey: .avatarPhotoData)
         avatarPresetId = try c.decodeIfPresent(String.self, forKey: .avatarPresetId)
+        themePreference = try c.decodeIfPresent(ThemePreference.self, forKey: .themePreference) ?? .system
+        ninetyDayTemplate = try c.decodeIfPresent(String.self, forKey: .ninetyDayTemplate)
     }
 }

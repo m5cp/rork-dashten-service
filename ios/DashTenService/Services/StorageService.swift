@@ -196,6 +196,10 @@ class StorageService {
                 checklistItems.append(item)
             }
         }
+        // Already separated/retired: auto-complete all pre-separation items so the
+        // roadmap doesn't pretend they still have 24 months of pre-sep work ahead.
+        // Users can uncheck anything they didn't actually finish.
+        bulkMarkPreSeparationComplete()
     }
 
     func bulkMarkPreSeparationComplete() {

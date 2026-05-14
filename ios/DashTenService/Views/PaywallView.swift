@@ -77,9 +77,9 @@ struct PaywallView: View {
 						endPoint: .bottomTrailing
 					))
 					.frame(width: 88, height: 88)
-				Image(systemName: "star.circle.fill")
-					.font(.system(size: 44))
-					.foregroundStyle(.white)
+				Image(systemName: "arrow.up.forward.circle.fill")
+					.font(.system(size: 48, weight: .thin))
+					.foregroundStyle(AppTheme.gold)
 			}
 			.scaleEffect(appeared ? 1 : 0.6)
 			.opacity(appeared ? 1 : 0)
@@ -175,7 +175,7 @@ struct PaywallView: View {
 		"VA Home Loan Guide and Funding Fee Calculator",
 		"TSP Options, Growth Estimator, and BRS Snapshot",
 		"GI Bill BAH and Education Benefits calculators",
-		"SCRA Protections reference guide",
+		"SCRA (Servicemembers Civil Relief Act) protections reference guide",
 		"State Benefits Finder",
 		"VA Healthcare Guide",
 		"Benefits by Disability Rating",

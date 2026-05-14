@@ -23,6 +23,10 @@ struct BenefitsView: View {
                         }
                         .buttonStyle(.plain)
                     }
+
+                    if searchText.isEmpty {
+                        scraCard
+                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
@@ -37,10 +41,56 @@ struct BenefitsView: View {
             .navigationDestination(for: PlanningRoute.self) { route in
                 switch route {
                 case .stateBenefits: StateBenefitsFinderView()
+                case .scraProtections: SCRAProtectionsView()
                 default: EmptyView()
                 }
             }
         }
+    }
+
+    private var scraCard: some View {
+        NavigationLink(value: PlanningRoute.scraProtections) {
+            HStack(spacing: 14) {
+                Image(systemName: "shield.lefthalf.filled")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 56, height: 56)
+                    .background(
+                        LinearGradient(
+                            colors: [.teal, .teal.opacity(0.75)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(.rect(cornerRadius: 14))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("SCRA — Servicemembers Civil Relief Act")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("Legal protections for active duty: lease termination, 6% interest cap, court protections, and more.")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 4)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -77,7 +127,7 @@ struct BenefitHeroCard: View {
                     Text(category.type.rawValue)
                         .font(.headline.weight(.bold))
                         .foregroundStyle(.primary)
-                        .lineLimit(2)
+                        .lineLimit(3)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                     if category.isSaved {
@@ -89,7 +139,7 @@ struct BenefitHeroCard: View {
                 Text(category.type.teaser)
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                    .lineLimit(4)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
 
