@@ -274,7 +274,7 @@ struct PlanView: View {
         case .firstThirty:
             return "Verify your DD-214, healthcare, and final pay. Lock the basics in."
         case .firstNinety:
-            return "Activate benefits. File VA claims, decide GI Bill / VR&E, handle SGLI."
+            return "Activate benefits. File VA claims, decide GI Bill or VR&E (Veteran Readiness & Employment), and handle SGLI."
         case .firstYear:
             return "Build the career. Resume, networking, certs, interviews, and mindset reset."
         case .yearTwoPlus:

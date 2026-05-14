@@ -6,6 +6,7 @@ struct EducationBenefitComparisonView: View {
     private let benefits: [EdBenefit] = [
         EdBenefit(
             name: "Post-9/11 GI Bill",
+            shortName: "Post-9/11",
             chapter: "Chapter 33",
             color: .blue,
             tuition: "Up to full in-state tuition at public schools, or up to ~$27,120/yr at private schools",
@@ -19,6 +20,7 @@ struct EducationBenefitComparisonView: View {
         ),
         EdBenefit(
             name: "Montgomery GI Bill",
+            shortName: "Montgomery",
             chapter: "Chapter 30",
             color: .teal,
             tuition: "Flat monthly payment (~$2,186/mo for full-time) applied to any school",
@@ -32,6 +34,7 @@ struct EducationBenefitComparisonView: View {
         ),
         EdBenefit(
             name: "Veteran Readiness (VR&E)",
+            shortName: "VR&E",
             chapter: "Chapter 31",
             color: .purple,
             tuition: "Full tuition, fees, books, and supplies covered",
@@ -77,7 +80,7 @@ struct EducationBenefitComparisonView: View {
 
                 Picker("Benefit", selection: $selectedBenefit) {
                     ForEach(0..<benefits.count, id: \.self) { i in
-                        Text(benefits[i].name).tag(i)
+                        Text(benefits[i].shortName).tag(i)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -186,6 +189,8 @@ struct EducationBenefitComparisonView: View {
                 Text(value)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary.opacity(0.8))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -243,6 +248,7 @@ struct EducationBenefitComparisonView: View {
 
 private nonisolated struct EdBenefit: Sendable {
     let name: String
+    let shortName: String
     let chapter: String
     let color: Color
     let tuition: String
