@@ -41,20 +41,6 @@ struct StreakStripView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                if storage.streakFreezesAvailable > 0 {
-                    HStack(spacing: 4) {
-                        Image(systemName: "snowflake")
-                            .font(.caption2.weight(.bold))
-                        Text("×\(storage.streakFreezesAvailable)")
-                            .font(.caption2.weight(.heavy))
-                    }
-                    .foregroundStyle(.cyan)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.cyan.opacity(0.12), in: Capsule())
-                    .accessibilityLabel("\(storage.streakFreezesAvailable) streak freeze available")
-                }
-
                 Spacer()
 
                 HStack(spacing: 6) {
@@ -69,7 +55,7 @@ struct StreakStripView: View {
                 }
             }
 
-            Text("Open the app or complete any task each day to grow your streak. Snowflakes protect a missed day.")
+            Text("Open the app or complete any task each day to keep your streak alive.")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

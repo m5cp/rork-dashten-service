@@ -382,10 +382,25 @@ extension TimelinePhase {
         case .sixMonths: "6 mo"
         case .ninetyDays: "90 days"
         case .thirtyDays: "30 days"
-        case .firstThirty: "First 30"
-        case .firstNinety: "First 90"
-        case .firstYear: "Year 1"
-        case .yearTwoPlus: "Year 2+"
+        case .firstThirty: "Step 1"
+        case .firstNinety: "Step 2"
+        case .firstYear: "Step 3"
+        case .yearTwoPlus: "Step 4"
+        }
+    }
+
+    /// User-facing name. Pre-separation phases read as “X before separation”; post-service phases read as numbered steps.
+    var displayName: String {
+        switch self {
+        case .eighteenToTwentyFour: "18–24 Months Before Separation"
+        case .twelveMonths: "12 Months Before Separation"
+        case .sixMonths: "6 Months Before Separation"
+        case .ninetyDays: "90 Days Before Separation"
+        case .thirtyDays: "30 Days Before Separation"
+        case .firstThirty: "Step 1 — First 30 Days After"
+        case .firstNinety: "Step 2 — First 90 Days After"
+        case .firstYear: "Step 3 — First Year After"
+        case .yearTwoPlus: "Step 4 — Year 2 & Beyond"
         }
     }
 }

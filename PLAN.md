@@ -1,32 +1,23 @@
-# Consolidate Plan tab, unify guides, iPad sidebar, label streak, fix paywall
+# Clean up Home screen, fix Roadmap for retirees, and add contextual dates
 
-### What you'll get
+## Home screen
 
-**1. One single Plan tab (no more duplicates)** - [x]
+- [x] Remove the streak/active-days strip (and the snowflake) from Home entirely.
+- [x] Fix the "This week's mission" card so tapping it opens the full Weekly Challenges screen.
+- [x] Tidy the mission card so the "complete" label and the "0/3 done" counter agree.
 
-- The leftover unused Plan screen has been removed so there's only one Plan experience to maintain.
-- Useful pieces from the unused version (planning areas grid, documents card with progress, tools list) were merged into the live Plan screen.
+## Onboarding
 
-**2. One source of truth for guide content** - [x]
+- [x] Contextual separation/retirement date label.
+- [x] Disclaimer must be accepted before Continue is enabled.
 
-- First 30 Days, Mindset Shifts, and Civilian Playbook now live in `GuideContents.swift` only.
-- Both the guide screens and the Learn tab read from those shared content structs.
+## Roadmap
 
-**3. iPad sidebar layout** - [x]
+- [x] Post-service phases re-labeled as Step 1–4.
+- [x] Pre-separation phases re-labeled as "X before separation".
+- [x] Review banner kept for retirees.
 
-- On iPad, the Plan and Tools tabs use a true `NavigationSplitView` sidebar + detail layout.
-- iPhone layout is unchanged.
+## Small polish
 
-**4. Home screen streak — clearer label** - [x]
-
-- Streak strip is now titled **"ACTIVE DAYS"** with helper copy: *"Open the app or complete any task each day to grow your streak. Snowflakes protect a missed day."*
-
-**5. Paywall pricing fix** - [x]
-
-- Paywall iterates every package RevenueCat returns (Monthly + Annual when configured).
-- Fallback shows both Monthly and Annual placeholders when offerings haven't loaded.
-- If only $0.99 appears in production, that's a RevenueCat dashboard config issue — the app code is ready for both.
-
-### Validation
-
-- iOS build checks passed.
+- [x] Snowflake / streak-freeze UI removed.
+- [x] Weekly mission card visually tappable (chevron + press feedback).

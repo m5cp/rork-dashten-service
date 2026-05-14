@@ -80,9 +80,6 @@ struct TodayView: View {
                             .delayedEntrance(appeared, delay: 0.16)
                     }
 
-                    StreakStripView(storage: storage)
-                        .delayedEntrance(appeared, delay: 0.22)
-
                     if RetentionService.shouldPromptReassessment(storage: storage) {
                         ReassessmentPromptCard(
                             storage: storage,
@@ -521,15 +518,36 @@ nonisolated extension WeeklyChallenge {
 struct WeeklyMissionCard: View {
     let storage: StorageService
 
+    private var currentWeekStart: Date {
+        Calendar.current.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
+    }
+
+    private var activeChallenges: [WeeklyChallenge] {
+        storage.weeklyChallenges.filter {
+            Calendar.current.isDate($0.weekStartDate, equalTo: currentWeekStart, toGranularity: .weekOfYear)
+        }
+    }
+
     private var currentChallenge: WeeklyChallenge? {
-        storage.weeklyChallenges.first(where: { !$0.isCompleted })
+        activeChallenges.first(where: { !$0.isCompleted })
     }
 
     private var completedCount: Int {
-        storage.weeklyChallenges.filter(\.isCompleted).count
+        activeChallenges.filter(\.isCompleted).count
+    }
+
+    private var totalCount: Int {
+        max(activeChallenges.count, 3)
     }
 
     var body: some View {
+        NavigationLink(value: PlanningRoute.weeklyChallenges) {
+            cardBody
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var cardBody: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 HStack(spacing: 6) {
@@ -542,9 +560,12 @@ struct WeeklyMissionCard: View {
                         .tracking(1.5)
                 }
                 Spacer()
-                Text("\(completedCount) of 3 done")
+                Text("\(completedCount) of \(totalCount) done")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(.secondary)
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.heavy))
+                    .foregroundStyle(.tertiary)
             }
 
             Text("A small weekly goal that builds momentum. Complete it to earn XP and a streak day.")
@@ -607,17 +628,21 @@ struct WeeklyMissionCard: View {
                         .font(.title3)
                         .foregroundStyle(AppTheme.forestGreen)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("All missions complete this week")
+                        Text(activeChallenges.isEmpty ? "Tap to load this week's missions" : "All missions complete this week")
                             .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.primary)
                         Text("New missions arrive each week")
                             .font(.caption2.weight(.semibold))
                             .foregroundStyle(.secondary)
                     }
+                    Spacer()
                 }
             }
         }
         .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 16))
+        .contentShape(Rectangle())
     }
 }

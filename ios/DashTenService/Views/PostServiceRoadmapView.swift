@@ -272,7 +272,7 @@ struct PostServiceRoadmapView: View {
 
     private func phaseGroup(phase: TimelinePhase, items: [ChecklistItem]) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(phase.rawValue.uppercased())
+            Text(phase.displayName.uppercased())
                 .font(.caption2.weight(.heavy))
                 .foregroundStyle(AppTheme.forestGreen)
             ForEach(items) { item in

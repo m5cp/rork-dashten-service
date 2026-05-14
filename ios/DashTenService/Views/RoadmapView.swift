@@ -286,7 +286,7 @@ struct RoadmapView: View {
 									.background(AppTheme.forestGreen.opacity(0.12))
 									.clipShape(.rect(cornerRadius: 8))
 								VStack(alignment: .leading, spacing: 2) {
-									Text(phase.rawValue)
+									Text(phase.displayName)
 										.font(.subheadline.weight(.bold))
 									Text("\(items.count) incomplete tasks")
 										.font(.caption.weight(.semibold))

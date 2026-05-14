@@ -308,7 +308,7 @@ struct OnboardingView: View {
 
                 if selectedTimeline != nil && selectedTimeline != .separated {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Estimated Separation Date")
+                        Text(dateLabel)
                             .font(.subheadline.weight(.bold))
                         DatePicker("", selection: $separationDate, displayedComponents: .date)
                             .datePickerStyle(.compact)
@@ -357,6 +357,20 @@ struct OnboardingView: View {
                             }
                             .buttonStyle(.plain)
                             .sensoryFeedback(.selection, trigger: selectedPostServiceStatus)
+                        }
+
+                        if selectedPostServiceStatus != nil {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(dateLabel)
+                                    .font(.subheadline.weight(.bold))
+                                DatePicker("", selection: $separationDate, in: ...Date(), displayedComponents: .date)
+                                    .datePickerStyle(.compact)
+                                    .labelsHidden()
+                            }
+                            .padding(16)
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .clipShape(.rect(cornerRadius: 12))
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
                     }
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
@@ -476,6 +490,18 @@ struct OnboardingView: View {
         }
     }
 
+    private var dateLabel: String {
+        if selectedTimeline == .separated {
+            switch selectedPostServiceStatus {
+            case .retired: return "Retirement Date"
+            case .separated: return "Separation Date"
+            case .none: return "Date You Left Service"
+            }
+        }
+        // Pre-separation: contextual label based on status they pick later? Default to estimated separation.
+        return "Estimated Separation Date"
+    }
+
     private var canAdvance: Bool {
         switch currentPage {
         case 0: true
@@ -523,7 +549,8 @@ struct OnboardingView: View {
         AnalyticsService.shared.log(.onboardingCompleted)
         storage.profile.branch = selectedBranch
         storage.profile.timeline = selectedTimeline
-        storage.profile.separationDate = selectedTimeline == .separated ? nil : separationDate
+        // Always store the date — for post-service users this represents when they left service.
+        storage.profile.separationDate = separationDate
         if selectedTimeline == .separated, let status = selectedPostServiceStatus {
             storage.applyPostServiceStatus(status)
         }
