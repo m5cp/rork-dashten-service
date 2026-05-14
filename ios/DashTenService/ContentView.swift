@@ -49,6 +49,45 @@ struct ContentView: View {
         .sheet(isPresented: $showAICoach) {
             AICoachSheet(storage: storage)
         }
+        .onOpenURL { url in
+            handleDeepLink(url)
+        }
+        .onAppear {
+            consumePendingIntents()
+        }
+    }
+
+    private func handleDeepLink(_ url: URL) {
+        guard url.scheme == "dashten" else { return }
+        AnalyticsService.shared.log(.featureUsed, properties: ["name": "deep_link", "host": url.host ?? ""])
+        switch url.host {
+        case "today", nil: selectedTab = 0
+        case "plan": selectedTab = 1
+        case "tools": selectedTab = 2
+        case "learn": selectedTab = 3
+        case "profile": selectedTab = 4
+        default: selectedTab = 0
+        }
+    }
+
+    private func consumePendingIntents() {
+        let defaults = UserDefaults.standard
+        if defaults.object(forKey: "dashten_pending_checkin") != nil {
+            defaults.removeObject(forKey: "dashten_pending_checkin")
+            _ = RetentionService.recordActivity(storage: storage)
+            AnalyticsService.shared.log(.featureUsed, properties: ["name": "siri_daily_checkin"])
+        }
+        if defaults.bool(forKey: "dashten_pending_open_mission") {
+            defaults.removeObject(forKey: "dashten_pending_open_mission")
+            selectedTab = 0
+            AnalyticsService.shared.log(.featureUsed, properties: ["name": "siri_open_mission"])
+        }
+        if defaults.string(forKey: "dashten_pending_contact_name") != nil {
+            // Hand off to Tools tab where networking hub lives.
+            defaults.removeObject(forKey: "dashten_pending_contact_name")
+            selectedTab = 2
+            AnalyticsService.shared.log(.featureUsed, properties: ["name": "siri_track_contact"])
+        }
     }
 }
 

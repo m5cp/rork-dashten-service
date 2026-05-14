@@ -509,7 +509,10 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "DashTen shows what you have going on each day of your week alongside your transition tasks. Calendar access stays on your device.";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "DashTen shows what you have going on each day of your week alongside your transition tasks. Calendar access stays on your device.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "DashTen reads Steps, Sleep, and Mindful Minutes to surface a private wellness snapshot. Your health data never leaves your device.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "DashTen never writes to Apple Health. This entry exists because Apple requires it whenever the HealthKit framework is linked.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSUserActivityTypes = "OpenPlanIntent CheckReadinessIntent LogDailyCheckInIntent OpenTodaysMissionIntent TrackContactIntent LogTodayTaskIntent";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -546,7 +549,10 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "DashTen shows what you have going on each day of your week alongside your transition tasks. Calendar access stays on your device.";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "DashTen shows what you have going on each day of your week alongside your transition tasks. Calendar access stays on your device.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "DashTen reads Steps, Sleep, and Mindful Minutes to surface a private wellness snapshot. Your health data never leaves your device.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "DashTen never writes to Apple Health. This entry exists because Apple requires it whenever the HealthKit framework is linked.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSUserActivityTypes = "OpenPlanIntent CheckReadinessIntent LogDailyCheckInIntent OpenTodaysMissionIntent TrackContactIntent LogTodayTaskIntent";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

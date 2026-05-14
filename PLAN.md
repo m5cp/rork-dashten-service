@@ -35,12 +35,14 @@ I'll work through this in 6 phases, smallest risk first so nothing already worki
 - [ ] App Store metadata rewrite: new title, subtitle, and 100-char keyword string optimized for veteran transition search terms
 - [ ] New screenshot copy outline focused on outcomes (job offer, VA rating, finances locked in) — not UI shots
 
-## Phase 5 — Platform connections (the ones you picked)
-- [ ] **WidgetKit**: Home Screen (Small/Medium/Large) showing days-to-EAS, next mission, readiness score. Lock Screen (Circular/Rectangular/Inline) for countdown + streak. Deep-link taps into the right screen. (Widget target already exists — needs expansion)
-- [ ] **Live Activities / Dynamic Island**: countdown to separation date, today's mission progress, weekly mission status with compact/minimal/expanded views (LiveActivityService exists — needs Dynamic Island UI)
-- [ ] **App Intents / Siri Shortcuts**: "Log today's check-in", "Show my readiness score", "Open today's mission", "Track a new contact". Donate on use, surface in Spotlight. (AppIntents.swift exists — needs audit + new intents)
-- [ ] **Push Notifications**: daily reminder (smart-timed), streak protection, milestone reached, new guide unlocked, weekly summary. Full permission flow with rationale screen.
-- [ ] **HealthKit**: read Mindfulness, Sleep, Steps to feed the Wellness Check-In trend chart; nothing is ever uploaded. Clear opt-in screen explaining what's read and why.
+## Phase 5 — Platform connections ✅ DONE
+- [x] **WidgetKit**: Small/Medium/Large home widgets + Circular/Rectangular/Inline lock screen widgets. Days-to-EAS, today's focus, readiness %, streak, tasks remaining. `widgetURL(dashten://today)` deep-links into Home.
+- [x] **Live Activities / Dynamic Island**: `TransitionCountdownLiveActivity` registered in widget bundle. Lock Screen banner + expanded/compact/minimal Dynamic Island with countdown, phase, branch, today's focus.
+- [x] **App Intents / Siri Shortcuts**: added `LogDailyCheckInIntent`, `OpenTodaysMissionIntent`, `TrackContactIntent` alongside existing OpenPlan/CheckReadiness/LogTask. Pending-intent flags consumed in `ContentView` on next launch (records streak activity, jumps to the right tab).
+- [x] **Push Notifications**: `NotificationPermissionView` rationale screen + daily smart reminder, streak protection (7pm), weekly summary (Sun 5pm), milestone helper, plus existing separation / account milestone schedules.
+- [x] **HealthKit**: `HealthKitService` reads Steps, Sleep, Mindful Minutes (last 7 days). `HealthKitOptInView` opt-in screen. HealthKit entitlement + `NSHealthShareUsageDescription` + `NSHealthUpdateUsageDescription` added. Read-only — never writes, never uploads.
+- [x] Privacy Policy updated with HealthKit (optional, read-only) and Notifications (optional, on-device) disclosures.
+- [x] Deep-link handler in `ContentView` (`dashten://today|plan|tools|learn|profile`).
 
 ## Phase 6 — Major upgrades (higher risk, reviewed carefully)
 - [ ] Refactor remaining services to a single DI pattern (no scattered singletons)

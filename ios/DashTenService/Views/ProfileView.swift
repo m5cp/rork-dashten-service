@@ -9,6 +9,8 @@ struct ProfileView: View {
     @State private var showPaywall: Bool = false
     @State private var showRedeemCode: Bool = false
     @State private var showTransparency: Bool = false
+    @State private var showHealthKit: Bool = false
+    @State private var showNotificationsTune: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPrivacy: Bool = false
     @State private var showEULA: Bool = false
@@ -305,6 +307,20 @@ struct ProfileView: View {
                             .font(.body.weight(.semibold))
                     }
 
+                    Button {
+                        showHealthKit = true
+                    } label: {
+                        Label("Apple Health (optional)", systemImage: "heart.text.square.fill")
+                            .font(.body.weight(.semibold))
+                    }
+                    .accessibilityLabel("Connect Apple Health for a private wellness snapshot")
+
+                    Button {
+                        showNotificationsTune = true
+                    } label: {
+                        Label("Tune notifications", systemImage: "bell.badge")
+                            .font(.body.weight(.semibold))
+                    }
                 }
 
                 Section("Legal") {
@@ -395,6 +411,12 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showEULA) {
                 EULAView()
+            }
+            .sheet(isPresented: $showHealthKit) {
+                HealthKitOptInView()
+            }
+            .sheet(isPresented: $showNotificationsTune) {
+                NotificationPermissionView(storage: storage)
             }
             .sheet(isPresented: $showAccessibility) {
                 AccessibilityStatementView()
@@ -709,6 +731,8 @@ struct PrivacyPolicyView: View {
         ("lock.shield.fill", AppTheme.forestGreen, "Private by design", "Your transition plan, documents checklist, and progress are private and under your complete control."),
         ("person.crop.circle.badge.xmark", .purple, "No PII collection", "We do not collect, store, or share any personally identifiable information."),
         ("chart.bar.xaxis", .orange, "On-device diagnostics only", "DashTen records anonymous diagnostic events (such as which screen you opened or whether the paywall was shown) to a local log on your device. These events are not personally identifiable, never leave your device, and are not sent to any analytics, advertising, or third-party SDK. They are erased when you delete the app."),
+        ("heart.text.square.fill", .pink, "Apple Health (optional, read-only)", "If you opt in, DashTen reads Steps, Sleep, and Mindful Minutes from Apple Health to show you a private 7-day snapshot. We never write to Apple Health, never upload your health data, and never share it with any third party."),
+        ("bell.badge.fill", .yellow, "Notifications (optional)", "If you opt in, DashTen schedules local-only reminders (daily check-in, streak protection, phase deadlines, milestones, weekly summary). Notifications are scheduled on-device and contain no marketing or third-party content."),
         ("trash.fill", .red, "Delete = gone", "If you delete the app, all local data is permanently removed from your device."),
         ("link", .teal, "External links", "External links in the app will open in your browser. Those websites have their own privacy policies.")
     ]

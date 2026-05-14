@@ -5,5 +5,6 @@ import SwiftUI
 struct DashTenWidgetBundle: WidgetBundle {
     var body: some Widget {
         DashTenWidget()
+        TransitionCountdownLiveActivity()
     }
 }
