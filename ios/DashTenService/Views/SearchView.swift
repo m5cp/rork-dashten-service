@@ -74,10 +74,10 @@ struct SearchView: View {
     let storage: StorageService
     var store: StoreViewModel
 
+    @Environment(PaywallCenter.self) private var paywall
     @State private var searchText: String = ""
     @State private var navPath = NavigationPath()
     @State private var activeSheet: ToolboxSheet?
-    @State private var showPaywall: Bool = false
     @FocusState private var searchFocused: Bool
 
     private var isSearching: Bool { !searchText.trimmingCharacters(in: .whitespaces).isEmpty }
@@ -375,9 +375,6 @@ struct SearchView: View {
             .sheet(item: $activeSheet) { sheet in
                 sheetContent(sheet)
             }
-            .sheet(isPresented: $showPaywall) {
-                PaywallView(store: store)
-            }
         }
     }
 
@@ -610,7 +607,7 @@ struct SearchView: View {
     private func handle(_ item: SearchItem) {
         // If this is a tool and locked, show paywall.
         if item.kind == .tool && store.isToolLocked(item.title) {
-            showPaywall = true
+            paywall.present(source: "search_locked_tool:\(item.title)")
             return
         }
         switch item.destination {

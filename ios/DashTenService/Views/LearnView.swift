@@ -264,7 +264,7 @@ private struct LearnHeroCard: View {
 struct GuidesListView: View {
     let storage: StorageService
     var store: StoreViewModel
-    @State private var showPaywall: Bool = false
+    @Environment(PaywallCenter.self) private var paywall
     @State private var expandedRoute: PlanningRoute?
 
     private let guides: [(title: String, subtitle: String, description: String, icon: String, color: Color, route: PlanningRoute)] = [
@@ -321,7 +321,7 @@ struct GuidesListView: View {
                         color: guide.color,
                         route: guide.route,
                         locked: store.isGuideLocked(guide.route),
-                        onTapLocked: { showPaywall = true }
+                        onTapLocked: { paywall.present(source: "guide_locked:\(guide.title)") }
                     )
                 }
             }
@@ -331,9 +331,6 @@ struct GuidesListView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Guides")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(store: store)
-        }
     }
 }
 

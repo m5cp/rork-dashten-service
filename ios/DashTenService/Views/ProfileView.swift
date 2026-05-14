@@ -6,10 +6,9 @@ struct ProfileView: View {
     @Bindable var storage: StorageService
     var store: StoreViewModel
     @State private var showAbout: Bool = false
-    @State private var showPaywall: Bool = false
+    @Environment(PaywallCenter.self) private var paywall
     @State private var showRedeemCode: Bool = false
     @State private var showTransparency: Bool = false
-    @State private var showHealthKit: Bool = false
     @State private var showNotificationsTune: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPrivacy: Bool = false
@@ -30,6 +29,30 @@ struct ProfileView: View {
                 profileHeader
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
+
+                Section {
+                    NavigationLink(value: ProfileRoute.wellness) {
+                        HStack(spacing: 14) {
+                            Image(systemName: "heart.text.square.fill")
+                                .font(.title3.weight(.bold))
+                                .foregroundStyle(.pink)
+                                .frame(width: 40, height: 40)
+                                .background(Color.pink.opacity(0.12))
+                                .clipShape(.rect(cornerRadius: 10))
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Wellness")
+                                    .font(.subheadline.weight(.bold))
+                                Text(wellnessSubtitle)
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Wellness")
+                }
 
                 Section {
                     NavigationLink(value: PlanningRoute.achievementBadges) {
@@ -245,7 +268,7 @@ struct ProfileView: View {
 
                 Section {
                     Button {
-                        showPaywall = true
+                        paywall.present(source: "profile_upgrade_row")
                     } label: {
                         HStack(spacing: 14) {
                             Image(systemName: store.isPremium ? "checkmark.seal.fill" : "arrow.up.forward.circle.fill")
@@ -306,14 +329,6 @@ struct ProfileView: View {
                         Label("Source Transparency", systemImage: "doc.text.magnifyingglass")
                             .font(.body.weight(.semibold))
                     }
-
-                    Button {
-                        showHealthKit = true
-                    } label: {
-                        Label("Apple Health (optional)", systemImage: "heart.text.square.fill")
-                            .font(.body.weight(.semibold))
-                    }
-                    .accessibilityLabel("Connect Apple Health for a private wellness snapshot")
 
                     Button {
                         showNotificationsTune = true
@@ -397,6 +412,11 @@ struct ProfileView: View {
             .navigationDestination(for: PlanningRoute.self) { route in
                 profileRouteDestination(route)
             }
+            .navigationDestination(for: ProfileRoute.self) { route in
+                switch route {
+                case .wellness: WellnessView(storage: storage)
+                }
+            }
             .sheet(isPresented: $showAbout) {
                 AboutView()
             }
@@ -412,9 +432,6 @@ struct ProfileView: View {
             .sheet(isPresented: $showEULA) {
                 EULAView()
             }
-            .sheet(isPresented: $showHealthKit) {
-                HealthKitOptInView()
-            }
             .sheet(isPresented: $showNotificationsTune) {
                 NotificationPermissionView(storage: storage)
             }
@@ -429,9 +446,6 @@ struct ProfileView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .openProfileSetup)) { _ in
                 showOnboarding = true
-            }
-            .sheet(isPresented: $showPaywall) {
-                PaywallView(store: store)
             }
             .sheet(isPresented: $showEditProfile) {
                 EditProfileSheet(storage: storage)
@@ -468,6 +482,13 @@ struct ProfileView: View {
         case .firstYearGuide: FirstYearGuideView()
         default: EmptyView()
         }
+    }
+
+    private var wellnessSubtitle: String {
+        if HealthKitService.shared.hasOptedIn {
+            return "Apple Health connected · check-ins & reset"
+        }
+        return "Apple Health, check-ins & a quick reset"
     }
 
     private var profileHeader: some View {

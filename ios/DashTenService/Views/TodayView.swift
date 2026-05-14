@@ -5,11 +5,11 @@ struct TodayView: View {
     var store: StoreViewModel
     @Binding var selectedTab: Int
 
+    @Environment(PaywallCenter.self) private var paywall
     @State private var appeared: Bool = false
     @State private var showCelebration: Bool = false
     @State private var celebrationTitle: String = ""
     @State private var celebrationSubtitle: String = ""
-    @State private var showPaywall: Bool = false
     @State private var showSearch: Bool = false
     @State private var showFeedback: Bool = false
     @State private var showMilestoneShare: Bool = false
@@ -128,7 +128,7 @@ struct TodayView: View {
                             .foregroundStyle(AppTheme.forestGreen)
                             .accessibilityLabel("DashTen Pro unlocked")
                     } else {
-                        Button { showPaywall = true } label: {
+                        Button { paywall.present(source: "home_toolbar") } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "sparkles")
                                     .font(.caption2.weight(.heavy))
@@ -162,9 +162,6 @@ struct TodayView: View {
                 title: celebrationTitle,
                 subtitle: celebrationSubtitle
             )
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(store: store)
         }
         .sheet(isPresented: $showSearch) {
             SearchView(storage: storage, store: store)

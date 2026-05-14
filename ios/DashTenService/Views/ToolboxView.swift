@@ -3,10 +3,10 @@ import SwiftUI
 struct ToolboxView: View {
     let storage: StorageService
     var store: StoreViewModel
+    @Environment(PaywallCenter.self) private var paywall
     @State private var activeSheet: ToolboxSheet?
     @State private var searchText: String = ""
     @State private var navPath = NavigationPath()
-    @State private var showPaywall: Bool = false
 
     private var isSearching: Bool { !searchText.isEmpty }
 
@@ -176,9 +176,6 @@ struct ToolboxView: View {
             .navigationDestination(for: ToolCategory.self) { category in
                 CategoryToolsView(storage: storage, store: store, category: category, tools: toolsFor(category), onAction: { action in handleAction(action) })
             }
-            .sheet(isPresented: $showPaywall) {
-                PaywallView(store: store)
-            }
             .sheet(item: $activeSheet) { sheet in
                 sheetContent(sheet)
             }
@@ -286,7 +283,7 @@ struct ToolboxView: View {
     private func handleAction(_ action: ToolAction, toolTitle: String = "") {
         if store.isToolLocked(toolTitle) {
             AnalyticsService.shared.log(.featureUsed, properties: ["name": "locked_tool_tapped", "tool": toolTitle])
-            showPaywall = true
+            paywall.present(source: "tool_locked:\(toolTitle)")
             return
         }
         if !toolTitle.isEmpty {
@@ -567,8 +564,8 @@ struct CategoryToolsView: View {
     let category: ToolCategory
     let tools: [ToolboxView.ToolEntry]
     let onAction: (ToolAction) -> Void
+    @Environment(PaywallCenter.self) private var paywall
     @State private var activeSheet: ToolboxSheet?
-    @State private var showPaywall: Bool = false
 
     var body: some View {
         ScrollView {
@@ -601,9 +598,6 @@ struct CategoryToolsView: View {
             case .civilianBudget: CivilianBudgetCalculatorView()
             case .emergencyFund: EmergencyFundCalculatorView()
             }
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(store: store)
         }
     }
 
@@ -639,7 +633,7 @@ struct CategoryToolsView: View {
         if locked {
             Button {
                 AnalyticsService.shared.log(.featureUsed, properties: ["name": "locked_tool_tapped", "tool": tool.title])
-                showPaywall = true
+                paywall.present(source: "tool_locked:\(tool.title)")
             } label: {
                 ToolboxRowContent(title: tool.title, subtitle: tool.subtitle, icon: tool.icon, color: tool.color, isLocked: true)
             }

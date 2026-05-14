@@ -27,7 +27,7 @@ class StoreViewModel {
         do {
             offerings = try await Purchases.shared.offerings()
         } catch {
-            self.error = error.localizedDescription
+            self.error = AppError.from(error).userMessage
         }
         isLoading = false
     }
@@ -53,8 +53,9 @@ class StoreViewModel {
         } catch ErrorCode.purchaseCancelledError {
             AnalyticsService.shared.log(.featureUsed, properties: ["name": "purchase_cancelled"])
         } catch ErrorCode.paymentPendingError {
+            self.error = AppError.purchasePending.userMessage
         } catch {
-            self.error = error.localizedDescription
+            self.error = AppError.from(error).userMessage
         }
         isPurchasing = false
     }
@@ -67,9 +68,11 @@ class StoreViewModel {
             isPremium = active
             if active {
                 AnalyticsService.shared.log(.subscriptionRestored)
+            } else {
+                self.error = AppError.restoreFailed.userMessage
             }
         } catch {
-            self.error = error.localizedDescription
+            self.error = AppError.from(error).userMessage
         }
     }
 
@@ -78,7 +81,7 @@ class StoreViewModel {
             let info = try await Purchases.shared.customerInfo()
             isPremium = info.entitlements["premium"]?.isActive == true
         } catch {
-            self.error = error.localizedDescription
+            self.error = AppError.from(error).userMessage
         }
     }
 

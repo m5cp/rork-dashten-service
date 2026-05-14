@@ -3,15 +3,22 @@ import SwiftUI
 struct ContentView: View {
     @State private var storage = StorageService()
     @State private var store = StoreViewModel()
+    @State private var paywall = PaywallCenter()
     @State private var selectedTab: Int = 0
     @State private var showAICoach: Bool = false
 
     var body: some View {
-        if storage.profile.hasCompletedOnboarding {
-            mainTabView
-                .tint(AppTheme.forestGreen)
-        } else {
-            OnboardingView(storage: storage, store: store)
+        Group {
+            if storage.profile.hasCompletedOnboarding {
+                mainTabView
+                    .tint(AppTheme.forestGreen)
+            } else {
+                OnboardingView(storage: storage, store: store)
+            }
+        }
+        .environment(paywall)
+        .sheet(isPresented: $paywall.isPresented) {
+            PaywallView(store: store)
         }
     }
 
