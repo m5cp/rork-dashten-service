@@ -18,7 +18,10 @@ struct ResumeTranslatorView: View {
 
             switch selectedTab {
             case .translate:
-                CareerTranslateTab()
+                CareerTranslateTab(onSwitchToJargon: { term in
+                    jargonSearch = term
+                    withAnimation(.spring(response: 0.3)) { selectedTab = .jargon }
+                })
             case .jargon:
                 jargonTab
             }
@@ -68,6 +71,7 @@ struct ResumeTranslatorView: View {
 // MARK: - Translate Tab
 
 private struct CareerTranslateTab: View {
+    let onSwitchToJargon: (String) -> Void
     @State private var selectedBranchFilter: BranchFilter = .all
     @State private var selectedRankFilter: RankFilter = .all
     @State private var searchText: String = ""
@@ -143,6 +147,7 @@ private struct CareerTranslateTab: View {
                     .foregroundStyle(.primary.opacity(0.7))
                     .padding(.top, 4)
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.top, 12)
             .padding(.bottom, 32)
@@ -239,15 +244,16 @@ private struct CareerTranslateTab: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
-            Text("AI lookup is coming soon for unlisted MOSs.")
+            Text("Try the Jargon Lookup for individual terms and acronyms.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             Button {
+                onSwitchToJargon(searchText)
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: "sparkles")
-                    Text("Try AI Lookup")
+                    Image(systemName: "text.magnifyingglass")
+                    Text("Search Jargon Lookup")
                         .font(.subheadline.weight(.semibold))
                 }
                 .padding(.horizontal, 16)
@@ -257,8 +263,6 @@ private struct CareerTranslateTab: View {
                 .clipShape(.rect(cornerRadius: 10))
             }
             .buttonStyle(.plain)
-            .disabled(true)
-            .opacity(0.6)
         }
         .frame(maxWidth: .infinity)
         .padding(24)

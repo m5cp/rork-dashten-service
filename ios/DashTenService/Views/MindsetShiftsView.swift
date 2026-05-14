@@ -34,6 +34,7 @@ struct MindsetShiftsView: View {
 
                     GuideDisclaimer(text: "Give yourself time. These shifts don't happen overnight, and that's okay.")
                 }
+                .readableContentWidth()
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
                 .padding(.bottom, 24)

@@ -44,6 +44,7 @@ struct NetworkingScorecardView: View {
 
                 weeklyHistory
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
         }

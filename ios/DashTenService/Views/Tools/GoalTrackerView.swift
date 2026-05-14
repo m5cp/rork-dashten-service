@@ -38,6 +38,7 @@ struct GoalTrackerView: View {
                     completedGoalsSection
                 }
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
         }

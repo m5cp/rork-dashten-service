@@ -1,0 +1,51 @@
+import Foundation
+
+nonisolated enum PlanningRoute: Hashable, Sendable {
+    case career
+    case education
+    case family
+    case financial
+    case readiness
+    case roadmap
+    case firstThirtyDays
+    case mindsetShifts
+    case civilianPlaybook
+    case selfAssessment
+    case finalGearCheck
+    case mentorTracker
+    case documents
+    case tspRollover
+    case salaryNegotiation
+    case costOfLiving
+    case resumeTranslator
+    case interviewPrep
+    case networkingScorecard
+    case skillsInventory
+    case giBillBAH
+    case educationComparison
+    case relocationCost
+    case stateBenefits
+    case transitionJournal
+    case goalTracker
+    case weeklyCheckIn
+    case elevatorPitch
+    case jargonTranslator
+    case jobOfferCompare
+    case decisionMatrix
+    case ninetyDayPlanner
+    case weeklyChallenges
+    case dailyPowerUp
+    case networkingEventPrep
+    case personalBrandAudit
+    case benefitsCountdown
+    case achievementBadges
+    case firstYearGuide
+    case tspGrowthEstimator
+    case brsRetirementSnapshot
+    case scraProtections
+    case financialReadiness
+    case vaFundingFee
+    case vaHomeLoanGuide
+    case disabilityBenefits
+    case vaHealthcareGuide
+}

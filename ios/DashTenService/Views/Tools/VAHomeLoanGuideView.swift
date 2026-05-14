@@ -31,6 +31,7 @@ struct VAHomeLoanGuideView: View {
 				Text("General information only · Not affiliated with any government agency · Verify eligibility at va.gov or with a VA-approved lender")
 					.font(.caption2).foregroundStyle(.secondary).multilineTextAlignment(.center).frame(maxWidth: .infinity)
 			}
+			.readableContentWidth()
 			.padding(.horizontal, 16)
 			.padding(.bottom, 40)
 		}

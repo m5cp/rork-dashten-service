@@ -97,6 +97,7 @@ struct TodayView: View {
                             .delayedEntrance(appeared, delay: 0.32)
                     }
                 }
+                .readableContentWidth()
                 .padding(.horizontal, 16)
                 .padding(.top, 4)
                 .padding(.bottom, 100)

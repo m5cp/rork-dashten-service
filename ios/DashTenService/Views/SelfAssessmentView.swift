@@ -249,6 +249,7 @@ struct AssessmentResultsView: View {
                 }
                 .sensoryFeedback(.success, trigger: true)
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }

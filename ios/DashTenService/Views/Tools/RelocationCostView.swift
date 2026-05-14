@@ -170,9 +170,23 @@ struct RelocationCostView: View {
                     .padding(14).background(AppTheme.gold.opacity(0.08)).clipShape(.rect(cornerRadius: 14))
                 }
 
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "info.circle.fill").font(.caption2.weight(.bold)).foregroundStyle(.secondary)
+                        Text("How this is estimated").font(.caption.weight(.bold)).foregroundStyle(.secondary)
+                    }
+                    Text("Shipping uses a typical per-pound rate plus a per-mile fuel factor for your selected household load. Travel assumes a per-mile driving cost plus daily meals for your family size and one hotel night per ~500 miles. Vehicle transport applies only beyond 500 miles. Setup includes deposits and starter household costs.")
+                        .font(.caption2.weight(.semibold)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(.rect(cornerRadius: 10))
+
                 Text("General information only · Not affiliated with any government agency")
                     .font(.caption2).foregroundStyle(.secondary).multilineTextAlignment(.center).frame(maxWidth: .infinity)
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 40)
         }

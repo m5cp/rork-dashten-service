@@ -40,6 +40,7 @@ struct WeeklyChallengesView: View {
                 streakSection
                 xpExplainer
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 100)
         }

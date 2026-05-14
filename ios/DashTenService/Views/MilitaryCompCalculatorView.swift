@@ -39,6 +39,7 @@ struct MilitaryCompCalculatorView: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.primary.opacity(0.7))
                 }
+                .readableContentWidth()
                 .padding(.horizontal, 16)
                 .padding(.bottom, 32)
             }
@@ -366,7 +367,7 @@ struct PayInputRow: View {
                     .foregroundStyle(.primary.opacity(0.7))
                 TextField("0", text: $value)
                     .font(.subheadline.weight(.bold))
-                    .keyboardType(.numberPad)
+                    .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
                     .frame(width: 100)
             }

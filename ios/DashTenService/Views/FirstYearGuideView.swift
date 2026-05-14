@@ -29,6 +29,7 @@ struct FirstYearGuideView: View {
 
                 GuideDisclaimer(text: "Every transition is unique. Adapt this guide to your situation and consult professionals for legal, medical, or financial decisions.")
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 40)
         }

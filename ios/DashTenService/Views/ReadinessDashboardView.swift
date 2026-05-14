@@ -34,6 +34,7 @@ struct ReadinessDashboardView: View {
                 shareSection
                 disclaimerNote
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }

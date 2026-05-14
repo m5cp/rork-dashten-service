@@ -71,8 +71,15 @@ struct CostOfLivingView: View {
                     comparisonSection(a: a, b: b)
                 }
 
+                Text("Estimates based on 2024 baseline data. Verify with current sources before relocating.")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+
                 DashTenInfoFooter()
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 40)
         }

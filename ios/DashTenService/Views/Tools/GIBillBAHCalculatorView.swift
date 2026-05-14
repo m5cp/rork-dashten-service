@@ -5,7 +5,16 @@ struct GIBillBAHCalculatorView: View {
     @State private var enrollmentStatus: String = "Full-time"
     @State private var showResults: Bool = false
 
-    private let enrollmentOptions = ["Full-time", "3/4 time", "Half-time", "Online only"]
+    private let enrollmentOptions: [String] = ["Full-time", "3/4 time", "Half-time", "Online only"]
+
+    private func bahAmount(for entry: BAHEntry) -> Double {
+        switch enrollmentStatus {
+        case "3/4 time": return entry.threeQuarter
+        case "Half-time": return entry.halfTime
+        case "Online only": return entry.online
+        default: return entry.fullTime
+        }
+    }
 
     private let bahData: [BAHEntry] = [
         BAHEntry(zip: "92101", city: "San Diego, CA", fullTime: 3252, threeQuarter: 2439, halfTime: 1626, online: 1054),
@@ -37,6 +46,17 @@ struct GIBillBAHCalculatorView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Enrollment Status")
+                        .font(.headline.weight(.bold))
+                    Picker("Enrollment Status", selection: $enrollmentStatus) {
+                        ForEach(enrollmentOptions, id: \.self) { option in
+                            Text(option).tag(option)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Select School Location")
                         .font(.headline.weight(.bold))
@@ -62,7 +82,7 @@ struct GIBillBAHCalculatorView: View {
 
                                 Spacer()
 
-                                Text(formatCurrency(entry.fullTime))
+                                Text(formatCurrency(bahAmount(for: entry)))
                                     .font(.caption.weight(.bold))
                                     .foregroundStyle(.blue)
                             }
@@ -81,6 +101,7 @@ struct GIBillBAHCalculatorView: View {
 
                 DashTenInfoFooter()
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 40)
         }
@@ -112,10 +133,10 @@ struct GIBillBAHCalculatorView: View {
                 Text("Annual Housing Estimate")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.primary.opacity(0.6))
-                Text(formatCurrency(entry.fullTime * 12))
+                Text(formatCurrency(bahAmount(for: entry) * 12))
                     .font(.title2.weight(.bold))
                     .foregroundStyle(.blue)
-                Text("at full-time enrollment (12 months)")
+                Text("at \(enrollmentStatus.lowercased()) enrollment (12 months)")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(.primary.opacity(0.7))
             }

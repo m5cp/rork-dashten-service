@@ -69,6 +69,7 @@ struct CivilianPlaybookView: View {
 
                 GuideDisclaimer(text: "Everyone's experience is different. Take what's useful, adapt what isn't, and give yourself grace.")
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }

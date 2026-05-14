@@ -10,6 +10,7 @@ struct PersonalBrandAuditView: View {
                 auditChecklist
                 improvementTips
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 100)
         }

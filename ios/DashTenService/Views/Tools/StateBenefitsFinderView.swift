@@ -30,6 +30,7 @@ struct StateBenefitsFinderView: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 4)
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
         }

@@ -130,6 +130,7 @@ struct RoadmapView: View {
 					.frame(maxWidth: .infinity)
 					.padding(.top, 8)
 			}
+			.readableContentWidth()
 			.padding(.horizontal, 16)
 			.padding(.bottom, 60)
 		}

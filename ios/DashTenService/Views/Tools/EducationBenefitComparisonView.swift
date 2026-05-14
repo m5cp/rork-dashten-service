@@ -91,6 +91,7 @@ struct EducationBenefitComparisonView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary.opacity(0.7))
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
         }

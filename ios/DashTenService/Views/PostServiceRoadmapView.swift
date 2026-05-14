@@ -97,6 +97,7 @@ struct PostServiceRoadmapView: View {
                         .id("afterService")
                     timelineSection
                 }
+                .readableContentWidth()
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)
             }

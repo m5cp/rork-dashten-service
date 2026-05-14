@@ -19,6 +19,7 @@ struct JobOfferComparisonView: View {
 
                 DashTenInfoFooter()
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 40)
         }

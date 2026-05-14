@@ -77,6 +77,7 @@ struct IncomeGapCalculatorView: View {
 
                     DashTenInfoFooter()
                 }
+                .readableContentWidth()
                 .padding(.horizontal, 16)
                 .padding(.bottom, 40)
             }

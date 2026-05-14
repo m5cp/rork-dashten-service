@@ -353,6 +353,7 @@ struct SearchView: View {
                         browseSection
                     }
                 }
+                .readableContentWidth()
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
                 .padding(.bottom, 100)

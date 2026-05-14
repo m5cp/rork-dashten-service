@@ -6,6 +6,20 @@ struct SCRAProtectionsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Servicemembers Civil Relief Act")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text("Federal protections for active-duty service members on pre-service debts, leases, court proceedings, and more.")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(14)
+                .background(AppTheme.forestGreen.opacity(0.06))
+                .clipShape(.rect(cornerRadius: 12))
+
                 ForEach(scraProtections) { protection in
                     ProtectionAccordionCard(
                         protection: protection,
@@ -21,11 +35,12 @@ struct SCRAProtectionsView: View {
                 Text("General information only · Not affiliated with any government agency")
                     .font(.caption2).foregroundStyle(.secondary).multilineTextAlignment(.center).frame(maxWidth: .infinity)
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 40)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("SCRA Protections")
+        .navigationTitle("SCRA")
         .navigationBarTitleDisplayMode(.inline)
     }
 

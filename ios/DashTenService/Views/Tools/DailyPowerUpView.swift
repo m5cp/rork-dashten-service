@@ -23,6 +23,7 @@ struct DailyPowerUpView: View {
                 levelProgress
                 quickActions
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 100)
         }
@@ -167,10 +168,22 @@ struct DailyPowerUpView: View {
                 .font(.headline.weight(.bold))
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-                QuickActionCard(icon: "book.fill", title: "Journal", subtitle: "Write today", color: .purple)
-                QuickActionCard(icon: "chart.xyaxis.line", title: "Check-In", subtitle: "How are you?", color: .blue)
-                QuickActionCard(icon: "target", title: "Goals", subtitle: "Review progress", color: AppTheme.forestGreen)
-                QuickActionCard(icon: "person.3.fill", title: "Network", subtitle: "Add a contact", color: .teal)
+                NavigationLink(value: PlanningRoute.transitionJournal) {
+                    QuickActionCard(icon: "book.fill", title: "Journal", subtitle: "Write today", color: .purple)
+                }
+                .buttonStyle(.plain)
+                NavigationLink(value: PlanningRoute.weeklyCheckIn) {
+                    QuickActionCard(icon: "chart.xyaxis.line", title: "Check-In", subtitle: "How are you?", color: .blue)
+                }
+                .buttonStyle(.plain)
+                NavigationLink(value: PlanningRoute.goalTracker) {
+                    QuickActionCard(icon: "target", title: "Goals", subtitle: "Review progress", color: AppTheme.forestGreen)
+                }
+                .buttonStyle(.plain)
+                NavigationLink(value: PlanningRoute.networkingScorecard) {
+                    QuickActionCard(icon: "person.3.fill", title: "Network", subtitle: "Add a contact", color: .teal)
+                }
+                .buttonStyle(.plain)
             }
         }
         .opacity(appeared ? 1 : 0)

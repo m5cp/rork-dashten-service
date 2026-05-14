@@ -32,6 +32,7 @@ struct DisabilityBenefitsView: View {
 					.multilineTextAlignment(.center)
 					.frame(maxWidth: .infinity)
 			}
+			.readableContentWidth()
 			.padding(.horizontal, 16)
 			.padding(.bottom, 40)
 		}

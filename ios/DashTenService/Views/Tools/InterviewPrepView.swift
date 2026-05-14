@@ -3,7 +3,6 @@ import SwiftUI
 struct InterviewPrepView: View {
     let storage: StorageService
     @State private var filterCategory: String = "All"
-    @State private var expandedQuestionId: String? = nil
 
     private let questions: [InterviewQuestion] = [
         InterviewQuestion(id: "q1", question: "Tell me about yourself.", category: "General", tip: "Use the Present-Past-Future formula: What you do now → What you've done → What you want to do next. Keep it under 2 minutes. Focus on relevant experience, not your entire military career."),
@@ -48,6 +47,7 @@ struct InterviewPrepView: View {
 
                 questionList
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
         }
@@ -68,7 +68,7 @@ struct InterviewPrepView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(practicedCount) of \(questions.count) Practiced")
                     .font(.headline.weight(.bold))
-                Text("Tap any question to reveal coaching tips")
+                Text("Practice each one out loud — coaching tips below")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary.opacity(0.7))
             }
@@ -94,14 +94,8 @@ struct InterviewPrepView: View {
 
     private var questionList: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("All Questions")
-                    .font(.headline.weight(.bold))
-                Spacer()
-                Text("Tap to reveal tip")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
+            Text("All Questions")
+                .font(.headline.weight(.bold))
 
             ForEach(filteredQuestions, id: \.id) { q in
                 questionRow(q)
@@ -111,88 +105,57 @@ struct InterviewPrepView: View {
 
     @ViewBuilder
     private func questionRow(_ q: InterviewQuestion) -> some View {
-        let isExpanded = expandedQuestionId == q.id
         let isPracticed = storage.practicedQuestions.contains(q.id)
 
-        VStack(alignment: .leading, spacing: 0) {
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                    expandedQuestionId = isExpanded ? nil : q.id
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Button {
+                    storage.togglePracticedQuestion(q.id)
+                } label: {
+                    Image(systemName: isPracticed ? "checkmark.circle.fill" : "circle")
+                        .font(.title3)
+                        .foregroundStyle(isPracticed ? AppTheme.forestGreen : .primary.opacity(0.35))
+                        .frame(width: 32, height: 32)
                 }
-            } label: {
-                HStack(spacing: 12) {
-                    Button {
-                        storage.togglePracticedQuestion(q.id)
-                    } label: {
-                        Image(systemName: isPracticed ? "checkmark.circle.fill" : "circle")
-                            .font(.title3)
-                            .foregroundStyle(isPracticed ? AppTheme.forestGreen : .primary.opacity(0.35))
-                            .frame(width: 32, height: 32)
-                    }
-                    .buttonStyle(.plain)
-                    .sensoryFeedback(.success, trigger: isPracticed)
-                    .accessibilityLabel(isPracticed ? "Mark as not practiced" : "Mark as practiced")
+                .buttonStyle(.plain)
+                .sensoryFeedback(.success, trigger: isPracticed)
+                .accessibilityLabel(isPracticed ? "Mark as not practiced" : "Mark as practiced")
 
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(q.question)
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary)
-                            .strikethrough(isPracticed)
-                            .multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: true)
-                        Text(q.category)
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.blue)
-                    }
-                    Spacer(minLength: 4)
-                    Image(systemName: "chevron.down")
-                        .font(.caption.weight(.heavy))
-                        .foregroundStyle(.secondary)
-                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
-                }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 14)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-
-            if isExpanded {
-                VStack(alignment: .leading, spacing: 10) {
-                    Divider().opacity(0.4)
-                    HStack(spacing: 6) {
-                        Image(systemName: "lightbulb.fill")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(AppTheme.gold)
-                        Text("Coaching Tip")
-                            .font(.caption.weight(.heavy))
-                            .foregroundStyle(AppTheme.gold)
-                            .tracking(0.6)
-                    }
-                    Text(q.tip)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.85))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(q.question)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .strikethrough(isPracticed)
+                        .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
-
-                    Button {
-                        storage.togglePracticedQuestion(q.id)
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: isPracticed ? "checkmark.circle.fill" : "checkmark.circle")
-                            Text(isPracticed ? "Practiced — tap to undo" : "Mark as practiced")
-                        }
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(isPracticed ? AppTheme.forestGreen : .white)
-                        .frame(maxWidth: .infinity, minHeight: 38)
-                        .background(isPracticed ? AppTheme.forestGreen.opacity(0.12) : AppTheme.forestGreen)
-                        .clipShape(.rect(cornerRadius: 10))
-                    }
-                    .buttonStyle(.plain)
+                    Text(q.category)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.blue)
                 }
-                .padding(.horizontal, 14)
-                .padding(.bottom, 14)
-                .transition(.opacity.combined(with: .move(edge: .top)))
+                Spacer(minLength: 0)
             }
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
+                    Image(systemName: "lightbulb.fill")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppTheme.gold)
+                    Text("COACHING TIP")
+                        .font(.caption2.weight(.heavy))
+                        .foregroundStyle(AppTheme.gold)
+                        .tracking(0.6)
+                }
+                Text(q.tip)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary.opacity(0.85))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(AppTheme.gold.opacity(0.08))
+            .clipShape(.rect(cornerRadius: 10))
         }
+        .padding(14)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 12))
     }

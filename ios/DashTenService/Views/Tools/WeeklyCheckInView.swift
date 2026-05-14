@@ -45,6 +45,7 @@ struct WeeklyCheckInView: View {
                     historySection
                 }
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
         }

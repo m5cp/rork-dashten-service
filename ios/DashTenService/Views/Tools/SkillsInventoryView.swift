@@ -173,6 +173,7 @@ struct SkillsInventoryView: View {
                     .clipShape(.rect(cornerRadius: 12))
                 }
             }
+            .readableContentWidth()
             .padding(.horizontal, 16)
             .padding(.bottom, 32)
         }
