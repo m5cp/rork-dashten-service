@@ -1,23 +1,11 @@
-# Clean up Home screen, fix Roadmap for retirees, and add contextual dates
+# Fix blank page when tapping This Week's Mission
 
-## Home screen
+**The problem**
 
-- [x] Remove the streak/active-days strip (and the snowflake) from Home entirely.
-- [x] Fix the "This week's mission" card so tapping it opens the full Weekly Challenges screen.
-- [x] Tidy the mission card so the "complete" label and the "0/3 done" counter agree.
+Tapping "This Week's Mission" on the home screen lands on a blank page because the home screen's navigation only knows how to open two destinations (the readiness dashboard and the self-assessment). The weekly missions destination was never wired up there, so the screen has nothing to show.
 
-## Onboarding
+**The fix**
 
-- [x] Contextual separation/retirement date label.
-- [x] Disclaimer must be accepted before Continue is enabled.
+- Wire the home screen's navigation to open the full Weekly Missions screen when the mission card is tapped.
+- Confirm the missions screen loads this week's missions (or generates them if empty) so users always see actionable tasks with tap-to-complete behavior and XP rewards.
 
-## Roadmap
-
-- [x] Post-service phases re-labeled as Step 1–4.
-- [x] Pre-separation phases re-labeled as "X before separation".
-- [x] Review banner kept for retirees.
-
-## Small polish
-
-- [x] Snowflake / streak-freeze UI removed.
-- [x] Weekly mission card visually tappable (chevron + press feedback).

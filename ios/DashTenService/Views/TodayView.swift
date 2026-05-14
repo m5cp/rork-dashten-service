@@ -145,6 +145,8 @@ struct TodayView: View {
                     ReadinessDashboardView(storage: storage)
                 } else if case .selfAssessment = route {
                     SelfAssessmentView(storage: storage)
+                } else if case .weeklyChallenges = route {
+                    WeeklyChallengesView(storage: storage)
                 }
             }
             .navigationDestination(isPresented: $goToAssessment) {
