@@ -204,10 +204,11 @@ struct PaywallView: View {
 			if store.isLoading {
 				ProgressView()
 					.padding(32)
-			} else if let offering = store.offerings?.current {
+			} else if let offering = store.offerings?.current, !offering.availablePackages.isEmpty {
 				ForEach(offering.availablePackages, id: \.identifier) { package in
 					packageButton(package)
 				}
+				.onAppear { autoSelectIfNeeded(from: offering.availablePackages) }
 			} else {
 				// Fallback when offerings haven't loaded
 				VStack(spacing: 10) {
@@ -324,10 +325,15 @@ struct PaywallView: View {
 		}
 		.buttonStyle(.plain)
 		.frame(minHeight: 44)
-		.onAppear {
-			if isAnnual && selectedPackageId == nil {
-				selectedPackageId = package.identifier
-			}
+	}
+
+	private func autoSelectIfNeeded(from packages: [Package]) {
+		guard selectedPackageId == nil else { return }
+		// Prefer annual; otherwise fall back to the first available package
+		if let annual = packages.first(where: { $0.packageType == .annual }) {
+			selectedPackageId = annual.identifier
+		} else if let first = packages.first {
+			selectedPackageId = first.identifier
 		}
 	}
 

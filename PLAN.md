@@ -1,33 +1,39 @@
-# Polish all tools, plans & guides to Apple-grade quality
+# Consolidate Plan tab, unify guides, iPad sidebar, label streak, fix paywall
 
-## Theme & Appearance
-- [x] Appearance setting in Profile (Light / Dark / System) — already wired via `ThemePreference` and `.preferredColorScheme` in `ContentView`.
+### What you'll get
 
-## iPad-ready everywhere
-- [x] `readableContentWidth()` modifier added (`Utilities/ReadableWidth+Extension.swift`) and applied across all Tools, Plan, Roadmap, Learn, Benefits, Wellness, Today, Documents, Search, calculators and planning wrappers.
+**1. One single Plan tab (no more duplicates)**
 
-## Fix what's broken or half-finished
-- [x] Daily Power-Up Quick Actions wired to Journal / Check-In / Goals / Networking routes.
-- [x] Resume Translator "Try AI Lookup" replaced with a working "Search Jargon Lookup" handoff into the Jargon tab.
-- [x] GI Bill BAH Calculator: added Full-time / 3/4 / Half-time / Online segmented picker; results react to selection.
-- [x] Interview Prep: coaching tips now shown inline under every question — no hidden toggle.
-- [x] BRS / all `PayInputRow` fields: switched to `.decimalPad` keyboard.
+- The leftover unused Plan screen will be removed so there's only one Plan experience to maintain.
+- Anything useful from the unused version (planning areas grid, documents card with progress, tools list) will be merged into the live Plan screen where it adds value.
 
-## Merge duplicates & remove dead code
-- [x] Deleted unused `BulletPoint` helper.
-- [x] Deleted orphaned `PlanningHubView`; extracted `PlanningRoute`, planning wrappers and `Guide*` primitives into proper homes.
-- [ ] (Out of scope per plan) GuideContents duplicates and consolidating the two Plan views.
+**2. One source of truth for guide content**
 
-## Negotiation Playbook
-- [x] Rebuilt `SalaryNegotiationView` as a Negotiation Playbook: Know-Your-Number worksheet, levers, email + verbal scripts (copy to clipboard), objection handling, veteran angles, pre-call checklist.
+- The First 30 Days, Mindset Shifts, and Civilian Playbook content currently exists in two places. I'll keep one shared library of guide content and have both the guide screens and the "Learn" tab read from it. Edits made in one place will reflect everywhere automatically.
 
-## Sweep small consistency issues
-- [x] SCRA: hero now spells out "Servicemembers Civil Relief Act" with subtitle context.
-- [x] Renamed "Pay Help" → "Financial Counseling".
-- [x] Cost of Living: 2024 baseline footnote added.
-- [x] Move Budget: "How this is estimated" disclosure added.
+**3. iPad sidebar layout**
 
-## Out of scope
-- iPad sidebar/detail layout
-- Apple-Intelligence jargon lookup
-- Consolidating PlanView vs PlanTabView
+- On iPad, the Plan and Tools tabs will use a true sidebar + detail layout (Apple-style split view). Tap a category on the left, see its content on the right — no more giant stretched phone-style screens.
+- iPhone layout stays exactly the same.
+
+**4. Home screen streak — clearer label**
+
+- The streak strip will be re-labeled so it's obvious what it tracks: **"Active days"** with a short helper line like *"Open the app or complete a task to keep it going."*
+- A small info tap will explain the rules (one day per calendar day of activity).
+
+**5. Paywall pricing fix**
+
+- The paywall will correctly render every package RevenueCat returns (Monthly + Annual when both are configured).
+- I'll also harden the fallback so if RevenueCat hasn't loaded yet, you see both Monthly and Annual placeholders instead of a single option.
+- If only $0.99 is showing live, that's a RevenueCat dashboard config issue I'll flag with steps to fix on your side (the app code will be ready for both).
+
+### Design feel
+
+- Sidebar uses standard iOS materials and the app's forest-green accent for selection — feels like Settings on iPad.
+- Streak strip keeps the same look, just gains a clear title and one-line description.
+- Paywall keeps the current layout; just renders both plans correctly.
+
+### Validation
+
+- I'll run the iOS build checks after the changes and confirm everything compiles before handing back.
+

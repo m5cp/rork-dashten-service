@@ -19,16 +19,24 @@ struct StreakStripView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: "flame.fill")
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(AppTheme.gold)
+                Text("ACTIVE DAYS")
+                    .font(.caption.weight(.heavy))
+                    .tracking(1.2)
+                    .foregroundStyle(AppTheme.gold)
+                Spacer()
+            }
+
             HStack(spacing: 12) {
-                HStack(spacing: 6) {
-                    Image(systemName: "flame.fill")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(AppTheme.gold)
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text("\(storage.currentStreak)")
-                        .font(.subheadline.weight(.heavy))
+                        .font(.system(size: 26, weight: .heavy, design: .rounded))
                         .foregroundStyle(.primary)
                         .contentTransition(.numericText())
-                    Text(storage.currentStreak == 1 ? "day streak" : "day streak")
+                    Text(storage.currentStreak == 1 ? "day in a row" : "days in a row")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }

@@ -6,6 +6,9 @@ struct ContentView: View {
     @State private var paywall = PaywallCenter()
     @State private var selectedTab: Int = 0
     @State private var showAICoach: Bool = false
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    private var isPadLayout: Bool { horizontalSizeClass == .regular }
 
     var body: some View {
         Group {
@@ -30,10 +33,18 @@ struct ContentView: View {
                 TodayView(storage: storage, store: store, selectedTab: $selectedTab)
             }
             Tab("Plan", systemImage: "map.fill", value: 1) {
-                PlanView(storage: storage)
+                if isPadLayout {
+                    PlanSidebarView(storage: storage)
+                } else {
+                    PlanView(storage: storage)
+                }
             }
             Tab("Tools", systemImage: "wrench.and.screwdriver.fill", value: 2) {
-                ToolboxView(storage: storage, store: store)
+                if isPadLayout {
+                    ToolsSidebarView(storage: storage, store: store)
+                } else {
+                    ToolboxView(storage: storage, store: store)
+                }
             }
             Tab("Learn", systemImage: "book.fill", value: 3) {
                 LearnView(storage: storage, store: store)
