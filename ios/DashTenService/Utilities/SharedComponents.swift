@@ -206,9 +206,14 @@ struct CelebrationOverlay: View {
     var body: some View {
         if isShowing {
             ZStack {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                    .onTapGesture { withAnimation(.spring) { isShowing = false } }
+                Button {
+                    withAnimation(.spring) { isShowing = false }
+                } label: {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Dismiss celebration")
 
                 VStack(spacing: 20) {
                     Image(systemName: "party.popper.fill")

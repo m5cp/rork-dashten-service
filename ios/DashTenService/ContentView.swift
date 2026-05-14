@@ -142,7 +142,7 @@ private struct FloatingAICoachButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Apple Intelligence coach")
-        .sensoryFeedback(.selection, trigger: pulse)
+        .accessibilityHint("Opens your on-device AI coach")
         .onAppear {
             withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
                 pulse = true
