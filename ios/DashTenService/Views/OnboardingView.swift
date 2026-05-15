@@ -15,6 +15,7 @@ struct OnboardingView: View {
     @State private var disclaimerAccepted: Bool = false
     @State private var showPaywall: Bool = false
     @State private var appeared: Bool = false
+    @State private var showSkipConfirm: Bool = false
 
     private let totalPages = 6
 
@@ -49,6 +50,30 @@ struct OnboardingView: View {
                 bottomBar
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            if currentPage > 0 && currentPage < totalPages - 1 {
+                Button {
+                    showSkipConfirm = true
+                } label: {
+                    Text("Skip")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .padding(.top, 8)
+                .padding(.trailing, 8)
+                .confirmationDialog("Skip onboarding?", isPresented: $showSkipConfirm) {
+                    Button("Skip to App") {
+                        completeOnboarding()
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("You can update your preferences anytime in your profile.")
+                }
             }
         }
         .onAppear {
@@ -221,13 +246,13 @@ struct OnboardingView: View {
                         HStack(spacing: 14) {
                             Image(systemName: prop.0)
                                 .font(.body.weight(.semibold))
-                                .foregroundStyle(AppTheme.gold)
+                                .foregroundStyle(.white)
                                 .frame(width: 32, height: 32)
-                                .background(AppTheme.gold.opacity(0.15))
+                                .background(Color.white.opacity(0.15))
                                 .clipShape(.rect(cornerRadius: 8))
                             Text(prop.1)
                                 .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.white.opacity(0.9))
+                                .foregroundStyle(.white)
                                 .fixedSize(horizontal: false, vertical: true)
                             Spacer()
                         }
@@ -240,7 +265,7 @@ struct OnboardingView: View {
                     }
                 }
                 .padding(20)
-                .background(.white.opacity(0.06))
+                .background(.white.opacity(0.12))
                 .clipShape(.rect(cornerRadius: 16))
 
                 Spacer(minLength: 24)
@@ -318,7 +343,7 @@ struct OnboardingView: View {
             .background(
                 isSelected
                     ? Color(.secondarySystemGroupedBackground)
-                    : Color(.secondarySystemGroupedBackground).opacity(0.5)
+                    : Color(.secondarySystemGroupedBackground).opacity(0.85)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
@@ -501,7 +526,7 @@ struct OnboardingView: View {
                 .fixedSize(horizontal: false, vertical: true)
             Text(subtitle)
                 .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.white.opacity(0.75))
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
