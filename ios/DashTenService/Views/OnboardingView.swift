@@ -1,556 +1,517 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @Bindable var storage: StorageService
+    let storage: StorageService
     var store: StoreViewModel
     @Environment(\.dismiss) private var dismiss
-    @Environment(PaywallCenter.self) private var paywall
-    @State private var currentPage: Int = 0
-    @State private var selectedBranch: MilitaryBranch?
-    @State private var selectedTimeline: TransitionTimeline?
-    @State private var selectedPostServiceStatus: PostServiceStatus?
-    @State private var separationDate: Date = Calendar.current.date(byAdding: .month, value: 12, to: Date()) ?? Date()
-    @State private var selectedGoals: Set<TransitionGoal> = []
-    @State private var disclaimerAccepted: Bool = false
 
-    private let totalPages = 4
+    @State private var currentPage: Int = 0
+    @State private var selectedBranch: MilitaryBranch? = nil
+    @State private var selectedTimeline: TransitionTimeline? = nil
+    @State private var selectedGoals: Set<TransitionGoal> = []
+    @State private var selectedPostServiceStatus: PostServiceStatus? = nil
+    @State private var separationDate: Date = Calendar.current.date(byAdding: .month, value: 12, to: Date()) ?? Date()
+    @State private var selectedPainPoints: Set<String> = []
+    @State private var disclaimerAccepted: Bool = false
+    @State private var showPaywall: Bool = false
+    @State private var appeared: Bool = false
+
+    private let totalPages = 6
 
     var body: some View {
-        VStack(spacing: 0) {
-            if currentPage > 0 {
-                HStack {
-                    Spacer()
-                    Button {
-                        skipOnboarding()
-                    } label: {
-                        Text("Skip")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary.opacity(0.7))
-                            .frame(minWidth: 44, minHeight: 44, alignment: .trailing)
-                    }
-                    .accessibilityLabel("Skip onboarding")
-                }
-                .padding(.horizontal, 24)
-
-                HStack(spacing: 6) {
-                    ForEach(0..<totalPages, id: \.self) { index in
-                        Capsule()
-                            .fill(index <= currentPage ? AppTheme.forestGreen : AppTheme.forestGreen.opacity(0.2))
-                            .frame(height: 4)
-                            .animation(.spring(response: 0.3), value: currentPage)
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
-            }
-
-            TabView(selection: $currentPage) {
-                welcomePage.tag(0)
-                branchPage.tag(1)
-                timelinePage.tag(2)
-                goalsPage.tag(3)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(.spring(response: 0.4), value: currentPage)
-            .onChange(of: currentPage) { _, newValue in
-                AnalyticsService.shared.log(.onboardingStepViewed, properties: ["step": String(newValue)])
-            }
-
-            if currentPage == 3 {
-                inlineDisclaimerBlock
-                    .padding(.horizontal, 24)
-                    .padding(.top, 4)
-                    .padding(.bottom, 4)
-                    .background(Color(.systemGroupedBackground))
-            }
-
-            if currentPage > 0 {
-                if currentPage == 3 && !disclaimerAccepted {
-                    Text("Accept the disclaimer above to continue")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.bottom, 2)
-                        .transition(.opacity)
-                }
-                bottomBar
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 16)
-            }
-        }
-        .background(currentPage == 0 ? Color(red: 0.05, green: 0.12, blue: 0.05) : Color(.systemGroupedBackground))
-    }
-
-    @State private var welcomeAnimated: Bool = false
-
-
-    private var welcomePage: some View {
         ZStack {
-            Color(red: 0.05, green: 0.12, blue: 0.05)
-                .ignoresSafeArea()
-
-            MeshGradient(
-                width: 3, height: 3,
-                points: [
-                    [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
-                    [0.0, 0.5], [0.55, 0.45], [1.0, 0.5],
-                    [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
-                ],
-                colors: [
-                    Color(red: 0.05, green: 0.12, blue: 0.05),
-                    AppTheme.darkGreen,
-                    Color(red: 0.05, green: 0.12, blue: 0.05),
-                    AppTheme.darkGreen,
-                    AppTheme.gold.opacity(0.15),
-                    Color(red: 0.05, green: 0.12, blue: 0.05),
-                    Color(red: 0.05, green: 0.12, blue: 0.05),
-                    AppTheme.darkGreen,
-                    Color(red: 0.05, green: 0.12, blue: 0.05)
-                ]
+            LinearGradient(
+                colors: [AppTheme.darkGreen, Color(.systemBackground)],
+                startPoint: .top,
+                endPoint: .bottom
             )
             .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                Spacer()
-
-                VStack(spacing: 36) {
-                    VStack(spacing: 20) {
-                        Image(systemName: "arrow.up.forward.circle.fill")
-                            .font(.system(size: 72, weight: .thin))
-                            .foregroundStyle(AppTheme.gold)
-                            .shadow(color: AppTheme.gold.opacity(0.4), radius: 20, y: 8)
-                            .scaleEffect(welcomeAnimated ? 1.0 : 0.3)
-                            .opacity(welcomeAnimated ? 1 : 0)
-                            .animation(.spring(response: 1.0, dampingFraction: 0.5).delay(0.3), value: welcomeAnimated)
-
-                        Text("DashTen")
-                            .font(.system(size: 52, weight: .bold))
-                            .foregroundStyle(.white)
-                            .opacity(welcomeAnimated ? 1 : 0)
-                            .offset(y: welcomeAnimated ? 0 : 30)
-                            .animation(.spring(response: 0.8, dampingFraction: 0.7).delay(0.7), value: welcomeAnimated)
-                    }
-
-                    VStack(spacing: 8) {
-                        Text("Your transition. Your terms.")
-                            .font(.title3.weight(.bold))
-                            .foregroundStyle(.white.opacity(0.9))
-                            .opacity(welcomeAnimated ? 1 : 0)
-                            .animation(.spring(response: 0.8).delay(1.2), value: welcomeAnimated)
-
-                        Text("Plan, track, and take action — all in one place.")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white.opacity(0.7))
-                            .multilineTextAlignment(.center)
-                            .opacity(welcomeAnimated ? 1 : 0)
-                            .animation(.spring(response: 0.8).delay(1.4), value: welcomeAnimated)
-                    }
+                if currentPage > 0 {
+                    progressBar
+                        .padding(.horizontal, 24)
+                        .padding(.top, 16)
+                        .transition(.opacity)
                 }
 
-                Spacer()
-
-                VStack(spacing: 24) {
-                    HStack(spacing: 20) {
-                        FeatureIcon(icon: "map.fill", label: "Plan")
-                        FeatureIcon(icon: "checkmark.circle.fill", label: "Track")
-                        FeatureIcon(icon: "bolt.fill", label: "Act")
-                    }
-                    .opacity(welcomeAnimated ? 1 : 0)
-                    .offset(y: welcomeAnimated ? 0 : 20)
-                    .animation(.spring(response: 0.7).delay(2.0), value: welcomeAnimated)
-
-                    Button {
-                        withAnimation(.spring(response: 0.4)) { currentPage = 1 }
-                    } label: {
-                        Text("Begin Your Transition")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(AppTheme.darkGreen)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 18)
-                            .background(AppTheme.gold)
-                            .clipShape(Capsule())
-                    }
-                    .opacity(welcomeAnimated ? 1 : 0)
-                    .offset(y: welcomeAnimated ? 0 : 20)
-                    .animation(.spring(response: 0.7).delay(2.3), value: welcomeAnimated)
-                    .sensoryFeedback(.impact(weight: .medium), trigger: currentPage)
+                TabView(selection: $currentPage) {
+                    welcomeScreen.tag(0)
+                    branchScreen.tag(1)
+                    timelineScreen.tag(2)
+                    painPointsScreen.tag(3)
+                    goalsScreen.tag(4)
+                    disclaimerScreen.tag(5)
                 }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 48)
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .animation(.spring(response: 0.45, dampingFraction: 0.85), value: currentPage)
+
+                bottomBar
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 32)
             }
         }
         .onAppear {
-            welcomeAnimated = true
-            AnalyticsService.shared.log(.onboardingStepViewed, properties: ["step": "0"])
+            withAnimation(.spring(response: 0.7)) { appeared = true }
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(store: store)
         }
     }
 
-    @State private var branchAnimated: Bool = false
+    // MARK: - Progress Bar
 
-    private var branchPage: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                VStack(spacing: 12) {
-                    Image(systemName: "shield.lefthalf.filled")
-                        .font(.system(size: 40))
-                        .foregroundStyle(AppTheme.forestGreen)
-                        .opacity(branchAnimated ? 1 : 0)
-                        .scaleEffect(branchAnimated ? 1 : 0.6)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: branchAnimated)
-
-                    Text("Your Background")
-                        .font(.title2.bold())
-                        .opacity(branchAnimated ? 1 : 0)
-                        .animation(.spring(response: 0.5).delay(0.2), value: branchAnimated)
-
-                    Text("Select your branch or affiliation")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.7))
-                        .opacity(branchAnimated ? 1 : 0)
-                        .animation(.spring(response: 0.5).delay(0.3), value: branchAnimated)
-                }
-                .padding(.top, 24)
-
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                    ForEach(Array(MilitaryBranch.allCases.enumerated()), id: \.element.id) { index, branch in
-                        Button {
-                            selectedBranch = branch
-                        } label: {
-                            VStack(spacing: 10) {
-                                Image(systemName: branch.icon)
-                                    .font(.title2)
-                                Text(branch.rawValue)
-                                    .font(.subheadline.weight(.bold))
-                                    .multilineTextAlignment(.center)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 18)
-                            .background(selectedBranch == branch ? AppTheme.forestGreen.opacity(0.12) : Color(.secondarySystemGroupedBackground))
-                            .foregroundStyle(selectedBranch == branch ? AppTheme.forestGreen : .primary)
-                            .clipShape(.rect(cornerRadius: 14))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .stroke(selectedBranch == branch ? AppTheme.forestGreen : .clear, lineWidth: 2)
-                            )
-                        }
-                        .sensoryFeedback(.selection, trigger: selectedBranch)
-                        .opacity(branchAnimated ? 1 : 0)
-                        .offset(y: branchAnimated ? 0 : 16)
-                        .animation(.spring(response: 0.5).delay(0.3 + Double(index) * 0.04), value: branchAnimated)
-                    }
-                }
-            }
-            .padding(.horizontal, 24)
-        }
-        .scrollIndicators(.hidden)
-        .onAppear { branchAnimated = true }
-    }
-
-    @State private var timelineAnimated: Bool = false
-
-    private var timelinePage: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                VStack(spacing: 12) {
-                    Image(systemName: "calendar.circle.fill")
-                        .font(.system(size: 40))
-                        .foregroundStyle(AppTheme.forestGreen)
-                        .opacity(timelineAnimated ? 1 : 0)
-                        .scaleEffect(timelineAnimated ? 1 : 0.6)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: timelineAnimated)
-
-                    Text("Where Are You?")
-                        .font(.title2.bold())
-                        .opacity(timelineAnimated ? 1 : 0)
-                        .animation(.spring(response: 0.5).delay(0.2), value: timelineAnimated)
-
-                    Text("How far are you from separation or retirement?")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.7))
-                        .multilineTextAlignment(.center)
-                        .opacity(timelineAnimated ? 1 : 0)
-                        .animation(.spring(response: 0.5).delay(0.3), value: timelineAnimated)
-                }
-                .padding(.top, 24)
-
-                VStack(spacing: 10) {
-                    ForEach(Array(TransitionTimeline.allCases.enumerated()), id: \.element.id) { index, timeline in
-                        Button {
-                            selectedTimeline = timeline
-                        } label: {
-                            HStack(spacing: 14) {
-                                Image(systemName: timeline.icon)
-                                    .font(.title3)
-                                    .frame(width: 36)
-                                Text(timeline.rawValue)
-                                    .font(.body.weight(.bold))
-                                Spacer()
-                                if selectedTimeline == timeline {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(AppTheme.forestGreen)
-                                }
-                            }
-                            .padding(16)
-                            .background(selectedTimeline == timeline ? AppTheme.forestGreen.opacity(0.12) : Color(.secondarySystemGroupedBackground))
-                            .foregroundStyle(selectedTimeline == timeline ? AppTheme.forestGreen : .primary)
-                            .clipShape(.rect(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(selectedTimeline == timeline ? AppTheme.forestGreen : .clear, lineWidth: 2)
-                            )
-                        }
-                        .sensoryFeedback(.selection, trigger: selectedTimeline)
-                        .opacity(timelineAnimated ? 1 : 0)
-                        .offset(y: timelineAnimated ? 0 : 16)
-                        .animation(.spring(response: 0.5).delay(0.3 + Double(index) * 0.06), value: timelineAnimated)
-                    }
-                }
-
-                if selectedTimeline != nil && selectedTimeline != .separated {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(dateLabel)
-                            .font(.subheadline.weight(.bold))
-                        DatePicker("", selection: $separationDate, displayedComponents: .date)
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 12))
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-                }
-
-                if selectedTimeline == .separated {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Which best describes you?")
-                            .font(.subheadline.weight(.bold))
-                        ForEach(PostServiceStatus.allCases) { status in
-                            Button {
-                                selectedPostServiceStatus = status
-                            } label: {
-                                HStack(spacing: 12) {
-                                    Image(systemName: status.icon)
-                                        .font(.title3)
-                                        .frame(width: 32)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(status.rawValue)
-                                            .font(.subheadline.weight(.heavy))
-                                        Text(status.subtitle)
-                                            .font(.caption2.weight(.semibold))
-                                            .foregroundStyle(.secondary)
-                                            .multilineTextAlignment(.leading)
-                                    }
-                                    Spacer()
-                                    if selectedPostServiceStatus == status {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundStyle(AppTheme.forestGreen)
-                                    }
-                                }
-                                .padding(14)
-                                .background(selectedPostServiceStatus == status ? AppTheme.forestGreen.opacity(0.12) : Color(.secondarySystemGroupedBackground))
-                                .foregroundStyle(selectedPostServiceStatus == status ? AppTheme.forestGreen : .primary)
-                                .clipShape(.rect(cornerRadius: 12))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(selectedPostServiceStatus == status ? AppTheme.forestGreen : .clear, lineWidth: 2)
-                                )
-                            }
-                            .buttonStyle(.plain)
-                            .sensoryFeedback(.selection, trigger: selectedPostServiceStatus)
-                        }
-
-                        if selectedPostServiceStatus != nil {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(dateLabel)
-                                    .font(.subheadline.weight(.bold))
-                                DatePicker("", selection: $separationDate, in: ...Date(), displayedComponents: .date)
-                                    .datePickerStyle(.compact)
-                                    .labelsHidden()
-                            }
-                            .padding(16)
-                            .background(Color(.secondarySystemGroupedBackground))
-                            .clipShape(.rect(cornerRadius: 12))
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
-                        }
-                    }
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-                }
-            }
-            .padding(.horizontal, 24)
-        }
-        .scrollIndicators(.hidden)
-        .onAppear { timelineAnimated = true }
-    }
-
-    @State private var goalsAnimated: Bool = false
-
-    private var goalsPage: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                VStack(spacing: 12) {
-                    Image(systemName: "target")
-                        .font(.system(size: 40))
-                        .foregroundStyle(AppTheme.forestGreen)
-                        .opacity(goalsAnimated ? 1 : 0)
-                        .scaleEffect(goalsAnimated ? 1 : 0.6)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: goalsAnimated)
-
-                    Text("Your Goals")
-                        .font(.title2.bold())
-                        .opacity(goalsAnimated ? 1 : 0)
-                        .animation(.spring(response: 0.5).delay(0.2), value: goalsAnimated)
-
-                    Text("What matters most to you right now?\nSelect all that apply.")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary.opacity(0.7))
-                        .multilineTextAlignment(.center)
-                        .opacity(goalsAnimated ? 1 : 0)
-                        .animation(.spring(response: 0.5).delay(0.3), value: goalsAnimated)
-                }
-                .padding(.top, 24)
-
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-                    ForEach(Array(TransitionGoal.allCases.enumerated()), id: \.element.id) { index, goal in
-                        Button {
-                            if selectedGoals.contains(goal) {
-                                selectedGoals.remove(goal)
-                            } else {
-                                selectedGoals.insert(goal)
-                            }
-                        } label: {
-                            VStack(spacing: 8) {
-                                Image(systemName: goal.icon)
-                                    .font(.title3)
-                                Text(goal.rawValue)
-                                    .font(.caption.weight(.bold))
-                                    .multilineTextAlignment(.center)
-                                    .lineLimit(2)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .padding(.horizontal, 8)
-                            .background(selectedGoals.contains(goal) ? AppTheme.forestGreen.opacity(0.12) : Color(.secondarySystemGroupedBackground))
-                            .foregroundStyle(selectedGoals.contains(goal) ? AppTheme.forestGreen : .primary)
-                            .clipShape(.rect(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(selectedGoals.contains(goal) ? AppTheme.forestGreen : .clear, lineWidth: 2)
-                            )
-                        }
-                        .opacity(goalsAnimated ? 1 : 0)
-                        .offset(y: goalsAnimated ? 0 : 16)
-                        .animation(.spring(response: 0.5).delay(0.3 + Double(index) * 0.04), value: goalsAnimated)
-                    }
-                }
-
-                if !selectedGoals.isEmpty {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(AppTheme.forestGreen)
-                        Text("\(selectedGoals.count) goal\(selectedGoals.count == 1 ? "" : "s") selected")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(AppTheme.forestGreen)
-                    }
-                    .transition(.opacity.combined(with: .scale))
-                }
-            }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 16)
-        }
-        .scrollIndicators(.hidden)
-        .onAppear { goalsAnimated = true }
-    }
-
-    private var inlineDisclaimerBlock: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Planning tool only — not legal, medical, financial, or career advice. Always verify benefits through official sources. For crisis support, call 988.")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.primary.opacity(0.75))
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Button {
-                disclaimerAccepted.toggle()
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: disclaimerAccepted ? "checkmark.square.fill" : "square")
-                        .font(.title3)
-                        .foregroundStyle(disclaimerAccepted ? AppTheme.forestGreen : .primary.opacity(0.5))
-                    Text("I understand and accept these terms")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.primary)
-                    Spacer()
-                }
-                .frame(minHeight: 44)
-                .padding(.horizontal, 14)
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(.rect(cornerRadius: 12))
-            }
-            .sensoryFeedback(.selection, trigger: disclaimerAccepted)
-        }
-    }
-
-    private var dateLabel: String {
-        if selectedTimeline == .separated {
-            switch selectedPostServiceStatus {
-            case .retired: return "Retirement Date"
-            case .separated: return "Separation Date"
-            case .none: return "Date You Left Service"
+    private var progressBar: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color.white.opacity(0.15))
+                    .frame(height: 3)
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(LinearGradient(
+                        colors: [AppTheme.forestGreen, AppTheme.gold],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ))
+                    .frame(
+                        width: geo.size.width * (Double(currentPage) / Double(totalPages - 1)),
+                        height: 3
+                    )
+                    .animation(.spring(response: 0.5), value: currentPage)
             }
         }
-        // Pre-separation: contextual label based on status they pick later? Default to estimated separation.
-        return "Estimated Separation Date"
+        .frame(height: 3)
     }
 
-    private var canAdvance: Bool {
-        switch currentPage {
-        case 0: true
-        case 1: selectedBranch != nil
-        case 2: selectedTimeline != nil && (selectedTimeline != .separated || selectedPostServiceStatus != nil)
-        case 3: !selectedGoals.isEmpty && disclaimerAccepted
-        default: false
-        }
-    }
+    // MARK: - Bottom Bar
 
     private var bottomBar: some View {
         HStack {
-            if currentPage > 1 {
+            if currentPage > 0 {
                 Button {
-                    withAnimation { currentPage -= 1 }
+                    withAnimation(.spring(response: 0.4)) { currentPage -= 1 }
                 } label: {
-                    Text("Back")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.primary.opacity(0.7))
-                        .frame(minWidth: 64, minHeight: 44, alignment: .leading)
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.caption.weight(.bold))
+                        Text("Back")
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .foregroundStyle(.white.opacity(0.7))
+                    .frame(minWidth: 44, minHeight: 44)
                 }
             }
             Spacer()
             Button {
-                if currentPage < totalPages - 1 {
-                    withAnimation { currentPage += 1 }
-                } else {
-                    completeOnboarding()
+                if canAdvance {
+                    if currentPage < totalPages - 1 {
+                        withAnimation(.spring(response: 0.4)) { currentPage += 1 }
+                    } else {
+                        completeOnboarding()
+                    }
                 }
             } label: {
-                Text(currentPage == totalPages - 1 ? "Start My Plan" : "Continue")
+                Text(ctaLabel)
                     .font(.headline.weight(.bold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 14)
-                    .background(canAdvance ? AppTheme.forestGreen : AppTheme.forestGreen.opacity(0.4))
+                    .background(
+                        canAdvance
+                            ? LinearGradient(
+                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                                startPoint: .leading,
+                                endPoint: .trailing)
+                            : LinearGradient(
+                                colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.4)],
+                                startPoint: .leading,
+                                endPoint: .trailing)
+                    )
                     .clipShape(Capsule())
             }
             .disabled(!canAdvance)
             .sensoryFeedback(.impact(weight: .medium), trigger: currentPage)
+            .scaleEffect(canAdvance ? 1.0 : 0.95)
+            .animation(.spring(response: 0.3), value: canAdvance)
         }
     }
 
+    private var ctaLabel: String {
+        switch currentPage {
+        case 0: return "Let's Go"
+        case totalPages - 1: return "Enter DashTen"
+        default: return "Continue"
+        }
+    }
+
+    private var canAdvance: Bool {
+        switch currentPage {
+        case 0: return true
+        case 1: return selectedBranch != nil
+        case 2: return selectedTimeline != nil && (selectedTimeline != .separated || selectedPostServiceStatus != nil)
+        case 3: return true
+        case 4: return !selectedGoals.isEmpty
+        case 5: return disclaimerAccepted
+        default: return false
+        }
+    }
+
+    // MARK: - SCREEN 1: WELCOME
+
+    private var welcomeScreen: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                Spacer(minLength: 40)
+
+                ZStack {
+                    Circle()
+                        .fill(AppTheme.forestGreen.opacity(0.25))
+                        .frame(width: 140, height: 140)
+                        .blur(radius: 20)
+                        .scaleEffect(appeared ? 1.2 : 0.8)
+                        .animation(
+                            .easeInOut(duration: 2.5).repeatForever(autoreverses: true),
+                            value: appeared
+                        )
+
+                    Circle()
+                        .fill(LinearGradient(
+                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ))
+                        .frame(width: 100, height: 100)
+                        .overlay(
+                            Image(systemName: "map.fill")
+                                .font(.system(size: 42, weight: .bold))
+                                .foregroundStyle(.white)
+                        )
+                        .shadow(color: AppTheme.forestGreen.opacity(0.5), radius: 20, y: 8)
+                }
+                .scaleEffect(appeared ? 1 : 0.6)
+                .opacity(appeared ? 1 : 0)
+                .animation(.spring(response: 0.7, dampingFraction: 0.7), value: appeared)
+
+                Spacer(minLength: 32)
+
+                VStack(spacing: 16) {
+                    Text("Your transition starts here.")
+                        .font(.system(size: 36, weight: .heavy))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 20)
+                        .animation(.spring(response: 0.6).delay(0.15), value: appeared)
+
+                    Text("A personalized roadmap, the right tools, and a clear plan — so you walk out confident, not guessing.")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.white.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 8)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 20)
+                        .animation(.spring(response: 0.6).delay(0.25), value: appeared)
+                }
+
+                Spacer(minLength: 40)
+
+                VStack(spacing: 12) {
+                    ForEach(Array(welcomeProps.enumerated()), id: \.0) { i, prop in
+                        HStack(spacing: 14) {
+                            Image(systemName: prop.0)
+                                .font(.body.weight(.semibold))
+                                .foregroundStyle(AppTheme.gold)
+                                .frame(width: 32, height: 32)
+                                .background(AppTheme.gold.opacity(0.15))
+                                .clipShape(.rect(cornerRadius: 8))
+                            Text(prop.1)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.white.opacity(0.9))
+                                .fixedSize(horizontal: false, vertical: true)
+                            Spacer()
+                        }
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 16)
+                        .animation(
+                            .spring(response: 0.5).delay(0.3 + Double(i) * 0.1),
+                            value: appeared
+                        )
+                    }
+                }
+                .padding(20)
+                .background(.white.opacity(0.06))
+                .clipShape(.rect(cornerRadius: 16))
+
+                Spacer(minLength: 24)
+            }
+            .padding(.horizontal, 24)
+        }
+    }
+
+    private let welcomeProps: [(String, String)] = [
+        ("map.fill", "A week-by-week roadmap built around your separation date"),
+        ("shield.lefthalf.filled", "Know every benefit you earned before you walk out"),
+        ("dollarsign.circle.fill", "Financial tools that show you exactly where you stand"),
+    ]
+
+    // MARK: - SCREEN 2: BRANCH
+
+    private var branchScreen: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 28) {
+                screenHeader(
+                    "Which branch did you serve?",
+                    subtitle: "Your roadmap, resume translator, and tools adapt to match."
+                )
+                LazyVGrid(
+                    columns: [GridItem(.flexible()), GridItem(.flexible())],
+                    spacing: 12
+                ) {
+                    ForEach(MilitaryBranch.allCases) { branch in
+                        branchOption(branch)
+                    }
+                }
+                Spacer(minLength: 24)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
+        }
+    }
+
+    private func branchOption(_ branch: MilitaryBranch) -> some View {
+        let isSelected = selectedBranch == branch
+        return Button {
+            withAnimation(.spring(response: 0.3)) {
+                selectedBranch = branch
+            }
+        } label: {
+            VStack(spacing: 10) {
+                Image(systemName: branch.icon)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
+                    .frame(width: 52, height: 52)
+                    .background(
+                        isSelected
+                            ? LinearGradient(
+                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing)
+                            : LinearGradient(
+                                colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.08)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing)
+                    )
+                    .clipShape(.rect(cornerRadius: 14))
+                    .shadow(
+                        color: isSelected ? AppTheme.forestGreen.opacity(0.4) : .clear,
+                        radius: 8, y: 4
+                    )
+                Text(branch.rawValue)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(isSelected ? .primary : .secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(
+                isSelected
+                    ? Color(.secondarySystemGroupedBackground)
+                    : Color(.secondarySystemGroupedBackground).opacity(0.5)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            )
+            .clipShape(.rect(cornerRadius: 14))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .scaleEffect(isSelected ? 1.02 : 1.0)
+        .animation(.spring(response: 0.3), value: isSelected)
+        .sensoryFeedback(.selection, trigger: isSelected)
+    }
+
+    // MARK: - SCREEN 3: TIMELINE
+
+    private var timelineScreen: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                screenHeader(
+                    "Where are you in your transition?",
+                    subtitle: "Your roadmap meets you exactly where you are."
+                )
+
+                VStack(spacing: 10) {
+                    ForEach(TransitionTimeline.allCases) { timeline in
+                        timelineOption(timeline)
+                    }
+                }
+
+                if selectedTimeline == .separated {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Are you separated or retired?")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.primary)
+                        ForEach(PostServiceStatus.allCases) { status in
+                            postServiceOption(status)
+                        }
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
+                if let t = selectedTimeline, t != .separated {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Approximate separation date")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.primary)
+                        DatePicker(
+                            "",
+                            selection: $separationDate,
+                            in: Date()...,
+                            displayedComponents: [.date]
+                        )
+                        .datePickerStyle(.graphical)
+                        .tint(AppTheme.forestGreen)
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(.rect(cornerRadius: 14))
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
+                Spacer(minLength: 24)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
+            .animation(.spring(response: 0.4), value: selectedTimeline)
+        }
+    }
+
+    private func timelineOption(_ timeline: TransitionTimeline) -> some View {
+        let isSelected = selectedTimeline == timeline
+        return Button {
+            withAnimation(.spring(response: 0.35)) {
+                selectedTimeline = timeline
+                if timeline != .separated { selectedPostServiceStatus = nil }
+            }
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: timeline.icon)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        isSelected
+                            ? LinearGradient(
+                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing)
+                            : LinearGradient(
+                                colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.12)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing)
+                    )
+                    .clipShape(.rect(cornerRadius: 10))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(timeline.rawValue)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text(timeline.description)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.forestGreen) : AnyShapeStyle(HierarchicalShapeStyle.tertiary))
+            }
+            .padding(14)
+            .background(Color(.secondarySystemGroupedBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            )
+            .clipShape(.rect(cornerRadius: 14))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: isSelected)
+    }
+
+    private func postServiceOption(_ status: PostServiceStatus) -> some View {
+        let isSelected = selectedPostServiceStatus == status
+        return Button {
+            withAnimation(.spring(response: 0.3)) {
+                selectedPostServiceStatus = status
+            }
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: status.icon)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        isSelected
+                            ? LinearGradient(
+                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing)
+                            : LinearGradient(
+                                colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.12)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing)
+                    )
+                    .clipShape(.rect(cornerRadius: 10))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(status.rawValue)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text(status.subtitle)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.forestGreen) : AnyShapeStyle(HierarchicalShapeStyle.tertiary))
+            }
+            .padding(14)
+            .background(Color(.secondarySystemGroupedBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            )
+            .clipShape(.rect(cornerRadius: 12))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: isSelected)
+    }
+
+    // MARK: - Shared
+
+    private func screenHeader(_ title: String, subtitle: String) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.system(size: 28, weight: .heavy))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(subtitle)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    // MARK: - Complete Onboarding
+
     private func completeOnboarding() {
-        AnalyticsService.shared.log(.onboardingCompleted)
         storage.profile.branch = selectedBranch
         storage.profile.timeline = selectedTimeline
-        // Always store the date — for post-service users this represents when they left service.
-        storage.profile.separationDate = separationDate
+        storage.profile.separationDate = selectedTimeline == .separated ? nil : separationDate
         if selectedTimeline == .separated, let status = selectedPostServiceStatus {
             storage.applyPostServiceStatus(status)
         }
@@ -558,34 +519,13 @@ struct OnboardingView: View {
         storage.profile.hasAcceptedDisclaimer = true
         storage.profile.hasCompletedOnboarding = true
         dismiss()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            paywall.present(source: "onboarding_complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            showPaywall = true
         }
     }
 
-    private func skipOnboarding() {
-        AnalyticsService.shared.log(.featureUsed, properties: ["name": "onboarding_skipped", "step": String(currentPage)])
-        storage.profile.hasAcceptedDisclaimer = true
-        storage.profile.hasCompletedOnboarding = true
-        dismiss()
-    }
-}
-
-struct FeatureIcon: View {
-    let icon: String
-    let label: String
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(AppTheme.gold)
-                .frame(width: 52, height: 52)
-                .background(.white.opacity(0.1))
-                .clipShape(Circle())
-            Text(label)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.white.opacity(0.9))
-        }
-    }
+    // Screens added in Part 2
+    private var painPointsScreen: some View { EmptyView() }
+    private var goalsScreen: some View { EmptyView() }
+    private var disclaimerScreen: some View { EmptyView() }
 }
