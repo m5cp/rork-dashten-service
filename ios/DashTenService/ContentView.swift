@@ -77,7 +77,11 @@ struct ContentView: View {
             handleDeepLink(url)
         }
         .onAppear {
+            selectedTab = 0
             consumePendingIntents()
+        }
+        .onChange(of: storage.profile.hasCompletedOnboarding) { _, completed in
+            if completed { selectedTab = 0 }
         }
     }
 
