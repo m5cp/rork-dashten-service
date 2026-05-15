@@ -79,7 +79,7 @@ struct OnboardingView: View {
         .onAppear {
             withAnimation(.spring(response: 0.7)) { appeared = true }
         }
-        .sheet(isPresented: $showPaywall) {
+        .fullScreenCover(isPresented: $showPaywall) {
             PaywallView(store: store)
         }
     }
