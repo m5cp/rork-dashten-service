@@ -19,20 +19,17 @@ struct OnboardingView: View {
 
     private let totalPages = 6
 
+    // MARK: - Body
+
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [AppTheme.darkGreen, Color(.systemBackground)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            backgroundGradient
 
             VStack(spacing: 0) {
                 if currentPage > 0 {
                     progressBar
                         .padding(.horizontal, 24)
-                        .padding(.top, 16)
+                        .padding(.top, 12)
                         .transition(.opacity)
                 }
 
@@ -48,8 +45,9 @@ struct OnboardingView: View {
                 .animation(.spring(response: 0.45, dampingFraction: 0.85), value: currentPage)
 
                 bottomBar
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 32)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
+                    .padding(.bottom, 24)
             }
         }
         .overlay(alignment: .topTrailing) {
@@ -59,16 +57,16 @@ struct OnboardingView: View {
                 } label: {
                     Text("Skip")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(.white.opacity(0.7))
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
                         .frame(minWidth: 44, minHeight: 44)
                 }
-                .padding(.top, 8)
+                .padding(.top, 6)
                 .padding(.trailing, 8)
                 .confirmationDialog("Skip onboarding?", isPresented: $showSkipConfirm) {
                     Button("Skip to App") {
-                        completeOnboarding()
+                        finishOnboarding()
                     }
                     Button("Cancel", role: .cancel) {}
                 } message: {
@@ -79,9 +77,37 @@ struct OnboardingView: View {
         .onAppear {
             withAnimation(.spring(response: 0.7)) { appeared = true }
         }
-        .fullScreenCover(isPresented: $showPaywall) {
+        .fullScreenCover(isPresented: $showPaywall, onDismiss: {
+            dismiss()
+        }) {
             PaywallView(store: store)
         }
+    }
+
+    // MARK: - Background
+
+    private var backgroundGradient: some View {
+        LinearGradient(
+            colors: [
+                AppTheme.darkGreen,
+                AppTheme.forestGreen.opacity(0.85),
+                AppTheme.darkGreen
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(
+            // Subtle radial glow for depth
+            RadialGradient(
+                colors: [AppTheme.forestGreen.opacity(0.35), .clear],
+                center: .top,
+                startRadius: 20,
+                endRadius: 400
+            )
+            .blendMode(.plusLighter)
+            .opacity(0.4)
+        )
+        .ignoresSafeArea()
     }
 
     // MARK: - Progress Bar
@@ -90,11 +116,11 @@ struct OnboardingView: View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.white.opacity(0.15))
+                    .fill(Color.white.opacity(0.18))
                     .frame(height: 3)
                 RoundedRectangle(cornerRadius: 2)
                     .fill(LinearGradient(
-                        colors: [AppTheme.forestGreen, AppTheme.gold],
+                        colors: [AppTheme.gold, .white],
                         startPoint: .leading,
                         endPoint: .trailing
                     ))
@@ -108,55 +134,74 @@ struct OnboardingView: View {
         .frame(height: 3)
     }
 
-    // MARK: - Bottom Bar
+    // MARK: - Bottom Bar (balanced Back + Continue)
 
     private var bottomBar: some View {
-        HStack {
-            if currentPage > 0 {
-                Button {
+        HStack(spacing: 12) {
+            // Back — outlined white pill, same height/prominence as Continue
+            Button {
+                if currentPage > 0 {
                     withAnimation(.spring(response: 0.4)) { currentPage -= 1 }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.caption.weight(.bold))
-                        Text("Back")
-                            .font(.subheadline.weight(.semibold))
-                    }
-                    .foregroundStyle(.white.opacity(0.7))
-                    .frame(minWidth: 44, minHeight: 44)
                 }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "chevron.left")
+                        .font(.subheadline.weight(.bold))
+                    Text("Back")
+                        .font(.headline.weight(.bold))
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    Capsule().fill(Color.white.opacity(0.12))
+                )
+                .overlay(
+                    Capsule().stroke(Color.white.opacity(0.5), lineWidth: 1.5)
+                )
             }
-            Spacer()
+            .opacity(currentPage > 0 ? 1.0 : 0.0)
+            .disabled(currentPage == 0)
+            .frame(minHeight: 44)
+
+            // Continue — filled green pill
             Button {
                 if canAdvance {
                     if currentPage < totalPages - 1 {
                         withAnimation(.spring(response: 0.4)) { currentPage += 1 }
                     } else {
-                        completeOnboarding()
+                        finishOnboarding()
                     }
                 }
             } label: {
-                Text(ctaLabel)
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 14)
-                    .background(
-                        canAdvance
-                            ? LinearGradient(
+                HStack(spacing: 6) {
+                    Text(ctaLabel)
+                        .font(.headline.weight(.bold))
+                    if currentPage < totalPages - 1 {
+                        Image(systemName: "chevron.right")
+                            .font(.subheadline.weight(.bold))
+                    }
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    Capsule()
+                        .fill(
+                            canAdvance
+                            ? AnyShapeStyle(LinearGradient(
                                 colors: [AppTheme.forestGreen, AppTheme.darkGreen],
                                 startPoint: .leading,
-                                endPoint: .trailing)
-                            : LinearGradient(
-                                colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.4)],
-                                startPoint: .leading,
-                                endPoint: .trailing)
-                    )
-                    .clipShape(Capsule())
+                                endPoint: .trailing))
+                            : AnyShapeStyle(Color.white.opacity(0.18))
+                        )
+                )
+                .shadow(color: canAdvance ? AppTheme.forestGreen.opacity(0.5) : .clear, radius: 12, y: 4)
             }
             .disabled(!canAdvance)
+            .frame(minHeight: 44)
             .sensoryFeedback(.impact(weight: .medium), trigger: currentPage)
-            .scaleEffect(canAdvance ? 1.0 : 0.95)
+            .scaleEffect(canAdvance ? 1.0 : 0.97)
             .animation(.spring(response: 0.3), value: canAdvance)
         }
     }
@@ -181,127 +226,132 @@ struct OnboardingView: View {
         }
     }
 
-    // MARK: - SCREEN 1: WELCOME
+    // MARK: - SCREEN 1: WELCOME (tighter rhythm)
 
     private var welcomeScreen: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                Spacer(minLength: 40)
+        VStack(spacing: 0) {
+            Spacer(minLength: 8)
 
-                ZStack {
-                    Circle()
-                        .fill(AppTheme.forestGreen.opacity(0.25))
-                        .frame(width: 140, height: 140)
-                        .blur(radius: 20)
-                        .scaleEffect(appeared ? 1.2 : 0.8)
-                        .animation(
-                            .easeInOut(duration: 2.5).repeatForever(autoreverses: true),
-                            value: appeared
-                        )
+            ZStack {
+                Circle()
+                    .fill(AppTheme.forestGreen.opacity(0.35))
+                    .frame(width: 140, height: 140)
+                    .blur(radius: 22)
+                    .scaleEffect(appeared ? 1.15 : 0.85)
+                    .animation(
+                        .easeInOut(duration: 2.5).repeatForever(autoreverses: true),
+                        value: appeared
+                    )
 
-                    Circle()
-                        .fill(LinearGradient(
-                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ))
-                        .frame(width: 100, height: 100)
-                        .overlay(
-                            Image(systemName: "map.fill")
-                                .font(.system(size: 42, weight: .bold))
-                                .foregroundStyle(.white)
-                        )
-                        .shadow(color: AppTheme.forestGreen.opacity(0.5), radius: 20, y: 8)
-                }
-                .scaleEffect(appeared ? 1 : 0.6)
-                .opacity(appeared ? 1 : 0)
-                .animation(.spring(response: 0.7, dampingFraction: 0.7), value: appeared)
-
-                Spacer(minLength: 32)
-
-                VStack(spacing: 16) {
-                    Text("Your transition starts here.")
-                        .font(.system(size: 36, weight: .heavy))
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.center)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 20)
-                        .animation(.spring(response: 0.6).delay(0.15), value: appeared)
-
-                    Text("A personalized roadmap, the right tools, and a clear plan — so you walk out confident, not guessing.")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.white.opacity(0.8))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 8)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 20)
-                        .animation(.spring(response: 0.6).delay(0.25), value: appeared)
-                }
-
-                Spacer(minLength: 40)
-
-                VStack(spacing: 12) {
-                    ForEach(Array(welcomeProps.enumerated()), id: \.0) { i, prop in
-                        HStack(spacing: 14) {
-                            Image(systemName: prop.0)
-                                .font(.body.weight(.semibold))
-                                .foregroundStyle(.white)
-                                .frame(width: 32, height: 32)
-                                .background(Color.white.opacity(0.15))
-                                .clipShape(.rect(cornerRadius: 8))
-                            Text(prop.1)
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.white)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Spacer()
-                        }
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 16)
-                        .animation(
-                            .spring(response: 0.5).delay(0.3 + Double(i) * 0.1),
-                            value: appeared
-                        )
-                    }
-                }
-                .padding(20)
-                .background(.white.opacity(0.12))
-                .clipShape(.rect(cornerRadius: 16))
-
-                Spacer(minLength: 24)
+                Circle()
+                    .fill(LinearGradient(
+                        colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                    .frame(width: 92, height: 92)
+                    .overlay(
+                        Image(systemName: "map.fill")
+                            .font(.system(size: 38, weight: .bold))
+                            .foregroundStyle(.white)
+                    )
+                    .overlay(
+                        Circle().stroke(Color.white.opacity(0.25), lineWidth: 1)
+                    )
+                    .shadow(color: AppTheme.forestGreen.opacity(0.5), radius: 20, y: 8)
             }
-            .padding(.horizontal, 24)
+            .scaleEffect(appeared ? 1 : 0.6)
+            .opacity(appeared ? 1 : 0)
+            .animation(.spring(response: 0.7, dampingFraction: 0.7), value: appeared)
+
+            Spacer(minLength: 20)
+
+            VStack(spacing: 12) {
+                Text("Your transition starts here.")
+                    .font(.system(size: 30, weight: .heavy))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(appeared ? 1 : 0)
+                    .offset(y: appeared ? 0 : 20)
+                    .animation(.spring(response: 0.6).delay(0.15), value: appeared)
+
+                Text("A personalized roadmap, the right tools, and a clear plan, so you walk out confident, not guessing.")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 8)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(appeared ? 1 : 0)
+                    .offset(y: appeared ? 0 : 20)
+                    .animation(.spring(response: 0.6).delay(0.25), value: appeared)
+            }
+
+            Spacer(minLength: 20)
+
+            VStack(spacing: 10) {
+                ForEach(Array(welcomeProps.enumerated()), id: \.0) { i, prop in
+                    HStack(spacing: 12) {
+                        Image(systemName: prop.0)
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 32, height: 32)
+                            .background(Color.white.opacity(0.18))
+                            .clipShape(.rect(cornerRadius: 8))
+                        Text(prop.1)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                    }
+                    .opacity(appeared ? 1 : 0)
+                    .offset(y: appeared ? 0 : 16)
+                    .animation(
+                        .spring(response: 0.5).delay(0.3 + Double(i) * 0.1),
+                        value: appeared
+                    )
+                }
+            }
+            .padding(16)
+            .background(Color.white.opacity(0.10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
+            )
+            .clipShape(.rect(cornerRadius: 16))
+
+            Spacer(minLength: 8)
         }
+        .padding(.horizontal, 24)
+        .padding(.top, 8)
     }
 
     private let welcomeProps: [(String, String)] = [
-        ("map.fill", "A week-by-week roadmap built around your separation date"),
+        ("map.fill", "A week by week roadmap built around your separation date"),
         ("shield.lefthalf.filled", "Know every benefit you earned before you walk out"),
         ("dollarsign.circle.fill", "Financial tools that show you exactly where you stand"),
     ]
 
-    // MARK: - SCREEN 2: BRANCH
+    // MARK: - SCREEN 2: BRANCH (compact 2-col grid)
 
     private var branchScreen: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
-                screenHeader(
-                    "Which branch did you serve?",
-                    subtitle: "Your roadmap, resume translator, and tools adapt to match."
-                )
-                LazyVGrid(
-                    columns: [GridItem(.flexible()), GridItem(.flexible())],
-                    spacing: 12
-                ) {
-                    ForEach(MilitaryBranch.allCases) { branch in
-                        branchOption(branch)
-                    }
+        VStack(alignment: .leading, spacing: 16) {
+            screenHeader(
+                "Which branch did you serve?",
+                subtitle: "Your roadmap, resume translator, and tools adapt to match."
+            )
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+                spacing: 10
+            ) {
+                ForEach(MilitaryBranch.allCases) { branch in
+                    branchOption(branch)
                 }
-                Spacer(minLength: 24)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
+            Spacer(minLength: 0)
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
     }
 
     private func branchOption(_ branch: MilitaryBranch) -> some View {
@@ -311,45 +361,36 @@ struct OnboardingView: View {
                 selectedBranch = branch
             }
         } label: {
-            VStack(spacing: 10) {
+            HStack(spacing: 10) {
                 Image(systemName: branch.icon)
-                    .font(.title2.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
-                    .frame(width: 52, height: 52)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 36, height: 36)
                     .background(
                         isSelected
-                            ? LinearGradient(
-                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing)
-                            : LinearGradient(
-                                colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.08)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing)
+                        ? AnyShapeStyle(LinearGradient(
+                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing))
+                        : AnyShapeStyle(Color.white.opacity(0.18))
                     )
-                    .clipShape(.rect(cornerRadius: 14))
-                    .shadow(
-                        color: isSelected ? AppTheme.forestGreen.opacity(0.4) : .clear,
-                        radius: 8, y: 4
-                    )
+                    .clipShape(.rect(cornerRadius: 10))
                 Text(branch.rawValue)
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(isSelected ? .primary : .secondary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(
-                isSelected
-                    ? Color(.secondarySystemGroupedBackground)
-                    : Color(.secondarySystemGroupedBackground).opacity(0.85)
-            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(glassFill(isSelected: isSelected))
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+                    .stroke(isSelected ? AppTheme.gold : Color.white.opacity(0.18), lineWidth: isSelected ? 2 : 1)
             )
             .clipShape(.rect(cornerRadius: 14))
+            .shadow(color: isSelected ? AppTheme.forestGreen.opacity(0.45) : .clear, radius: 10, y: 4)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -358,59 +399,67 @@ struct OnboardingView: View {
         .sensoryFeedback(.selection, trigger: isSelected)
     }
 
-    // MARK: - SCREEN 3: TIMELINE
+    // MARK: - SCREEN 3: TIMELINE (compact rows, all fit)
 
     private var timelineScreen: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                screenHeader(
-                    "Where are you in your transition?",
-                    subtitle: "Your roadmap meets you exactly where you are."
-                )
+        VStack(alignment: .leading, spacing: 14) {
+            screenHeader(
+                "Where are you in your transition?",
+                subtitle: "Your roadmap meets you exactly where you are."
+            )
 
-                VStack(spacing: 10) {
-                    ForEach(TransitionTimeline.allCases) { timeline in
-                        timelineOption(timeline)
-                    }
+            VStack(spacing: 8) {
+                ForEach(TransitionTimeline.allCases) { timeline in
+                    timelineOption(timeline)
                 }
-
-                if selectedTimeline == .separated {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Are you separated or retired?")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary)
-                        ForEach(PostServiceStatus.allCases) { status in
-                            postServiceOption(status)
-                        }
-                    }
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-
-                if let t = selectedTimeline, t != .separated {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Approximate separation date")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary)
-                        DatePicker(
-                            "",
-                            selection: $separationDate,
-                            in: Date()...,
-                            displayedComponents: [.date]
-                        )
-                        .datePickerStyle(.graphical)
-                        .tint(AppTheme.forestGreen)
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(.rect(cornerRadius: 14))
-                    }
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-
-                Spacer(minLength: 24)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
-            .animation(.spring(response: 0.4), value: selectedTimeline)
+
+            if selectedTimeline == .separated {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Are you separated or retired?")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.white)
+                    ForEach(PostServiceStatus.allCases) { status in
+                        postServiceOption(status)
+                    }
+                }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
+            if let t = selectedTimeline, t != .separated {
+                HStack(spacing: 10) {
+                    Image(systemName: "calendar")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.white)
+                    Text("Separation date")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    DatePicker(
+                        "",
+                        selection: $separationDate,
+                        in: Date()...,
+                        displayedComponents: [.date]
+                    )
+                    .labelsHidden()
+                    .colorScheme(.dark)
+                    .tint(AppTheme.gold)
+                }
+                .padding(12)
+                .background(glassFill(isSelected: false))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                )
+                .clipShape(.rect(cornerRadius: 14))
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
+            Spacer(minLength: 0)
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
+        .animation(.spring(response: 0.4), value: selectedTimeline)
     }
 
     private func timelineOption(_ timeline: TransitionTimeline) -> some View {
@@ -421,45 +470,13 @@ struct OnboardingView: View {
                 if timeline != .separated { selectedPostServiceStatus = nil }
             }
         } label: {
-            HStack(spacing: 14) {
-                Image(systemName: timeline.icon)
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
-                    .frame(width: 36, height: 36)
-                    .background(
-                        isSelected
-                            ? LinearGradient(
-                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing)
-                            : LinearGradient(
-                                colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.12)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing)
-                    )
-                    .clipShape(.rect(cornerRadius: 10))
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(timeline.rawValue)
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.primary)
-                    Text(timeline.description)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer()
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.forestGreen) : AnyShapeStyle(HierarchicalShapeStyle.tertiary))
-            }
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            optionRow(
+                icon: timeline.icon,
+                title: timeline.rawValue,
+                subtitle: timeline.description,
+                isSelected: isSelected,
+                indicator: .radio
             )
-            .clipShape(.rect(cornerRadius: 14))
-            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: isSelected)
@@ -472,130 +489,48 @@ struct OnboardingView: View {
                 selectedPostServiceStatus = status
             }
         } label: {
-            HStack(spacing: 14) {
-                Image(systemName: status.icon)
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
-                    .frame(width: 36, height: 36)
-                    .background(
-                        isSelected
-                            ? LinearGradient(
-                                colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing)
-                            : LinearGradient(
-                                colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.12)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing)
-                    )
-                    .clipShape(.rect(cornerRadius: 10))
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(status.rawValue)
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.primary)
-                    Text(status.subtitle)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer()
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.forestGreen) : AnyShapeStyle(HierarchicalShapeStyle.tertiary))
-            }
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            optionRow(
+                icon: status.icon,
+                title: status.rawValue,
+                subtitle: status.subtitle,
+                isSelected: isSelected,
+                indicator: .radio
             )
-            .clipShape(.rect(cornerRadius: 12))
-            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: isSelected)
     }
 
-    // MARK: - Shared
-
-    private func screenHeader(_ title: String, subtitle: String) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.system(size: 28, weight: .heavy))
-                .foregroundStyle(.primary)
-                .fixedSize(horizontal: false, vertical: true)
-            Text(subtitle)
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.white.opacity(0.75))
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    // MARK: - Complete Onboarding
-
-    private func completeOnboarding() {
-        storage.profile.branch = selectedBranch
-        storage.profile.timeline = selectedTimeline
-        storage.profile.separationDate = selectedTimeline == .separated ? nil : separationDate
-        if selectedTimeline == .separated, let status = selectedPostServiceStatus {
-            storage.applyPostServiceStatus(status)
-        }
-        storage.profile.goals = Array(selectedGoals)
-        storage.profile.hasAcceptedDisclaimer = true
-        storage.profile.hasCompletedOnboarding = true
-        dismiss()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            showPaywall = true
-        }
-    }
-
-    // MARK: - SCREEN 4: PAIN POINTS
+    // MARK: - SCREEN 4: PAIN POINTS (compact rows)
 
     private var painPointsScreen: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                screenHeader(
-                    "What concerns you most?",
-                    subtitle: "Select all that apply. Your roadmap prioritizes these first."
-                )
+        VStack(alignment: .leading, spacing: 14) {
+            screenHeader(
+                "What concerns you most?",
+                subtitle: "Select all that apply. Your roadmap prioritizes these first."
+            )
 
-                VStack(spacing: 10) {
-                    ForEach(painPoints, id: \.0) { id, icon, label in
-                        painPointOption(id: id, icon: icon, label: label)
-                    }
+            VStack(spacing: 8) {
+                ForEach(painPoints, id: \.0) { id, icon, label in
+                    painPointOption(id: id, icon: icon, label: label)
                 }
-
-                if !selectedPainPoints.isEmpty {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(AppTheme.forestGreen)
-                        Text("Got it. Your roadmap will cover these first.")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(AppTheme.forestGreen)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(12)
-                    .background(AppTheme.forestGreen.opacity(0.08))
-                    .clipShape(.rect(cornerRadius: 10))
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-
-                Spacer(minLength: 24)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
-            .animation(.spring(response: 0.35), value: selectedPainPoints.count)
+
+            Spacer(minLength: 0)
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
+        .animation(.spring(response: 0.35), value: selectedPainPoints.count)
     }
 
     private let painPoints: [(String, String, String)] = [
-        ("resume", "doc.text.fill", "Translating my military experience to a civilian resume"),
-        ("benefits", "shield.fill", "Understanding what benefits I have and how to use them"),
-        ("finance", "dollarsign.circle.fill", "Figuring out my financial situation after service"),
-        ("housing", "house.fill", "Housing — where to live and whether to rent or buy"),
-        ("career", "briefcase.fill", "Finding a job or career that fits my background"),
-        ("healthcare", "cross.fill", "Healthcare coverage after my military coverage ends"),
-        ("family", "person.3.fill", "Managing the impact on my family during the transition"),
+        ("resume", "doc.text.fill", "Translating my military experience"),
+        ("benefits", "shield.fill", "Understanding my benefits"),
+        ("finance", "dollarsign.circle.fill", "My financial situation after service"),
+        ("housing", "house.fill", "Housing, rent or buy decisions"),
+        ("career", "briefcase.fill", "Finding the right civilian career"),
+        ("healthcare", "cross.fill", "Healthcare coverage after service"),
+        ("family", "person.3.fill", "Family impact during transition"),
     ]
 
     private func painPointOption(id: String, icon: String, label: String) -> some View {
@@ -606,66 +541,38 @@ struct OnboardingView: View {
                 else { selectedPainPoints.insert(id) }
             }
         } label: {
-            HStack(spacing: 14) {
-                Image(systemName: icon)
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
-                    .frame(width: 36, height: 36)
-                    .background(
-                        isSelected
-                        ? LinearGradient(
-                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing)
-                        : LinearGradient(
-                            colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.12)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing)
-                    )
-                    .clipShape(.rect(cornerRadius: 10))
-                Text(label)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer()
-                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                    .font(.title3)
-                    .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.forestGreen) : AnyShapeStyle(HierarchicalShapeStyle.tertiary))
-            }
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            optionRow(
+                icon: icon,
+                title: label,
+                subtitle: nil,
+                isSelected: isSelected,
+                indicator: .check
             )
-            .clipShape(.rect(cornerRadius: 14))
-            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: isSelected)
     }
 
-    // MARK: - SCREEN 5: GOALS
+    // MARK: - SCREEN 5: GOALS (compact)
 
     private var goalsScreen: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                screenHeader(
-                    "What are you working toward?",
-                    subtitle: "Pick one or more. This shapes your weekly missions and tool recommendations."
-                )
+        VStack(alignment: .leading, spacing: 14) {
+            screenHeader(
+                "What are you working toward?",
+                subtitle: "Pick one or more. This shapes your weekly missions."
+            )
 
-                VStack(spacing: 10) {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 8) {
                     ForEach(TransitionGoal.allCases) { goal in
                         goalOption(goal)
                     }
                 }
-
-                Spacer(minLength: 24)
+                .padding(.bottom, 8)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
     }
 
     private func goalOption(_ goal: TransitionGoal) -> some View {
@@ -676,45 +583,13 @@ struct OnboardingView: View {
                 else { selectedGoals.insert(goal) }
             }
         } label: {
-            HStack(spacing: 14) {
-                Image(systemName: goal.icon)
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
-                    .frame(width: 36, height: 36)
-                    .background(
-                        isSelected
-                        ? LinearGradient(
-                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing)
-                        : LinearGradient(
-                            colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.12)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing)
-                    )
-                    .clipShape(.rect(cornerRadius: 10))
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(goal.rawValue)
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.primary)
-                    Text(goal.description)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer()
-                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                    .font(.title3)
-                    .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.forestGreen) : AnyShapeStyle(HierarchicalShapeStyle.tertiary))
-            }
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            optionRow(
+                icon: goal.icon,
+                title: goal.rawValue,
+                subtitle: nil,
+                isSelected: isSelected,
+                indicator: .check
             )
-            .clipShape(.rect(cornerRadius: 14))
-            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: isSelected)
@@ -723,112 +598,194 @@ struct OnboardingView: View {
     // MARK: - SCREEN 6: DISCLAIMER
 
     private var disclaimerScreen: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                screenHeader(
-                    "Almost there.",
-                    subtitle: "One quick acknowledgment before your roadmap is ready."
+        VStack(alignment: .leading, spacing: 14) {
+            screenHeader(
+                "Almost there.",
+                subtitle: "One quick acknowledgment before your roadmap is ready."
+            )
+
+            VStack(alignment: .leading, spacing: 12) {
+                disclaimerRow(
+                    "map.fill",
+                    "Your personalized roadmap is ready the moment you step in."
                 )
-
-                VStack(alignment: .leading, spacing: 16) {
-
-                    VStack(alignment: .leading, spacing: 14) {
-                        disclaimerRow(
-                            "map.fill",
-                            AppTheme.forestGreen,
-                            "Your personalized roadmap is ready the moment you step in."
-                        )
-                        disclaimerRow(
-                            "dollarsign.circle.fill",
-                            AppTheme.gold,
-                            "All calculators and tools are general information — not financial, legal, or medical advice."
-                        )
-                        disclaimerRow(
-                            "shield.fill",
-                            .blue,
-                            "DashTen is not affiliated with the Department of War, DoD, VA, or any government agency."
-                        )
-                        disclaimerRow(
-                            "lock.fill",
-                            Color(.secondaryLabel),
-                            "Your data stays on your device. Nothing is sent to a server."
-                        )
-                    }
-                    .padding(16)
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(.rect(cornerRadius: 16))
-
-                    Button {
-                        withAnimation(.spring(response: 0.3)) {
-                            disclaimerAccepted.toggle()
-                        }
-                    } label: {
-                        HStack(spacing: 14) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 6)
-                                    .stroke(
-                                        disclaimerAccepted
-                                        ? AppTheme.forestGreen
-                                        : Color.secondary.opacity(0.4),
-                                        lineWidth: 1.5
-                                    )
-                                    .frame(width: 24, height: 24)
-                                if disclaimerAccepted {
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .fill(AppTheme.forestGreen)
-                                        .frame(width: 24, height: 24)
-                                    Image(systemName: "checkmark")
-                                        .font(.caption.weight(.heavy))
-                                        .foregroundStyle(.white)
-                                }
-                            }
-                            Text("I understand this is an informational guide and not official government guidance.")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.primary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .contentShape(Rectangle())
-                        .frame(minHeight: 44)
-                    }
-                    .buttonStyle(.plain)
-                    .sensoryFeedback(.selection, trigger: disclaimerAccepted)
-                }
-
-                if disclaimerAccepted {
-                    VStack(spacing: 10) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 48))
-                            .foregroundStyle(AppTheme.forestGreen)
-                        Text("You're ready.")
-                            .font(.title2.weight(.bold))
-                            .foregroundStyle(.primary)
-                        Text("Your roadmap is waiting.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .transition(.scale.combined(with: .opacity))
-                }
-
-                Spacer(minLength: 24)
+                disclaimerRow(
+                    "dollarsign.circle.fill",
+                    "Calculators and tools are general information, not financial, legal, or medical advice."
+                )
+                disclaimerRow(
+                    "shield.fill",
+                    "DashTen is not affiliated with the Department of War, DoD, VA, or any government agency."
+                )
+                disclaimerRow(
+                    "lock.fill",
+                    "Your data stays on your device. Nothing is sent to a server."
+                )
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
+            .padding(14)
+            .background(glassFill(isSelected: false))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(Color.white.opacity(0.18), lineWidth: 1)
+            )
+            .clipShape(.rect(cornerRadius: 14))
+
+            Button {
+                withAnimation(.spring(response: 0.3)) {
+                    disclaimerAccepted.toggle()
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(
+                                disclaimerAccepted
+                                ? AppTheme.gold
+                                : Color.white.opacity(0.5),
+                                lineWidth: 1.5
+                            )
+                            .frame(width: 24, height: 24)
+                        if disclaimerAccepted {
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(AppTheme.gold)
+                                .frame(width: 24, height: 24)
+                            Image(systemName: "checkmark")
+                                .font(.caption.weight(.heavy))
+                                .foregroundStyle(AppTheme.darkGreen)
+                        }
+                    }
+                    Text("I understand this is an informational guide and not official government guidance.")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
+                }
+                .padding(12)
+                .background(glassFill(isSelected: disclaimerAccepted))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(disclaimerAccepted ? AppTheme.gold : Color.white.opacity(0.18), lineWidth: disclaimerAccepted ? 1.5 : 1)
+                )
+                .clipShape(.rect(cornerRadius: 14))
+                .contentShape(Rectangle())
+                .frame(minHeight: 44)
+            }
+            .buttonStyle(.plain)
+            .sensoryFeedback(.selection, trigger: disclaimerAccepted)
+
+            Spacer(minLength: 0)
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
     }
 
-    private func disclaimerRow(_ icon: String, _ color: Color, _ text: String) -> some View {
+    private func disclaimerRow(_ icon: String, _ text: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.caption.weight(.bold))
-                .foregroundStyle(color)
-                .frame(width: 20)
-                .padding(.top, 2)
+                .foregroundStyle(AppTheme.gold)
+                .frame(width: 22, height: 22)
+                .background(Color.white.opacity(0.12))
+                .clipShape(.rect(cornerRadius: 6))
             Text(text)
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.primary.opacity(0.85))
+                .foregroundStyle(.white.opacity(0.92))
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+        }
+    }
+
+    // MARK: - Shared helpers
+
+    private enum OptionIndicator { case radio, check }
+
+    private func optionRow(
+        icon: String,
+        title: String,
+        subtitle: String?,
+        isSelected: Bool,
+        indicator: OptionIndicator
+    ) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(width: 34, height: 34)
+                .background(
+                    isSelected
+                    ? AnyShapeStyle(LinearGradient(
+                        colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing))
+                    : AnyShapeStyle(Color.white.opacity(0.18))
+                )
+                .clipShape(.rect(cornerRadius: 9))
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.75))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Spacer(minLength: 0)
+            Image(systemName: indicatorIcon(indicator: indicator, isSelected: isSelected))
+                .font(.title3)
+                .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.gold) : AnyShapeStyle(Color.white.opacity(0.45)))
+        }
+        .padding(12)
+        .background(glassFill(isSelected: isSelected))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(isSelected ? AppTheme.gold : Color.white.opacity(0.18), lineWidth: isSelected ? 2 : 1)
+        )
+        .clipShape(.rect(cornerRadius: 14))
+        .shadow(color: isSelected ? AppTheme.forestGreen.opacity(0.4) : .clear, radius: 10, y: 4)
+        .contentShape(Rectangle())
+    }
+
+    private func indicatorIcon(indicator: OptionIndicator, isSelected: Bool) -> String {
+        switch indicator {
+        case .radio: return isSelected ? "checkmark.circle.fill" : "circle"
+        case .check: return isSelected ? "checkmark.square.fill" : "square"
+        }
+    }
+
+    private func glassFill(isSelected: Bool) -> Color {
+        isSelected ? Color.white.opacity(0.18) : Color.white.opacity(0.08)
+    }
+
+    private func screenHeader(_ title: String, subtitle: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.system(size: 24, weight: .heavy))
+                .foregroundStyle(.white)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(subtitle)
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.white.opacity(0.75))
                 .fixedSize(horizontal: false, vertical: true)
         }
+    }
+
+    // MARK: - Complete Onboarding
+
+    private func finishOnboarding() {
+        storage.profile.branch = selectedBranch
+        storage.profile.timeline = selectedTimeline
+        storage.profile.separationDate = selectedTimeline == .separated ? nil : separationDate
+        if selectedTimeline == .separated, let status = selectedPostServiceStatus {
+            storage.applyPostServiceStatus(status)
+        }
+        storage.profile.goals = Array(selectedGoals)
+        storage.profile.hasAcceptedDisclaimer = true
+        storage.profile.hasCompletedOnboarding = true
+        // Show paywall first; onboarding view dismisses after paywall closes.
+        showPaywall = true
     }
 }
