@@ -3,489 +3,408 @@ import StoreKit
 import RevenueCat
 
 struct PaywallView: View {
-	var store: StoreViewModel
-	@Environment(\.dismiss) private var dismiss
-	@State private var appeared: Bool = false
-	@State private var showTerms: Bool = false
-	@State private var showPrivacy: Bool = false
-	@State private var showRedeemCode: Bool = false
-	@State private var selectedPackageId: String?
+    var store: StoreViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var appeared: Bool = false
+    @State private var shakeOffset: CGFloat = 0
+    @State private var showTerms: Bool = false
+    @State private var showPrivacy: Bool = false
+    @State private var showRedeemCode: Bool = false
+    @State private var selectedPackageId: String? = nil
+    @State private var showNoneRestoredAlert: Bool = false
 
-	var body: some View {
-		NavigationStack {
-			ScrollView {
-				VStack(spacing: 0) {
-					headerSection
-					freeVsProSection
-					purchaseSection
-					restoreButton
-					redeemCodeButton
-					legalSection
-				}
-			}
-			.background(Color(.systemGroupedBackground))
-			.navigationBarTitleDisplayMode(.inline)
-			.toolbar {
-				ToolbarItem(placement: .cancellationAction) {
-					Button { dismiss() } label: {
-						Image(systemName: "xmark.circle.fill")
-							.font(.title3)
-							.symbolRenderingMode(.hierarchical)
-							.foregroundStyle(.secondary)
-					}
-					.accessibilityLabel("Close")
-					.frame(minWidth: 44, minHeight: 44)
-				}
-			}
-			.alert("Error", isPresented: .init(
-				get: { store.error != nil },
-				set: { if !$0 { store.error = nil } }
-			)) {
-				Button("OK") { store.error = nil }
-			} message: {
-				Text(store.error ?? "")
-			}
-			.onChange(of: store.isPremium) { _, isPremium in
-				if isPremium { dismiss() }
-			}
-			.onAppear {
-				withAnimation(.spring(response: 0.7)) { appeared = true }
-				AnalyticsService.shared.log(.paywallShown)
-			}
-			.onDisappear {
-				if !store.isPremium {
-					AnalyticsService.shared.log(.paywallDismissed)
-				}
-			}
-			.sheet(isPresented: $showTerms) { TermsOfUseView() }
-			.sheet(isPresented: $showPrivacy) { PrivacyPolicyView() }
-			.offerCodeRedemption(isPresented: $showRedeemCode) { _ in
-				Task { await store.checkStatus() }
-			}
-		}
-	}
+    var body: some View {
+        ZStack(alignment: .top) {
 
-	// MARK: - Header
+            // Background
+            LinearGradient(
+                colors: [AppTheme.darkGreen, Color(.systemBackground)],
+                startPoint: .top,
+                endPoint: .center
+            )
+            .ignoresSafeArea()
 
-	private var headerSection: some View {
-		VStack(spacing: 20) {
-			ZStack {
-				Circle()
-					.fill(LinearGradient(
-						colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-						startPoint: .topLeading,
-						endPoint: .bottomTrailing
-					))
-					.frame(width: 88, height: 88)
-				Image(systemName: "arrow.up.forward.circle.fill")
-					.font(.system(size: 48, weight: .thin))
-					.foregroundStyle(AppTheme.gold)
-			}
-			.scaleEffect(appeared ? 1 : 0.6)
-			.opacity(appeared ? 1 : 0)
+            ScrollView {
+                VStack(spacing: 0) {
+                    heroSection
+                    featuresSection
+                    packagesSection
+                    ctaSection
+                    footerSection
+                }
+            }
 
-			VStack(spacing: 8) {
-				Text("DashTen Pro")
-					.font(.largeTitle.weight(.heavy))
-					.tracking(-0.5)
-				Text("Tools to land strong — not just get out safely.")
-					.font(.subheadline.weight(.semibold))
-					.foregroundStyle(.secondary)
-					.multilineTextAlignment(.center)
-			}
-			.opacity(appeared ? 1 : 0)
-		}
-		.padding(.top, 32)
-		.padding(.bottom, 24)
-		.padding(.horizontal, 24)
-	}
+            // Close button — always available, no cooldown
+            HStack {
+                Spacer()
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .frame(width: 32, height: 32)
+                        .background(.white.opacity(0.12))
+                        .clipShape(Circle())
+                }
+                .frame(minWidth: 44, minHeight: 44)
+                .padding(.trailing, 16)
+                .padding(.top, 16)
+            }
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.7)) { appeared = true }
+            startShaking()
+        }
+        .onChange(of: store.isPremium) { _, isPremium in
+            if isPremium { dismiss() }
+        }
+        .alert("No Purchases Restored", isPresented: $showNoneRestoredAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("No previous purchases were found for this account.")
+        }
+        .alert("Error", isPresented: .init(
+            get: { store.error != nil },
+            set: { if !$0 { store.error = nil } }
+        )) {
+            Button("OK") { store.error = nil }
+        } message: {
+            Text(store.error ?? "")
+        }
+        .sheet(isPresented: $showTerms) { TermsOfUseView() }
+        .sheet(isPresented: $showPrivacy) { PrivacyPolicyView() }
+        .offerCodeRedemption(isPresented: $showRedeemCode) { _ in
+            Task { await store.checkStatus() }
+        }
+    }
 
-	// MARK: - Free vs Pro
+    // MARK: - Hero
 
-	private var freeVsProSection: some View {
-		VStack(spacing: 16) {
+    private var heroSection: some View {
+        VStack(spacing: 20) {
+            Spacer(minLength: 60)
 
-			// Free column
-			VStack(alignment: .leading, spacing: 14) {
-				HStack(spacing: 8) {
-					Image(systemName: "checkmark.shield.fill")
-						.foregroundStyle(AppTheme.forestGreen)
-					Text("Always Free")
-						.font(.headline.weight(.bold))
-						.foregroundStyle(AppTheme.forestGreen)
-				}
-				VStack(alignment: .leading, spacing: 8) {
-					ForEach(freeFeatures, id: \.self) { feature in
-						HStack(alignment: .top, spacing: 10) {
-							Image(systemName: "checkmark.circle.fill")
-								.font(.caption.weight(.bold))
-								.foregroundStyle(AppTheme.forestGreen)
-								.padding(.top, 1)
-							Text(feature)
-								.font(.subheadline.weight(.semibold))
-								.foregroundStyle(.primary)
-								.fixedSize(horizontal: false, vertical: true)
-						}
-					}
-				}
-			}
-			.padding(16)
-			.frame(maxWidth: .infinity, alignment: .leading)
-			.background(AppTheme.forestGreen.opacity(0.06))
-			.clipShape(.rect(cornerRadius: 16))
+            // Animated icon
+            ZStack {
+                Circle()
+                    .fill(.white.opacity(0.08))
+                    .frame(width: 130, height: 130)
 
-			// Pro column
-			VStack(alignment: .leading, spacing: 14) {
-				HStack(spacing: 8) {
-					Image(systemName: "star.circle.fill")
-						.foregroundStyle(AppTheme.gold)
-					Text("Pro Features")
-						.font(.headline.weight(.bold))
-						.foregroundStyle(AppTheme.gold)
-				}
-				VStack(alignment: .leading, spacing: 8) {
-					ForEach(proFeatures, id: \.0) { icon, feature in
-						HStack(alignment: .top, spacing: 10) {
-							Image(systemName: icon)
-								.font(.caption.weight(.bold))
-								.foregroundStyle(AppTheme.gold)
-								.frame(width: 16)
-								.padding(.top, 1)
-							Text(feature)
-								.font(.subheadline.weight(.semibold))
-								.foregroundStyle(.primary)
-								.fixedSize(horizontal: false, vertical: true)
-						}
-					}
-				}
-			}
-			.padding(16)
-			.frame(maxWidth: .infinity, alignment: .leading)
-			.background(AppTheme.gold.opacity(0.06))
-			.clipShape(.rect(cornerRadius: 16))
-		}
-		.padding(.horizontal, 16)
-		.padding(.bottom, 24)
-	}
+                Circle()
+                    .fill(LinearGradient(
+                        colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                    .frame(width: 96, height: 96)
+                    .overlay(
+                        Image(systemName: "star.circle.fill")
+                            .font(.system(size: 44))
+                            .foregroundStyle(.white)
+                    )
+                    .shadow(color: AppTheme.forestGreen.opacity(0.5), radius: 20, y: 8)
+                    .offset(x: shakeOffset)
+            }
+            .scaleEffect(appeared ? 1.0 : 0.7)
+            .opacity(appeared ? 1 : 0)
+            .animation(.spring(response: 0.6, dampingFraction: 0.7), value: appeared)
 
-	private let freeFeatures: [String] = [
-		"Personalized roadmap and countdown",
-		"Resume translator — all 6 branches",
-		"Document vault with legal & estate checklist",
-		"VA Home Loan Guide and Funding Fee Calculator",
-		"TSP Options, Growth Estimator, and BRS Snapshot",
-		"GI Bill BAH and Education Benefits calculators",
-		"SCRA (Servicemembers Civil Relief Act) protections reference guide",
-		"State Benefits Finder",
-		"VA Healthcare Guide",
-		"Benefits by Disability Rating",
-		"Financial Readiness resources by branch",
-		"All basic financial calculators",
-		"Readiness Score and achievement badges",
-		"Daily Power-Up and Today’s Focus",
-	]
+            VStack(spacing: 10) {
+                Text("DashTen Pro")
+                    .font(.system(size: 32, weight: .heavy))
+                    .foregroundStyle(.white)
 
-	private let proFeatures: [(String, String)] = [
-		("person.fill.questionmark", "Interview Prep — flashcard practice by category"),
-		("mic.fill", "Elevator Pitch Builder — 30, 60, and 90 second versions"),
-		("person.3.fill", "Networking Hub — contact and follow-up tracker"),
-		("person.crop.circle.badge.checkmark", "Personal Brand Audit — score your professional presence"),
-		("calendar.badge.clock", "First 90 Days Planner — week-by-week post-hire roadmap"),
-		("book.fill", "Transition Journal — guided daily prompts"),
-		("chart.xyaxis.line", "Wellness Check-In — track readiness over time"),
-		("map.fill", "Civilian Playbook — the unwritten rules of civilian work"),
-		("flag.fill", "First 30 Days Guide — hit the ground running"),
-	]
+                Text("Tools to land well — not just get out safely.")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+            }
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 16)
+            .animation(.spring(response: 0.5).delay(0.15), value: appeared)
 
-	// MARK: - Purchase
+            Spacer(minLength: 8)
+        }
+        .padding(.horizontal, 24)
+    }
 
-	private var purchaseSection: some View {
-		VStack(spacing: 14) {
-			if store.isLoading {
-				ProgressView()
-					.padding(32)
-			} else if let offering = store.offerings?.current, !offering.availablePackages.isEmpty {
-				ForEach(offering.availablePackages, id: \.identifier) { package in
-					packageButton(package)
-				}
-				.onAppear { autoSelectIfNeeded(from: offering.availablePackages) }
-			} else {
-				// Fallback when offerings haven't loaded
-				VStack(spacing: 10) {
-					placeholderPackageButton(
-						title: "Monthly",
-						price: "$7.99",
-						period: "per month",
-						subprice: nil,
-						badge: nil,
-						isSelected: selectedPackageId == "monthly"
-					)
-					placeholderPackageButton(
-						title: "Annual",
-						price: "$59.99",
-						period: "per year",
-						subprice: "about $1.15 / week · save 37%",
-						badge: "Best Value",
-						isSelected: selectedPackageId == "annual"
-					)
-				}
-			}
+    // MARK: - Features
 
-			// Auto-renewal disclosure ABOVE the CTA (App Review 3.1)
-			autoRenewalDisclosure
+    private var featuresSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(Array(proFeatures.enumerated()), id: \.0) { i, feature in
+                HStack(spacing: 14) {
+                    Image(systemName: feature.0)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(AppTheme.gold)
+                        .frame(width: 28, height: 28)
+                        .background(AppTheme.gold.opacity(0.15))
+                        .clipShape(.rect(cornerRadius: 8))
+                    Text(feature.1)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                }
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 12)
+                .animation(.spring(response: 0.4).delay(0.2 + Double(i) * 0.06), value: appeared)
+            }
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 16))
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+        .padding(.bottom, 16)
+    }
 
-			// CTA button
-			Button {
-				guard let package = selectedPackage(from: store.offerings) else { return }
-				Task { await store.purchase(package: package) }
-			} label: {
-				Group {
-					if store.isPurchasing {
-						ProgressView()
-							.progressViewStyle(.circular)
-							.tint(.white)
-					} else {
-						Text("Start 3-Day Free Trial")
-							.font(.headline.weight(.bold))
-					}
-				}
-				.foregroundStyle(.white)
-				.frame(maxWidth: .infinity)
-				.padding(.vertical, 18)
-				.background(
-					LinearGradient(
-						colors: [AppTheme.forestGreen, AppTheme.darkGreen],
-						startPoint: .leading,
-						endPoint: .trailing
-					)
-				)
-				.clipShape(.rect(cornerRadius: 14))
-			}
-			.disabled(store.isPurchasing || selectedPackageId == nil)
-			.frame(minHeight: 44)
+    private let proFeatures: [(String, String)] = [
+        ("person.fill.questionmark", "Interview Prep — flashcard practice by category"),
+        ("mic.fill", "Elevator Pitch Builder — 30, 60, and 90 second versions"),
+        ("person.3.fill", "Networking Hub — contact and follow-up tracker"),
+        ("person.crop.circle.badge.checkmark", "Personal Brand Audit — score your professional presence"),
+        ("calendar.badge.clock", "First 90 Days Planner — week-by-week post-hire roadmap"),
+        ("book.fill", "Transition Journal — guided daily prompts"),
+        ("chart.xyaxis.line", "Wellness Check-In — track readiness over time"),
+        ("map.fill", "Civilian Playbook — unwritten rules of civilian work"),
+        ("flag.fill", "First 30 Days Guide — hit the ground running"),
+    ]
 
-			Text("Then \(selectedRenewalSummary). Cancel anytime in Settings.")
-				.font(.caption.weight(.semibold))
-				.foregroundStyle(.secondary)
-				.multilineTextAlignment(.center)
-				.fixedSize(horizontal: false, vertical: true)
-		}
-		.padding(.horizontal, 16)
-		.padding(.bottom, 16)
-	}
+    // MARK: - Packages
 
-	private var autoRenewalDisclosure: some View {
-		HStack(alignment: .top, spacing: 10) {
-			Image(systemName: "arrow.triangle.2.circlepath")
-				.font(.caption.weight(.bold))
-				.foregroundStyle(.secondary)
-				.padding(.top, 1)
-			Text("After your 3-day free trial, your subscription will auto-renew at the price above until you cancel. Cancel at least 24 hours before the period ends to avoid charges. Manage in your App Store account at any time.")
-				.font(.caption2.weight(.semibold))
-				.foregroundStyle(.secondary)
-				.fixedSize(horizontal: false, vertical: true)
-		}
-		.padding(12)
-		.frame(maxWidth: .infinity, alignment: .leading)
-		.background(Color(.tertiarySystemGroupedBackground))
-		.clipShape(.rect(cornerRadius: 10))
-	}
+    private var packagesSection: some View {
+        VStack(spacing: 10) {
+            if store.isLoading {
+                ProgressView().padding(24)
+            } else if let offering = store.offerings?.current {
+                ForEach(offering.availablePackages, id: \.identifier) { package in
+                    packageRow(package)
+                        .onAppear {
+                            // Auto-select annual by default
+                            if package.packageType == .annual && selectedPackageId == nil {
+                                selectedPackageId = package.identifier
+                            }
+                        }
+                }
+            } else {
+                // Fallback static display while products load
+                staticPackageRow(
+                    title: "Annual",
+                    detail: "$59.99 per year",
+                    isSelected: selectedPackageId == "annual" || selectedPackageId == nil
+                ) { selectedPackageId = "annual" }
 
-	private var selectedRenewalSummary: String {
-		guard let pkg = selectedPackage(from: store.offerings) else {
-			if selectedPackageId == "annual" { return "$59.99 / year auto-renews" }
-			if selectedPackageId == "monthly" { return "$7.99 / month auto-renews" }
-			return "your selected plan auto-renews"
-		}
-		let period = pkg.packageType == .annual ? "year" : "month"
-		return "\(pkg.localizedPriceString) / \(period) auto-renews"
-	}
+                staticPackageRow(
+                    title: "Monthly",
+                    detail: "$7.99 per month",
+                    isSelected: selectedPackageId == "monthly"
+                ) { selectedPackageId = "monthly" }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
 
-	private func packageButton(_ package: Package) -> some View {
-		let isAnnual = package.packageType == .annual
-		let isSelected = selectedPackageId == package.identifier
-		let periodText = isAnnual ? "per year" : "per month"
-		let weeklyEquivalent: String? = isAnnual
-			? "about \(weeklyEquivalentString(for: package)) / week · save 37%"
-			: nil
+    private func packageRow(_ package: Package) -> some View {
+        let isAnnual = package.packageType == .annual
+        let isSelected = selectedPackageId == package.identifier
 
-		return Button {
-			withAnimation(.spring(response: 0.3)) {
-				selectedPackageId = package.identifier
-			}
-		} label: {
-			packageButtonContent(
-				title: isAnnual ? "Annual" : "Monthly",
-				price: package.localizedPriceString,
-				period: periodText,
-				subprice: weeklyEquivalent,
-				badge: isAnnual ? "Best Value" : nil,
-				isSelected: isSelected
-			)
-		}
-		.buttonStyle(.plain)
-		.frame(minHeight: 44)
-	}
+        return Button {
+            withAnimation(.spring(response: 0.3)) {
+                selectedPackageId = package.identifier
+            }
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(isSelected ? AppTheme.forestGreen : .secondary)
 
-	private func autoSelectIfNeeded(from packages: [Package]) {
-		guard selectedPackageId == nil else { return }
-		// Prefer annual; otherwise fall back to the first available package
-		if let annual = packages.first(where: { $0.packageType == .annual }) {
-			selectedPackageId = annual.identifier
-		} else if let first = packages.first {
-			selectedPackageId = first.identifier
-		}
-	}
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(isAnnual ? "Annual" : "Monthly")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text(package.localizedPriceString + (isAnnual ? " per year" : " per month"))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
 
-	private func weeklyEquivalentString(for package: Package) -> String {
-		let price = NSDecimalNumber(decimal: package.storeProduct.price).doubleValue
-		guard price > 0 else { return "$0" }
-		let perWeek = price / 52.0
-		let formatter = NumberFormatter()
-		formatter.numberStyle = .currency
-		formatter.locale = package.storeProduct.priceFormatter?.locale ?? Locale.current
-		formatter.maximumFractionDigits = 2
-		formatter.minimumFractionDigits = 2
-		return formatter.string(from: NSNumber(value: perWeek)) ?? String(format: "$%.2f", perWeek)
-	}
+                Spacer()
 
-	@ViewBuilder
-	private func packageButtonContent(title: String, price: String, period: String, subprice: String?, badge: String?, isSelected: Bool) -> some View {
-		HStack(spacing: 14) {
-			Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-				.font(.title2)
-				.foregroundStyle(isSelected ? AppTheme.forestGreen : .secondary)
+                if isAnnual {
+                    Text("Best Value")
+                        .font(.caption2.weight(.heavy))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(AppTheme.forestGreen)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding(16)
+            .background(Color(.secondarySystemGroupedBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            )
+            .clipShape(.rect(cornerRadius: 14))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: isSelected)
+    }
 
-			VStack(alignment: .leading, spacing: 4) {
-				HStack(spacing: 8) {
-					Text(title)
-						.font(.subheadline.weight(.heavy))
-						.foregroundStyle(.primary)
-					if let badge {
-						Text(badge)
-							.font(.caption2.weight(.heavy))
-							.foregroundStyle(.white)
-							.padding(.horizontal, 8)
-							.padding(.vertical, 3)
-							.background(AppTheme.gold)
-							.clipShape(Capsule())
-					}
-				}
-				if let subprice {
-					Text(subprice)
-						.font(.caption2.weight(.semibold))
-						.foregroundStyle(.secondary)
-				}
-			}
+    private func staticPackageRow(title: String, detail: String, isSelected: Bool, onTap: @escaping () -> Void) -> some View {
+        Button(action: onTap) {
+            HStack(spacing: 14) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(isSelected ? AppTheme.forestGreen : .secondary)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title).font(.headline.weight(.bold)).foregroundStyle(.primary)
+                    Text(detail).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                }
+                Spacer()
+                if title == "Annual" {
+                    Text("Best Value")
+                        .font(.caption2.weight(.heavy))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(AppTheme.forestGreen)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding(16)
+            .background(Color(.secondarySystemGroupedBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            )
+            .clipShape(.rect(cornerRadius: 14))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: isSelected)
+    }
 
-			Spacer(minLength: 8)
+    // MARK: - CTA
 
-			VStack(alignment: .trailing, spacing: 0) {
-				Text(price)
-					.font(.system(size: 22, weight: .heavy, design: .rounded))
-					.foregroundStyle(.primary)
-				Text(period)
-					.font(.caption2.weight(.semibold))
-					.foregroundStyle(.secondary)
-			}
-		}
-		.padding(16)
-		.background(
-			isSelected
-				? AppTheme.forestGreen.opacity(0.08)
-				: Color(.secondarySystemGroupedBackground)
-		)
-		.overlay(
-			RoundedRectangle(cornerRadius: 14)
-				.stroke(
-					isSelected ? AppTheme.forestGreen : Color.clear,
-					lineWidth: 2
-				)
-		)
-		.clipShape(.rect(cornerRadius: 14))
-		.contentShape(Rectangle())
-	}
+    private var ctaSection: some View {
+        VStack(spacing: 12) {
+            Button {
+                if let pkg = selectedPackage {
+                    Task { await store.purchase(package: pkg) }
+                }
+            } label: {
+                ZStack {
+                    if store.isPurchasing {
+                        ProgressView().progressViewStyle(.circular).tint(.white)
+                    } else {
+                        Text(ctaLabel)
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(
+                    LinearGradient(
+                        colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .clipShape(.rect(cornerRadius: 14))
+            }
+            .disabled(store.isPurchasing || selectedPackageId == nil)
 
-	private func placeholderPackageButton(title: String, price: String, period: String, subprice: String?, badge: String?, isSelected: Bool) -> some View {
-		Button {
-			withAnimation(.spring(response: 0.3)) {
-				selectedPackageId = title.lowercased()
-			}
-		} label: {
-			packageButtonContent(
-				title: title,
-				price: price,
-				period: period,
-				subprice: subprice,
-				badge: badge,
-				isSelected: isSelected
-			)
-		}
-		.buttonStyle(.plain)
-		.frame(minHeight: 44)
-		.onAppear {
-			if title == "Annual" && selectedPackageId == nil {
-				selectedPackageId = title.lowercased()
-			}
-		}
-	}
+            Text("3-day free trial · Cancel anytime in App Store settings")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
 
-	private func selectedPackage(from offerings: Offerings?) -> Package? {
-		offerings?.current?.availablePackages.first { $0.identifier == selectedPackageId }
-	}
+    private var ctaLabel: String {
+        guard let id = selectedPackageId,
+              let pkg = store.offerings?.current?.availablePackages.first(where: { $0.identifier == id }),
+              pkg.packageType != .annual else {
+            return "Start Free Trial"
+        }
+        return "Start Free Trial"
+    }
 
-	// MARK: - Restore / Redeem / Legal
+    private var selectedPackage: Package? {
+        store.offerings?.current?.availablePackages.first { $0.identifier == selectedPackageId }
+    }
 
-	private var restoreButton: some View {
-		Button {
-			Task { await store.restore() }
-		} label: {
-			Text("Restore Purchases")
-				.font(.subheadline.weight(.semibold))
-				.foregroundStyle(.secondary)
-				.frame(maxWidth: .infinity)
-				.frame(minHeight: 44)
-		}
-		.padding(.horizontal, 16)
-	}
+    // MARK: - Footer
 
-	private var redeemCodeButton: some View {
-		Button {
-			AnalyticsService.shared.log(.featureUsed, properties: ["name": "redeem_code_tapped"])
-			showRedeemCode = true
-		} label: {
-			HStack(spacing: 6) {
-				Image(systemName: "gift.fill")
-					.font(.caption.weight(.bold))
-				Text("Redeem a code")
-					.font(.subheadline.weight(.semibold))
-			}
-			.foregroundStyle(.secondary)
-			.frame(maxWidth: .infinity)
-			.frame(minHeight: 44)
-		}
-		.padding(.horizontal, 16)
-		.accessibilityLabel("Redeem an offer code")
-	}
+    private var footerSection: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 24) {
+                Button {
+                    Task {
+                        await store.restore()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                            if !store.isPremium { showNoneRestoredAlert = true }
+                        }
+                    }
+                } label: {
+                    Text("Restore Purchases")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .underline()
+                        .frame(minHeight: 44)
+                }
 
-	private var legalSection: some View {
-		VStack(spacing: 12) {
-			HStack(spacing: 24) {
-				Button("Terms of Use") { showTerms = true }
-					.frame(minHeight: 44)
-				Button("Privacy Policy") { showPrivacy = true }
-					.frame(minHeight: 44)
-			}
-			.font(.caption.weight(.semibold))
-			.foregroundStyle(.secondary)
+                Button { showRedeemCode = true } label: {
+                    Text("Redeem Code")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .underline()
+                        .frame(minHeight: 44)
+                }
+            }
 
-			Text("General information only · Not financial or legal advice")
-				.font(.caption2)
-				.foregroundStyle(.secondary.opacity(0.7))
-				.multilineTextAlignment(.center)
-		}
-		.padding(.horizontal, 24)
-		.padding(.top, 8)
-		.padding(.bottom, 40)
-	}
+            HStack(spacing: 16) {
+                Button("Terms of Use") { showTerms = true }
+                Button("Privacy Policy") { showPrivacy = true }
+            }
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+
+            Text("Subscription auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime in your App Store account settings.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            Text("General information only · Not financial or legal advice")
+                .font(.caption2)
+                .foregroundStyle(.secondary.opacity(0.6))
+                .multilineTextAlignment(.center)
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 48)
+    }
+
+    // MARK: - Shake animation for icon
+
+    private func startShaking() {
+        let duration = 0.07
+        let shakes = 4
+        for i in 0..<shakes {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 + Double(i) * duration * 2) {
+                withAnimation(.easeInOut(duration: duration)) { shakeOffset = i % 2 == 0 ? 8 : -8 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                    withAnimation(.easeInOut(duration: duration)) { shakeOffset = 0 }
+                }
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { startShaking() }
+    }
 }
