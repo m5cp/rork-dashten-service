@@ -88,7 +88,7 @@ struct CivilianBudgetCalculatorView: View {
                             Divider()
                             PayInputRow(label: "Transportation", sublabel: "Car, gas, insurance", value: $transportation, color: .orange)
                             Divider()
-                            PayInputRow(label: "Health Insurance", sublabel: "No more Tricare (free)", value: $healthInsurance, color: .red)
+                            PayInputRow(label: "Health Insurance", sublabel: "TRICARE ends at separation — enter your new plan cost", value: $healthInsurance, color: .red)
                             Divider()
                             PayInputRow(label: "Phone & Internet", sublabel: "Monthly bills", value: $phoneInternet, color: .blue)
                             Divider()
@@ -246,7 +246,7 @@ struct CivilianBudgetCalculatorView: View {
                 .foregroundStyle(.red)
 
             VStack(alignment: .leading, spacing: 4) {
-                CostReminderRow(text: "Health insurance premiums (no more free Tricare)")
+                CostReminderRow(text: "Health insurance premiums — TRICARE ends at separation for most veterans")
                 CostReminderRow(text: "Full rent/mortgage at market rate (no BAH)")
                 CostReminderRow(text: "Full grocery bill (no BAS)")
                 CostReminderRow(text: "Professional clothing (no uniform allowance)")

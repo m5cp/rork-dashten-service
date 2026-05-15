@@ -58,6 +58,16 @@ nonisolated enum TransitionTimeline: String, Codable, CaseIterable, Identifiable
         case .separated: "checkmark.circle.fill"
         }
     }
+
+    var description: String {
+        switch self {
+        case .twentyFourPlus: return "Planning early — the best time to start"
+        case .twelveMonths: return "One year out — time to build your plan"
+        case .sixMonths: return "Six months out — execution phase begins"
+        case .ninetyDays: return "Final stretch — lock in your transition"
+        case .separated: return "Already separated or retired from service"
+        }
+    }
 }
 
 nonisolated enum PostServiceStatus: String, Codable, CaseIterable, Identifiable, Sendable {
@@ -107,6 +117,21 @@ nonisolated enum TransitionGoal: String, Codable, CaseIterable, Identifiable, Se
         case .relocation: "house.fill"
         case .familyReadiness: "figure.2.and.child.holdinghands"
         case .financialReset: "dollarsign.circle.fill"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .employment: return "Land a civilian job that fits your background"
+        case .school: return "Use education benefits to earn a degree"
+        case .certification: return "Get certified in a trade or technical field"
+        case .entrepreneurship: return "Start a business after service"
+        case .healthCareSetup: return "Sort out healthcare coverage for you and your family"
+        case .disabilityPrep: return "Understand and file for VA disability benefits"
+        case .careerReadiness: return "Build your resume, interview skills, and network"
+        case .relocation: return "Plan and execute your post-service move"
+        case .familyReadiness: return "Prepare your family for life after the military"
+        case .financialReset: return "Rebuild your budget and finances for civilian life"
         }
     }
 }
