@@ -524,8 +524,286 @@ struct OnboardingView: View {
         }
     }
 
-    // Screens added in Part 2
-    private var painPointsScreen: some View { EmptyView() }
-    private var goalsScreen: some View { EmptyView() }
-    private var disclaimerScreen: some View { EmptyView() }
+    // MARK: - SCREEN 4: PAIN POINTS
+
+    private var painPointsScreen: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                screenHeader(
+                    "What concerns you most?",
+                    subtitle: "Select all that apply. Your roadmap prioritizes these first."
+                )
+
+                VStack(spacing: 10) {
+                    ForEach(painPoints, id: \.0) { id, icon, label in
+                        painPointOption(id: id, icon: icon, label: label)
+                    }
+                }
+
+                if !selectedPainPoints.isEmpty {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(AppTheme.forestGreen)
+                        Text("Got it. Your roadmap will cover these first.")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppTheme.forestGreen)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(12)
+                    .background(AppTheme.forestGreen.opacity(0.08))
+                    .clipShape(.rect(cornerRadius: 10))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
+                Spacer(minLength: 24)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
+            .animation(.spring(response: 0.35), value: selectedPainPoints.count)
+        }
+    }
+
+    private let painPoints: [(String, String, String)] = [
+        ("resume", "doc.text.fill", "Translating my military experience to a civilian resume"),
+        ("benefits", "shield.fill", "Understanding what benefits I have and how to use them"),
+        ("finance", "dollarsign.circle.fill", "Figuring out my financial situation after service"),
+        ("housing", "house.fill", "Housing — where to live and whether to rent or buy"),
+        ("career", "briefcase.fill", "Finding a job or career that fits my background"),
+        ("healthcare", "cross.fill", "Healthcare coverage after my military coverage ends"),
+        ("family", "person.3.fill", "Managing the impact on my family during the transition"),
+    ]
+
+    private func painPointOption(id: String, icon: String, label: String) -> some View {
+        let isSelected = selectedPainPoints.contains(id)
+        return Button {
+            withAnimation(.spring(response: 0.3)) {
+                if isSelected { selectedPainPoints.remove(id) }
+                else { selectedPainPoints.insert(id) }
+            }
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        isSelected
+                        ? LinearGradient(
+                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing)
+                        : LinearGradient(
+                            colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.12)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing)
+                    )
+                    .clipShape(.rect(cornerRadius: 10))
+                Text(label)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
+                    .font(.title3)
+                    .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.forestGreen) : AnyShapeStyle(HierarchicalShapeStyle.tertiary))
+            }
+            .padding(14)
+            .background(Color(.secondarySystemGroupedBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            )
+            .clipShape(.rect(cornerRadius: 14))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: isSelected)
+    }
+
+    // MARK: - SCREEN 5: GOALS
+
+    private var goalsScreen: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                screenHeader(
+                    "What are you working toward?",
+                    subtitle: "Pick one or more. This shapes your weekly missions and tool recommendations."
+                )
+
+                VStack(spacing: 10) {
+                    ForEach(TransitionGoal.allCases) { goal in
+                        goalOption(goal)
+                    }
+                }
+
+                Spacer(minLength: 24)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
+        }
+    }
+
+    private func goalOption(_ goal: TransitionGoal) -> some View {
+        let isSelected = selectedGoals.contains(goal)
+        return Button {
+            withAnimation(.spring(response: 0.3)) {
+                if isSelected { selectedGoals.remove(goal) }
+                else { selectedGoals.insert(goal) }
+            }
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: goal.icon)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white : AppTheme.forestGreen)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        isSelected
+                        ? LinearGradient(
+                            colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing)
+                        : LinearGradient(
+                            colors: [AppTheme.forestGreen.opacity(0.12), AppTheme.forestGreen.opacity(0.12)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing)
+                    )
+                    .clipShape(.rect(cornerRadius: 10))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(goal.rawValue)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text(goal.description)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
+                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
+                    .font(.title3)
+                    .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.forestGreen) : AnyShapeStyle(HierarchicalShapeStyle.tertiary))
+            }
+            .padding(14)
+            .background(Color(.secondarySystemGroupedBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? AppTheme.forestGreen : Color.clear, lineWidth: 1.5)
+            )
+            .clipShape(.rect(cornerRadius: 14))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: isSelected)
+    }
+
+    // MARK: - SCREEN 6: DISCLAIMER
+
+    private var disclaimerScreen: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                screenHeader(
+                    "Almost there.",
+                    subtitle: "One quick acknowledgment before your roadmap is ready."
+                )
+
+                VStack(alignment: .leading, spacing: 16) {
+
+                    VStack(alignment: .leading, spacing: 14) {
+                        disclaimerRow(
+                            "map.fill",
+                            AppTheme.forestGreen,
+                            "Your personalized roadmap is ready the moment you step in."
+                        )
+                        disclaimerRow(
+                            "dollarsign.circle.fill",
+                            AppTheme.gold,
+                            "All calculators and tools are general information — not financial, legal, or medical advice."
+                        )
+                        disclaimerRow(
+                            "shield.fill",
+                            .blue,
+                            "DashTen is not affiliated with the Department of War, DoD, VA, or any government agency."
+                        )
+                        disclaimerRow(
+                            "lock.fill",
+                            Color(.secondaryLabel),
+                            "Your data stays on your device. Nothing is sent to a server."
+                        )
+                    }
+                    .padding(16)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(.rect(cornerRadius: 16))
+
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            disclaimerAccepted.toggle()
+                        }
+                    } label: {
+                        HStack(spacing: 14) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(
+                                        disclaimerAccepted
+                                        ? AppTheme.forestGreen
+                                        : Color.secondary.opacity(0.4),
+                                        lineWidth: 1.5
+                                    )
+                                    .frame(width: 24, height: 24)
+                                if disclaimerAccepted {
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(AppTheme.forestGreen)
+                                        .frame(width: 24, height: 24)
+                                    Image(systemName: "checkmark")
+                                        .font(.caption.weight(.heavy))
+                                        .foregroundStyle(.white)
+                                }
+                            }
+                            Text("I understand this is an informational guide and not official government guidance.")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .contentShape(Rectangle())
+                        .frame(minHeight: 44)
+                    }
+                    .buttonStyle(.plain)
+                    .sensoryFeedback(.selection, trigger: disclaimerAccepted)
+                }
+
+                if disclaimerAccepted {
+                    VStack(spacing: 10) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 48))
+                            .foregroundStyle(AppTheme.forestGreen)
+                        Text("You're ready.")
+                            .font(.title2.weight(.bold))
+                            .foregroundStyle(.primary)
+                        Text("Your roadmap is waiting.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .transition(.scale.combined(with: .opacity))
+                }
+
+                Spacer(minLength: 24)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
+        }
+    }
+
+    private func disclaimerRow(_ icon: String, _ color: Color, _ text: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(color)
+                .frame(width: 20)
+                .padding(.top, 2)
+            Text(text)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.85))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
 }
