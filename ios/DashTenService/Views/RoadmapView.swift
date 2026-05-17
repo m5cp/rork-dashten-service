@@ -8,6 +8,7 @@ struct RoadmapView: View {
 	@State private var newItemCategory: ReadinessCategory = .admin
 	@State private var showCatchUpSheet: Bool = false
 	@State private var celebratingPhase: TimelinePhase? = nil
+	@State private var showEarlyCheckIn: Bool = false
 
 	private func itemsForPhase(_ phase: TimelinePhase) -> [ChecklistItem] {
 		storage.checklistItems.filter { $0.phase == phase }
@@ -32,13 +33,23 @@ struct RoadmapView: View {
 			if monthsSince < 12 { return .firstYear }
 			return .yearTwoPlus
 		}
-		guard let sepDate = storage.profile.separationDate else { return nil }
+		// Fall back to the timeline selection from onboarding when no date is set,
+		// so a user who picked "12 months out" lands in the 12-month phase.
+		guard let sepDate = storage.profile.separationDate else {
+			switch storage.profile.timeline {
+			case .twentyFourPlus: return .eighteenToTwentyFour
+			case .twelveMonths: return .twelveMonths
+			case .sixMonths: return .sixMonths
+			case .ninetyDays: return .ninetyDays
+			case .separated, .none: return nil
+			}
+		}
 		let months = Calendar.current.dateComponents([.month], from: Date(), to: sepDate).month ?? 0
-		if months > 18 { return .eighteenToTwentyFour }
-		if months > 12 { return .twelveMonths }
-		if months > 6 { return .sixMonths }
-		if months > 3 { return .ninetyDays }
-		if months > 0 { return .thirtyDays }
+		if months >= 18 { return .eighteenToTwentyFour }
+		if months >= 12 { return .twelveMonths }
+		if months >= 6 { return .sixMonths }
+		if months >= 3 { return .ninetyDays }
+		if months >= 0 { return .thirtyDays }
 		let monthsSince = Calendar.current.dateComponents([.month], from: sepDate, to: Date()).month ?? 0
 		if monthsSince < 1 { return .firstThirty }
 		if monthsSince < 3 { return .firstNinety }
@@ -77,42 +88,63 @@ struct RoadmapView: View {
 		}
 	}
 
+	private var visibleCategories: [ReadinessCategory] {
+		let present = Set(storage.checklistItems.map { $0.readinessCategory })
+		return ReadinessCategory.allCases.filter { present.contains($0) }
+	}
+
+	private func itemsForCategory(_ category: ReadinessCategory) -> [ChecklistItem] {
+		storage.checklistItems
+			.filter { $0.readinessCategory == category }
+			.sorted { sortKey(for: $0) < sortKey(for: $1) }
+	}
+
+	private func completionForCategory(_ category: ReadinessCategory) -> Double {
+		let items = itemsForCategory(category)
+		guard !items.isEmpty else { return 0 }
+		return Double(items.filter(\.isCompleted).count) / Double(items.count)
+	}
+
+	private func sortKey(for item: ChecklistItem) -> Int {
+		let phases: [TimelinePhase] = TimelinePhase.allCases
+		return phases.firstIndex(of: item.phase) ?? 0
+	}
+
+	private func nextOpenTask(in category: ReadinessCategory) -> ChecklistItem? {
+		itemsForCategory(category).first { !$0.isCompleted }
+	}
+
+	private var overallCompletion: Double {
+		let items = storage.checklistItems
+		guard !items.isEmpty else { return 0 }
+		return Double(items.filter(\.isCompleted).count) / Double(items.count)
+	}
+
 	private var preSeparationBody: some View {
 		ScrollView {
-			VStack(spacing: 20) {
+			VStack(spacing: 16) {
 
-				// Catch-up banner for late joiners
-				if !pastPhasesWithIncompleteTasks.isEmpty {
-					catchUpBanner
+				overallCard
+
+				if let phase = currentPhase {
+					currentPhasePill(phase)
 				}
 
-				// Phase cards
-				ForEach(Array(visiblePhases.enumerated()), id: \.element.id) { index, phase in
-					let isCurrent = phase == currentPhase
-					let isPast = isPhaseCompleted(phase)
-					let completion = completionForPhase(phase)
-
-					NavigationLink(value: phase) {
-						PhaseCard(
-							phase: phase,
-							completion: completion,
-							isCurrent: isCurrent,
-							isPast: isPast,
-							completedCount: itemsForPhase(phase).filter(\.isCompleted).count,
-							totalCount: itemsForPhase(phase).count,
-							isCelebrating: celebratingPhase == phase
-						)
-					}
-					.buttonStyle(.plain)
-					.onChange(of: completion) { _, newVal in
-						if newVal >= 1.0 {
-							withAnimation(.spring(response: 0.5)) {
-								celebratingPhase = phase
-							}
-							DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-								withAnimation { celebratingPhase = nil }
-							}
+				LazyVGrid(
+					columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+					spacing: 12
+				) {
+					ForEach(visibleCategories) { category in
+						NavigationLink(value: category) {
+							CategoryCard(
+								category: category,
+								completion: completionForCategory(category),
+								completedCount: itemsForCategory(category).filter(\.isCompleted).count,
+								totalCount: itemsForCategory(category).count,
+								nextOpenTitle: nextOpenTask(in: category)?.title
+							)
 						}
+						.buttonStyle(.plain)
 					}
 				}
 
@@ -142,10 +174,103 @@ struct RoadmapView: View {
 			}
 		}
 		.sheet(isPresented: $showAddItem) { addItemSheet }
-		.sheet(isPresented: $showCatchUpSheet) { catchUpSheet }
+		.sheet(isPresented: $showEarlyCheckIn) {
+			EarlyItemsCheckInSheet(storage: storage, currentPhase: currentPhase) {
+				storage.profile.hasSeenEarlyItemsCheckIn = true
+			}
+		}
+		.navigationDestination(for: ReadinessCategory.self) { category in
+			CategoryDetailView(storage: storage, category: category)
+		}
 		.navigationDestination(for: TimelinePhase.self) { phase in
 			PhaseDetailView(storage: storage, phase: phase)
 		}
+		.onAppear {
+			if !storage.profile.hasSeenEarlyItemsCheckIn,
+			   storage.profile.timeline != nil,
+			   storage.profile.timeline != .separated,
+			   currentPhase != nil,
+			   currentPhase != .eighteenToTwentyFour {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+					showEarlyCheckIn = true
+				}
+			}
+		}
+	}
+
+	private var overallCard: some View {
+		HStack(spacing: 18) {
+			ProgressRing(progress: overallCompletion, size: 72, lineWidth: 8, color: AppTheme.forestGreen)
+				.overlay {
+					VStack(spacing: 0) {
+						Text("\(Int((overallCompletion * 100).rounded()))")
+							.font(.system(size: 22, weight: .bold, design: .rounded))
+							.foregroundStyle(.primary)
+						Text("%")
+							.font(.caption2.weight(.bold))
+							.foregroundStyle(.secondary)
+					}
+				}
+			VStack(alignment: .leading, spacing: 4) {
+				Text("Overall Progress")
+					.font(.headline.weight(.bold))
+				let completed = storage.checklistItems.filter(\.isCompleted).count
+				Text("\(completed) of \(storage.checklistItems.count) tasks complete")
+					.font(.caption.weight(.semibold))
+					.foregroundStyle(.secondary)
+			}
+			Spacer()
+		}
+		.padding(16)
+		.frame(maxWidth: .infinity, alignment: .leading)
+		.background(Color(.secondarySystemGroupedBackground))
+		.clipShape(.rect(cornerRadius: 16))
+	}
+
+	private func currentPhasePill(_ phase: TimelinePhase) -> some View {
+		HStack(spacing: 10) {
+			Image(systemName: phase.icon)
+				.font(.subheadline.weight(.bold))
+				.foregroundStyle(.white)
+				.frame(width: 32, height: 32)
+				.background(
+					LinearGradient(
+						colors: [AppTheme.forestGreen, AppTheme.darkGreen],
+						startPoint: .topLeading,
+						endPoint: .bottomTrailing
+					)
+				)
+				.clipShape(.rect(cornerRadius: 10))
+			VStack(alignment: .leading, spacing: 2) {
+				Text("You are here")
+					.font(.caption2.weight(.heavy))
+					.tracking(1.2)
+					.foregroundStyle(AppTheme.gold)
+				Text(phase.displayName)
+					.font(.subheadline.weight(.bold))
+					.foregroundStyle(.primary)
+					.fixedSize(horizontal: false, vertical: true)
+			}
+			Spacer()
+			if !storage.profile.hasSeenEarlyItemsCheckIn {
+				Button {
+					showEarlyCheckIn = true
+				} label: {
+					Text("Catch up")
+						.font(.caption.weight(.heavy))
+						.foregroundStyle(.white)
+						.padding(.horizontal, 10)
+						.padding(.vertical, 6)
+						.background(AppTheme.gold)
+						.clipShape(Capsule())
+				}
+				.buttonStyle(.plain)
+			}
+		}
+		.padding(12)
+		.frame(maxWidth: .infinity, alignment: .leading)
+		.background(Color(.secondarySystemGroupedBackground))
+		.clipShape(.rect(cornerRadius: 14))
 	}
 
 	// MARK: - Catch-Up Banner

@@ -54,6 +54,8 @@ nonisolated struct UserProfile: Codable, Sendable {
     /// Manual override for the Plan tab's current phase. When `nil`, the phase is auto-detected
     /// from `timeline`, `postServiceStatus`, and `separationDate`.
     var manualPhaseOverride: TimelinePhase?
+    /// Tracks whether the one-time "have you already done early items?" check-in has been answered.
+    var hasSeenEarlyItemsCheckIn: Bool
 
     init() {
         displayName = ""
@@ -74,6 +76,7 @@ nonisolated struct UserProfile: Codable, Sendable {
         themePreference = .system
         ninetyDayTemplate = nil
         manualPhaseOverride = nil
+        hasSeenEarlyItemsCheckIn = false
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -85,6 +88,7 @@ nonisolated struct UserProfile: Codable, Sendable {
         case themePreference
         case ninetyDayTemplate
         case manualPhaseOverride
+        case hasSeenEarlyItemsCheckIn
     }
 
     init(from decoder: Decoder) throws {
@@ -107,5 +111,6 @@ nonisolated struct UserProfile: Codable, Sendable {
         themePreference = try c.decodeIfPresent(ThemePreference.self, forKey: .themePreference) ?? .system
         ninetyDayTemplate = try c.decodeIfPresent(String.self, forKey: .ninetyDayTemplate)
         manualPhaseOverride = try c.decodeIfPresent(TimelinePhase.self, forKey: .manualPhaseOverride)
+        hasSeenEarlyItemsCheckIn = try c.decodeIfPresent(Bool.self, forKey: .hasSeenEarlyItemsCheckIn) ?? false
     }
 }

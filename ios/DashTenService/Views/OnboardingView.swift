@@ -8,7 +8,6 @@ struct OnboardingView: View {
     @State private var currentPage: Int = 0
     @State private var selectedBranch: MilitaryBranch? = nil
     @State private var selectedTimeline: TransitionTimeline? = nil
-    @State private var selectedGoals: Set<TransitionGoal> = []
     @State private var selectedPostServiceStatus: PostServiceStatus? = nil
     @State private var separationDate: Date = Calendar.current.date(byAdding: .month, value: 12, to: Date()) ?? Date()
     @State private var selectedPainPoints: Set<String> = []
@@ -17,7 +16,7 @@ struct OnboardingView: View {
     @State private var appeared: Bool = false
     @State private var showSkipConfirm: Bool = false
 
-    private let totalPages = 6
+    private let totalPages = 5
 
     // MARK: - Body
 
@@ -38,8 +37,7 @@ struct OnboardingView: View {
                     branchScreen.tag(1)
                     timelineScreen.tag(2)
                     painPointsScreen.tag(3)
-                    goalsScreen.tag(4)
-                    disclaimerScreen.tag(5)
+                    disclaimerScreen.tag(4)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.spring(response: 0.45, dampingFraction: 0.85), value: currentPage)
@@ -220,8 +218,7 @@ struct OnboardingView: View {
         case 1: return selectedBranch != nil
         case 2: return selectedTimeline != nil && (selectedTimeline != .separated || selectedPostServiceStatus != nil)
         case 3: return true
-        case 4: return !selectedGoals.isEmpty
-        case 5: return disclaimerAccepted
+        case 4: return disclaimerAccepted
         default: return false
         }
     }
@@ -553,49 +550,7 @@ struct OnboardingView: View {
         .sensoryFeedback(.selection, trigger: isSelected)
     }
 
-    // MARK: - SCREEN 5: GOALS (compact)
-
-    private var goalsScreen: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            screenHeader(
-                "What are you working toward?",
-                subtitle: "Pick one or more. This shapes your weekly missions."
-            )
-
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 8) {
-                    ForEach(TransitionGoal.allCases) { goal in
-                        goalOption(goal)
-                    }
-                }
-                .padding(.bottom, 8)
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-    }
-
-    private func goalOption(_ goal: TransitionGoal) -> some View {
-        let isSelected = selectedGoals.contains(goal)
-        return Button {
-            withAnimation(.spring(response: 0.3)) {
-                if isSelected { selectedGoals.remove(goal) }
-                else { selectedGoals.insert(goal) }
-            }
-        } label: {
-            optionRow(
-                icon: goal.icon,
-                title: goal.rawValue,
-                subtitle: nil,
-                isSelected: isSelected,
-                indicator: .check
-            )
-        }
-        .buttonStyle(.plain)
-        .sensoryFeedback(.selection, trigger: isSelected)
-    }
-
-    // MARK: - SCREEN 6: DISCLAIMER
+    // MARK: - SCREEN 5: DISCLAIMER
 
     private var disclaimerScreen: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -782,7 +737,6 @@ struct OnboardingView: View {
         if selectedTimeline == .separated, let status = selectedPostServiceStatus {
             storage.applyPostServiceStatus(status)
         }
-        storage.profile.goals = Array(selectedGoals)
         storage.profile.hasAcceptedDisclaimer = true
         storage.profile.hasCompletedOnboarding = true
         // Show paywall first; onboarding view dismisses after paywall closes.
