@@ -18,13 +18,13 @@ struct GettingStartedWalkthroughView: View {
              body: "Open the Profile tab and add your branch, status, separation date, and goals. This powers every recommendation in the app."),
         Step(number: 2, icon: "map.fill", color: AppTheme.forestGreen,
              title: "Review Your Roadmap",
-             body: "The roadmap at the top of the Plan tab shows every phase of your transition — from 18+ months out to your first year as a civilian. Tap any phase to see exactly what to do and how."),
+             body: "Open the Tools tab → Planning → Transition Roadmap to see every phase of your transition — from 18+ months out to your first year as a civilian. Tap any phase to see exactly what to do and how."),
         Step(number: 3, icon: "scope", color: AppTheme.forestGreen,
              title: "Knock out Recommended Tasks",
              body: "On the Today tab, your Recommended Tasks are the highest-priority items for right now — including anything overdue from earlier phases. Start there."),
         Step(number: 4, icon: "doc.text.fill", color: .orange,
              title: "Secure your documents",
-             body: "Work the Documents section on the Plan tab. Gather what's needed now so you're not scrambling later."),
+             body: "Open Tools → Planning to find Documents. Gather what's needed now so you're not scrambling later."),
         Step(number: 5, icon: "wrench.and.screwdriver.fill", color: .teal,
              title: "Use the Tools",
              body: "The Tools tab has calculators, a resume translator, interview prep, a jargon translator, and more. Pull them out as you need them."),
@@ -132,7 +132,7 @@ struct GettingStartedWalkthroughView: View {
                 Text("Tip")
                     .font(.caption.weight(.heavy))
                     .foregroundStyle(AppTheme.gold)
-                Text("You can export your roadmap to PDF any time from the menu in the top-right of the Plan tab.")
+                Text("You can export your roadmap to PDF any time from the menu in the top-right of the Transition Roadmap screen.")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary.opacity(0.8))
                     .fixedSize(horizontal: false, vertical: true)

@@ -1,60 +1,32 @@
-# Rebuild the Roadmap by category, remove the Goals step, and fix the progress bug
+# Remove Plan tab and rebuild Roadmap as a tool inside the Planning section
 
-## What's wrong today
+## What changes
 
-- The Home screen says you're 33% complete and drops you into a post-service phase even though you picked "12 months out."
-- Pre-separation tasks are getting auto-checked when they shouldn't be.
-- The Goals step in onboarding doesn't change anything in the app, so it wastes your time.
-- The roadmap is a long stack of time-based phase cards that doesn't reflect how you actually think about the work.
+**Bottom tab bar** drops from 5 tabs to 4: Home · Tools · Learn · Profile. The Plan tab and its "Your Roadmap" timeline view go away as a tab destination.
 
-## The new Roadmap
+**Roadmap moves into Tools → Planning** as a new tool entry that opens the full phased roadmap (pre-separation phases, post-service phases, current phase tasks, overdue tasks, export to PDF — everything the Plan tab did, styled to match the other planning tools).
 
-**Organized by category, not by date.** Seven categories with their own progress rings:
+## Pages / Screens
 
-- Admin & Records
-- Health Care
-- Finance
-- Career & Employment
-- Family
-- Housing
-- Education
+- **Tools tab → Planning category**: A new "Transition Roadmap" tool appears at the top of the Planning list with a map icon. Tapping it opens the full roadmap experience (your phases, current focus, tasks per phase, PDF export, manual phase override) — same content the Plan tab had, just re-skinned to match the other tools.
+- **Home tab**: Any buttons or cards that previously jumped to the Plan tab (e.g. "View Roadmap", readiness boost rows, "Open in Roadmap" callouts) now route to Tools → Planning → Transition Roadmap.
+- **Deep links**: `dashten://plan` continues to work and now lands on Tools → Planning → Transition Roadmap so widgets, Siri shortcuts, and notifications keep functioning.
+- **iPad sidebar**: The Plan section is removed from the sidebar; Roadmap stays accessible under Tools → Planning to mirror the phone layout.
+- **Tab bar**: Now Home · Tools · Learn · Profile. Selected indices and analytics names update to match.
 
-Each category opens to a clean checklist of every task in that area, sorted from soonest to latest. Each task has a small time-window tag (e.g. "12 mo", "6 mo", "90 days", "Post-service") so you still know when it matters, but the time isn't the thing driving the layout — the topic is.
+## Design
 
-A top progress ring on the Roadmap shows your overall readiness. Each category card shows its own ring, completed count, and the most urgent task inside.
+- The new Roadmap tool entry uses the same row styling as other Planning tools (icon tile, title, subtitle, chevron). Opens into a full screen that keeps the phase cards, task list, current-phase header, PDF export menu, and manual phase override exactly as they work today — re-using the existing roadmap UI so nothing visual is lost.
+- No changes to colors, fonts, or layout language elsewhere; the rest of Tools, Home, Learn, and Profile are untouched.
 
-## "Have you already done these?" check-in
+## Connectors verified
 
-The first time you open the new Roadmap, a one-time prompt asks:
-
-> "You're 12 months out — have you already taken care of the early-planning items?"
-
-You can tap "Yes, mark them done", "Some — let me pick", or "No, keep them open." Picking "Some" opens a quick list where you check off only the ones you actually finished. After that, the prompt never returns. You can always uncheck anything later.
-
-## Onboarding
-
-- The **Goals step is removed**. Onboarding is now: Welcome → Branch → Where you are in your transition → Concerns → Disclaimer.
-- That makes onboarding shorter and removes a step that didn't drive any behavior in the app.
-
-## Fixes to the progress bug
-
-- The phase boundaries are corrected so "12 months out" actually lands in the 12-month window (not the 6-month one).
-- Transitioning users will no longer have pre-separation tasks silently marked complete. Only the one-time "Have you already done these?" answer affects what's checked.
-- Already-separated and retired users keep the current behavior — pre-separation tasks are auto-completed for them since they're past that point.
-- Your current Home percentage will recalculate from your real checked items once the bug fix runs.
-
-## Home screen impact
-
-- The Readiness percentage on Home will now reflect what you've actually completed, not phantom auto-checks.
-- The "Today's Focus" card will pick the next real open task from the highest-priority category.
-
-## Profile
-
-- The Goals section in your Profile stays so you can still view/edit them if you set any previously, but it's no longer part of onboarding.
+- Home "open roadmap" actions, readiness dashboard "Open in Roadmap" links, the Getting Started walkthrough's "Review Your Roadmap" step, search results for "roadmap", widget deep links, and Siri intents are all rewired to land on the new Tools → Planning → Roadmap location.
+- PDF export, notifications (`scrollToRoadmap`), and the post-service roadmap variant continue to work unchanged inside the new location.
+- Build and run checks after the changes to confirm no broken references.
 
 ## What stays the same
 
-- Post-service users continue to see the four post-service steps (First 30 Days, First 90 Days, First Year, Year 2+) — that flow already works well.
-- All your existing tasks, documents, benefits, tools, and badges are untouched.
-- Catch-up banner stays available in case you fall behind.
+- The roadmap content, phase logic, post-service vs pre-separation switching, and PDF export are unchanged — only the entry point moves.
+- Tools, Learn, Profile, Home, onboarding, and paywall behavior are untouched.
 

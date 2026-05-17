@@ -72,6 +72,7 @@ struct ToolboxView: View {
 
     private var planningTools: [ToolEntry] {
         [
+            ToolEntry(title: "Transition Roadmap", subtitle: "Your phased path with tasks, current focus, and PDF export", icon: "map.fill", color: AppTheme.forestGreen, action: .nav(.roadmap), keywords: ["roadmap", "timeline", "phases", "plan", "tasks"]),
             ToolEntry(title: "Decision Matrix", subtitle: "Weighted side-by-side comparison tool", icon: "square.grid.3x3.fill", color: .blue, action: .nav(.decisionMatrix), keywords: ["decision", "compare"]),
             ToolEntry(title: "First 90 Days Planner", subtitle: "Week-by-week post-hire plan + goal tracking", icon: "calendar.badge.clock", color: .purple, action: .nav(.ninetyDayPlanner), keywords: ["90 days", "planner", "goals"]),
             ToolEntry(title: "Transition Journal", subtitle: "Daily guided prompts and reflections", icon: "book.fill", color: .purple, action: .nav(.transitionJournal), keywords: ["journal", "write"]),
@@ -179,6 +180,10 @@ struct ToolboxView: View {
             }
             .sheet(item: $activeSheet) { sheet in
                 sheetContent(sheet)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openRoadmap)) { _ in
+                navPath = NavigationPath()
+                navPath.append(PlanningRoute.roadmap)
             }
         }
     }

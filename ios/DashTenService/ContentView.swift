@@ -32,29 +32,22 @@ struct ContentView: View {
             Tab("Home", systemImage: "house.fill", value: 0) {
                 TodayView(storage: storage, store: store, selectedTab: $selectedTab)
             }
-            Tab("Plan", systemImage: "map.fill", value: 1) {
-                if isPadLayout {
-                    PlanSidebarView(storage: storage)
-                } else {
-                    PlanView(storage: storage)
-                }
-            }
-            Tab("Tools", systemImage: "wrench.and.screwdriver.fill", value: 2) {
+            Tab("Tools", systemImage: "wrench.and.screwdriver.fill", value: 1) {
                 if isPadLayout {
                     ToolsSidebarView(storage: storage, store: store)
                 } else {
                     ToolboxView(storage: storage, store: store)
                 }
             }
-            Tab("Learn", systemImage: "book.fill", value: 3) {
+            Tab("Learn", systemImage: "book.fill", value: 2) {
                 LearnView(storage: storage, store: store)
             }
-            Tab("Profile", systemImage: "person.fill", value: 4) {
+            Tab("Profile", systemImage: "person.fill", value: 3) {
                 ProfileView(storage: storage, store: store)
             }
         }
         .onChange(of: selectedTab) { _, newValue in
-            let names = ["home", "plan", "tools", "learn", "profile"]
+            let names = ["home", "tools", "learn", "profile"]
             let name = (0..<names.count).contains(newValue) ? names[newValue] : "unknown"
             AnalyticsService.shared.log(.screenView, properties: ["name": name])
         }
@@ -90,10 +83,14 @@ struct ContentView: View {
         AnalyticsService.shared.log(.featureUsed, properties: ["name": "deep_link", "host": url.host ?? ""])
         switch url.host {
         case "today", nil: selectedTab = 0
-        case "plan": selectedTab = 1
-        case "tools": selectedTab = 2
-        case "learn": selectedTab = 3
-        case "profile": selectedTab = 4
+        case "plan":
+            selectedTab = 1
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                NotificationCenter.default.post(name: .openRoadmap, object: nil)
+            }
+        case "tools": selectedTab = 1
+        case "learn": selectedTab = 2
+        case "profile": selectedTab = 3
         default: selectedTab = 0
         }
     }
@@ -113,7 +110,7 @@ struct ContentView: View {
         if defaults.string(forKey: "dashten_pending_contact_name") != nil {
             // Hand off to Tools tab where networking hub lives.
             defaults.removeObject(forKey: "dashten_pending_contact_name")
-            selectedTab = 2
+            selectedTab = 1
             AnalyticsService.shared.log(.featureUsed, properties: ["name": "siri_track_contact"])
         }
     }

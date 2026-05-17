@@ -9,6 +9,7 @@ struct RoadmapView: View {
 	@State private var showCatchUpSheet: Bool = false
 	@State private var celebratingPhase: TimelinePhase? = nil
 	@State private var showEarlyCheckIn: Bool = false
+	@State private var exportedPDFURL: URL? = nil
 
 	private func itemsForPhase(_ phase: TimelinePhase) -> [ChecklistItem] {
 		storage.checklistItems.filter { $0.phase == phase }
@@ -164,14 +165,26 @@ struct RoadmapView: View {
 		.navigationBarTitleDisplayMode(.large)
 		.toolbar {
 			ToolbarItem(placement: .topBarTrailing) {
-				Button {
-					showAddItem = true
+				Menu {
+					Button {
+						showAddItem = true
+					} label: {
+						Label("Add Custom Task", systemImage: "plus.circle")
+					}
+					Button {
+						exportedPDFURL = RoadmapPDFService.generate(storage: storage)
+					} label: {
+						Label("Export Roadmap to PDF", systemImage: "square.and.arrow.up")
+					}
 				} label: {
-					Image(systemName: "plus.circle.fill")
+					Image(systemName: "ellipsis.circle.fill")
 						.foregroundStyle(AppTheme.forestGreen)
 				}
-				.accessibilityLabel("Add roadmap item")
+				.accessibilityLabel("Roadmap menu")
 			}
+		}
+		.sheet(item: Binding(get: { exportedPDFURL.map { PDFURL(url: $0) } }, set: { exportedPDFURL = $0?.url })) { wrapper in
+			ShareSheet(items: [wrapper.url])
 		}
 		.sheet(isPresented: $showAddItem) { addItemSheet }
 		.sheet(isPresented: $showEarlyCheckIn) {

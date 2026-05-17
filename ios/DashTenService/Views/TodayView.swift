@@ -267,7 +267,7 @@ struct TodayView: View {
             .minimumScaleFactor(0.6)
         } else {
             Button {
-                selectedTab = 4
+                selectedTab = 3
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "calendar.badge.plus")
@@ -388,6 +388,9 @@ struct TodayView: View {
 
             Button {
                 selectedTab = 1
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    NotificationCenter.default.post(name: .openRoadmap, object: nil)
+                }
             } label: {
                 HStack(spacing: 6) {
                     Text("See all tasks")
