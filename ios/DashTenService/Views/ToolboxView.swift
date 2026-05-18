@@ -185,6 +185,10 @@ struct ToolboxView: View {
                 navPath = NavigationPath()
                 navPath.append(PlanningRoute.roadmap)
             }
+            .onReceive(NotificationCenter.default.publisher(for: .openDocuments)) { _ in
+                navPath = NavigationPath()
+                navPath.append(PlanningRoute.documents)
+            }
         }
     }
 

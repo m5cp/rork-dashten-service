@@ -147,6 +147,8 @@ struct TodayView: View {
                     SelfAssessmentView(storage: storage)
                 } else if case .achievementBadges = route {
                     AchievementBadgesView(storage: storage)
+                } else if case .documents = route {
+                    DocumentsView(storage: storage)
                 }
             }
             .navigationDestination(isPresented: $goToAssessment) {
@@ -305,41 +307,81 @@ struct TodayView: View {
     // MARK: - Readiness
 
     private var readinessCard: some View {
-        NavigationLink(value: PlanningRoute.readiness) {
-            HStack(spacing: 18) {
-                ZStack {
-                    ProgressRing(progress: readiness.overall, size: 76, lineWidth: 8, color: AppTheme.forestGreen)
-                    VStack(spacing: 0) {
-                        Text("\(readiness.overallPercent)")
-                            .font(.system(size: 22, weight: .bold, design: .rounded))
+        VStack(spacing: 10) {
+            NavigationLink(value: PlanningRoute.readiness) {
+                HStack(spacing: 18) {
+                    ZStack {
+                        ProgressRing(progress: readiness.overall, size: 76, lineWidth: 8, color: AppTheme.forestGreen)
+                        VStack(spacing: 0) {
+                            Text("\(readiness.overallPercent)")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundStyle(.primary)
+                                .contentTransition(.numericText())
+                            Text("%")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Transition Readiness")
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(.primary)
-                            .contentTransition(.numericText())
-                        Text("%")
-                            .font(.caption2.weight(.bold))
+                        Text("Documents, benefits & checklist combined")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(18)
+                .frame(maxWidth: .infinity)
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(.rect(cornerRadius: 18))
+            }
+            .buttonStyle(.plain)
+
+            NavigationLink(value: PlanningRoute.documents) {
+                HStack(spacing: 12) {
+                    Image(systemName: "folder.fill")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .background(AppTheme.forestGreen)
+                        .clipShape(.rect(cornerRadius: 8))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Documents Vault")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(.primary)
+                        Text("\(verifiedDocsCount) of \(totalDocsCount) verified")
+                            .font(.caption2.weight(.semibold))
                             .foregroundStyle(.secondary)
                     }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.tertiary)
                 }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Transition Readiness")
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.primary)
-                    Text("Documents, benefits & checklist combined")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.tertiary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity)
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(.rect(cornerRadius: 14))
             }
-            .padding(18)
-            .frame(maxWidth: .infinity)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 18))
+            .buttonStyle(.plain)
+            .accessibilityLabel("Open Documents Vault")
         }
-        .buttonStyle(.plain)
+    }
+
+    private var verifiedDocsCount: Int {
+        storage.documents.filter { $0.status == .verified }.count
+    }
+
+    private var totalDocsCount: Int {
+        storage.documents.count
     }
 
     // MARK: - Focus

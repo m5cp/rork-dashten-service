@@ -1,33 +1,14 @@
-# Fix the broken Roadmap screen and audit cross-app links
+# Add quick Documents access from the Transition Readiness card
 
-## The bug
+**Why**
+Documents count toward the Readiness % but there's no obvious way to jump straight to them from the Home screen's readiness card. Today they're buried inside Tools → Planning.
 
-When you tap the Roadmap card in Tools (or open Roadmap from Home's "See all tasks", Learn, Search, or the Readiness dashboard), it pushes onto a navigation stack that **already exists** — but the Roadmap screen also creates its own navigation stack inside itself. Two stacks nested together is why you see a blank white screen with just a tiny warning icon and a back button.
+**What will change**
 
-## The fix
+- On the **Transition Readiness card** on Home, add a small "Documents" shortcut button (folder icon + label) next to the chevron. Tapping the card itself still opens the full Readiness Dashboard; tapping the shortcut jumps directly into the Documents vault.
+- On the **Readiness Dashboard** screen, add a prominent "Open Documents Vault" quick-action row right under the overall score ring, so it's the first thing visible after the percentage.
+- Inside the **By Category** breakdown, the Admin / Finance / Health rows already open a category sheet — that sheet will gain an "Open Documents" button at the top when the category has related documents.
+- The Tools → Planning → Documents card stays where it is; this is purely additive so users can reach Documents from the readiness flow in one or two taps.
 
-- **Remove the duplicate navigation wrapper inside the Roadmap screen** so it renders correctly wherever it's opened from — Tools, Home, Learn, Search, the iPad sidebar, and the Readiness dashboard.
-- **Verify the Roadmap title, menu (Add Custom Task / Export PDF), and inner navigation** (tapping a category → tasks → phase detail) all still work after the wrapper is removed.
-
-## Full app audit at the same time
-
-I'll walk every navigation entry point and confirm nothing is dead or orphaned:
-
-- **Home tab** — "See all tasks", "Today's focus" buttons, milestone cards, retention cards, the AI coach button, profile/streak shortcuts.
-- **Tools tab** — every category card, every tool row inside Money / Career / Planning, the State Benefits hero card, search results.
-- **Learn tab** — every benefit, guide, and article link, plus the "First Year Guide" cross-link.
-- **Profile tab** — Edit profile, subscription, notifications, theme, share progress, delete data, getting-started walkthrough.
-- **Deep links** — `dashten://today`, `dashten://plan`, `dashten://tools`, `dashten://learn`, `dashten://profile`.
-- **Widgets and Siri shortcuts** — daily check-in, open mission, track contact.
-- **Paywall** — opens from onboarding finish, locked tools, and Profile upgrade.
-
-For anything dead or misrouted, I'll wire it to the correct destination and note it in the summary.
-
-## What you'll see after
-
-- Tapping **Transition Roadmap** from any place in the app opens the real Roadmap screen with the overall progress card, current-phase pill, and the category grid (Admin, Health, Finance, Employment, Family, Housing, Education) — no more blank screen.
-- The top-right "⋯" menu still offers **Add Custom Task** and **Export to PDF**.
-- Category → task → phase detail navigation works end-to-end.
-- The post-service version of the roadmap (for already-separated users) renders correctly too.
-
-Build will be verified before I hand it back.
+**Result**
+From Home, Documents is now one tap away via the readiness card shortcut, or two taps via Readiness Dashboard → Open Documents Vault. Everything stays in sync with the existing Documents screen.

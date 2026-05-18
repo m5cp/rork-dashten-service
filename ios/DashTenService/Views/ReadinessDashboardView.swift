@@ -29,6 +29,7 @@ struct ReadinessDashboardView: View {
         ScrollView {
             VStack(spacing: 24) {
                 overallScore
+                documentsShortcut
                 categoryBreakdown
                 milestoneSection
                 shareSection
@@ -49,6 +50,44 @@ struct ReadinessDashboardView: View {
         .sheet(item: $selectedCategory) { category in
             CategoryDetailSheet(storage: storage, category: category)
         }
+    }
+
+    private var documentsShortcut: some View {
+        NavigationLink(value: PlanningRoute.documents) {
+            HStack(spacing: 14) {
+                Image(systemName: "folder.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(AppTheme.forestGreen)
+                    .clipShape(.rect(cornerRadius: 12))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Open Documents Vault")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text("\(verifiedDocsCount) of \(totalDocsCount) verified")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(.rect(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var verifiedDocsCount: Int {
+        storage.documents.filter { $0.status == .verified }.count
+    }
+
+    private var totalDocsCount: Int {
+        storage.documents.count
     }
 
     private var overallScore: some View {
@@ -407,6 +446,41 @@ struct CategoryDetailSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     headerCard
+
+                    if !docs.isEmpty {
+                        Button {
+                            dismiss()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                NotificationCenter.default.post(name: .openDocuments, object: nil)
+                            }
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: "folder.fill")
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 36, height: 36)
+                                    .background(color)
+                                    .clipShape(.rect(cornerRadius: 10))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Open Documents Vault")
+                                        .font(.subheadline.weight(.bold))
+                                        .foregroundStyle(.primary)
+                                    Text("Jump to \(category.rawValue.lowercased()) paperwork")
+                                        .font(.caption2.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .padding(12)
+                            .frame(maxWidth: .infinity)
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .clipShape(.rect(cornerRadius: 12))
+                        }
+                        .buttonStyle(.plain)
+                    }
 
                     if !checklistItems.isEmpty {
                         section(title: "Roadmap Tasks", icon: "checklist") {

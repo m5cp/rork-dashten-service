@@ -4,4 +4,5 @@ extension Notification.Name {
     static let scrollToRoadmap = Notification.Name("scrollToRoadmap")
     static let openProfileSetup = Notification.Name("openProfileSetup")
     static let openRoadmap = Notification.Name("openRoadmap")
+    static let openDocuments = Notification.Name("openDocuments")
 }
