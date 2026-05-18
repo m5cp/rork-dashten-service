@@ -848,17 +848,21 @@ struct TermsOfUseView: View {
 struct PrivacyPolicyView: View {
     @Environment(\.dismiss) private var dismiss
 
-    private static let lastUpdated: String = "April 2026"
+    private static let lastUpdated: String = "May 2026"
 
     private let items: [(icon: String, color: Color, title: String, body: String)] = [
-        ("iphone", .blue, "Local-only storage", "DashTen stores all data locally on your device. No personal information is transmitted to external servers."),
-        ("lock.shield.fill", AppTheme.forestGreen, "Private by design", "Your transition plan, documents checklist, and progress are private and under your complete control."),
-        ("person.crop.circle.badge.xmark", .purple, "No PII collection", "We do not collect, store, or share any personally identifiable information."),
+        ("iphone", .blue, "Local-only storage", "DashTen stores all of your data — profile, transition plan, checklist, documents vault, goals, journal entries, and progress — locally on your device. No personal information is transmitted to external servers."),
+        ("lock.shield.fill", AppTheme.forestGreen, "Private by design", "Your transition plan, readiness score, documents checklist, and progress are private and under your complete control. Nothing is uploaded to a DashTen account or cloud."),
+        ("person.crop.circle.badge.xmark", .purple, "No PII collection", "We do not collect, store, or share any personally identifiable information. There is no DashTen account, no login, and no email signup required."),
         ("chart.bar.xaxis", .orange, "On-device diagnostics only", "DashTen records anonymous diagnostic events (such as which screen you opened or whether the paywall was shown) to a local log on your device. These events are not personally identifiable, never leave your device, and are not sent to any analytics, advertising, or third-party SDK. They are erased when you delete the app."),
-        ("heart.text.square.fill", .pink, "Apple Health (optional, read-only)", "If you opt in, DashTen reads Steps, Sleep, and Mindful Minutes from Apple Health to show you a private 7-day snapshot. We never write to Apple Health, never upload your health data, and never share it with any third party."),
+        ("heart.text.square.fill", .pink, "Apple Health (optional, read-only)", "HealthKit is fully optional and disabled until you tap to opt in. If you opt in, DashTen reads only three categories — Steps, Sleep, and Mindful Minutes — from Apple Health to show you a private 7-day wellness snapshot in the app. DashTen never writes to Apple Health, never uploads your health data, never shares it with any third party, and never uses it for advertising or analytics. You can revoke access any time in Settings → Privacy → Health → DashTen."),
+        ("calendar", .indigo, "Calendar (optional, read-only)", "If you grant access, DashTen reads events from your device calendar only to display what you have going on alongside your weekly transition tasks. Events are read on-device, never uploaded, and never shared."),
         ("bell.badge.fill", .yellow, "Notifications (optional)", "If you opt in, DashTen schedules local-only reminders (daily check-in, streak protection, phase deadlines, milestones, weekly summary). Notifications are scheduled on-device and contain no marketing or third-party content."),
-        ("trash.fill", .red, "Delete = gone", "If you delete the app, all local data is permanently removed from your device."),
-        ("link", .teal, "External links", "External links in the app will open in your browser. Those websites have their own privacy policies.")
+        ("brain.head.profile", .mint, "AI Coach — on-device only", "The AI Coach uses Apple Intelligence (Foundation Models) running entirely on your device when available. Your transition context never leaves your iPhone. If on-device AI is not available, a built-in rule-based message is shown instead — no cloud AI is ever called."),
+        ("creditcard.fill", .blue, "Subscriptions", "Subscriptions are processed by Apple through the App Store and managed by RevenueCat purely for receipt validation and entitlement checks. DashTen never sees your payment information. RevenueCat receives an anonymous subscriber ID — no name, email, or contact info."),
+        ("trash.fill", .red, "Delete = gone", "If you delete the app, all local data — including your plan, documents vault, journal, and diagnostic log — is permanently removed from your device."),
+        ("link", .teal, "External links", "External links in the app (VA.gov, DOL, FINRA, etc.) open in your browser. Those websites have their own privacy policies."),
+        ("shield.lefthalf.filled", .gray, "Not affiliated with the U.S. government", "DashTen is an independent product. It is not endorsed by, affiliated with, or sponsored by the U.S. Department of Veterans Affairs, the Department of Defense, or any branch of the U.S. Armed Forces.")
     ]
 
     var body: some View {
