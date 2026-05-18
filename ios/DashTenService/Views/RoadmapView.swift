@@ -78,13 +78,11 @@ struct RoadmapView: View {
 	}
 
 	var body: some View {
-		NavigationStack {
-			Group {
-				if isPostService {
-					PostServiceRoadmapView(storage: storage)
-				} else {
-					preSeparationBody
-				}
+		Group {
+			if isPostService {
+				PostServiceRoadmapView(storage: storage)
+			} else {
+				preSeparationBody
 			}
 		}
 	}

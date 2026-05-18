@@ -1,32 +1,33 @@
-# Remove Plan tab and rebuild Roadmap as a tool inside the Planning section
+# Fix the broken Roadmap screen and audit cross-app links
 
-## What changes
+## The bug
 
-**Bottom tab bar** drops from 5 tabs to 4: Home · Tools · Learn · Profile. The Plan tab and its "Your Roadmap" timeline view go away as a tab destination.
+When you tap the Roadmap card in Tools (or open Roadmap from Home's "See all tasks", Learn, Search, or the Readiness dashboard), it pushes onto a navigation stack that **already exists** — but the Roadmap screen also creates its own navigation stack inside itself. Two stacks nested together is why you see a blank white screen with just a tiny warning icon and a back button.
 
-**Roadmap moves into Tools → Planning** as a new tool entry that opens the full phased roadmap (pre-separation phases, post-service phases, current phase tasks, overdue tasks, export to PDF — everything the Plan tab did, styled to match the other planning tools).
+## The fix
 
-## Pages / Screens
+- **Remove the duplicate navigation wrapper inside the Roadmap screen** so it renders correctly wherever it's opened from — Tools, Home, Learn, Search, the iPad sidebar, and the Readiness dashboard.
+- **Verify the Roadmap title, menu (Add Custom Task / Export PDF), and inner navigation** (tapping a category → tasks → phase detail) all still work after the wrapper is removed.
 
-- **Tools tab → Planning category**: A new "Transition Roadmap" tool appears at the top of the Planning list with a map icon. Tapping it opens the full roadmap experience (your phases, current focus, tasks per phase, PDF export, manual phase override) — same content the Plan tab had, just re-skinned to match the other tools.
-- **Home tab**: Any buttons or cards that previously jumped to the Plan tab (e.g. "View Roadmap", readiness boost rows, "Open in Roadmap" callouts) now route to Tools → Planning → Transition Roadmap.
-- **Deep links**: `dashten://plan` continues to work and now lands on Tools → Planning → Transition Roadmap so widgets, Siri shortcuts, and notifications keep functioning.
-- **iPad sidebar**: The Plan section is removed from the sidebar; Roadmap stays accessible under Tools → Planning to mirror the phone layout.
-- **Tab bar**: Now Home · Tools · Learn · Profile. Selected indices and analytics names update to match.
+## Full app audit at the same time
 
-## Design
+I'll walk every navigation entry point and confirm nothing is dead or orphaned:
 
-- The new Roadmap tool entry uses the same row styling as other Planning tools (icon tile, title, subtitle, chevron). Opens into a full screen that keeps the phase cards, task list, current-phase header, PDF export menu, and manual phase override exactly as they work today — re-using the existing roadmap UI so nothing visual is lost.
-- No changes to colors, fonts, or layout language elsewhere; the rest of Tools, Home, Learn, and Profile are untouched.
+- **Home tab** — "See all tasks", "Today's focus" buttons, milestone cards, retention cards, the AI coach button, profile/streak shortcuts.
+- **Tools tab** — every category card, every tool row inside Money / Career / Planning, the State Benefits hero card, search results.
+- **Learn tab** — every benefit, guide, and article link, plus the "First Year Guide" cross-link.
+- **Profile tab** — Edit profile, subscription, notifications, theme, share progress, delete data, getting-started walkthrough.
+- **Deep links** — `dashten://today`, `dashten://plan`, `dashten://tools`, `dashten://learn`, `dashten://profile`.
+- **Widgets and Siri shortcuts** — daily check-in, open mission, track contact.
+- **Paywall** — opens from onboarding finish, locked tools, and Profile upgrade.
 
-## Connectors verified
+For anything dead or misrouted, I'll wire it to the correct destination and note it in the summary.
 
-- Home "open roadmap" actions, readiness dashboard "Open in Roadmap" links, the Getting Started walkthrough's "Review Your Roadmap" step, search results for "roadmap", widget deep links, and Siri intents are all rewired to land on the new Tools → Planning → Roadmap location.
-- PDF export, notifications (`scrollToRoadmap`), and the post-service roadmap variant continue to work unchanged inside the new location.
-- Build and run checks after the changes to confirm no broken references.
+## What you'll see after
 
-## What stays the same
+- Tapping **Transition Roadmap** from any place in the app opens the real Roadmap screen with the overall progress card, current-phase pill, and the category grid (Admin, Health, Finance, Employment, Family, Housing, Education) — no more blank screen.
+- The top-right "⋯" menu still offers **Add Custom Task** and **Export to PDF**.
+- Category → task → phase detail navigation works end-to-end.
+- The post-service version of the roadmap (for already-separated users) renders correctly too.
 
-- The roadmap content, phase logic, post-service vs pre-separation switching, and PDF export are unchanged — only the entry point moves.
-- Tools, Learn, Profile, Home, onboarding, and paywall behavior are untouched.
-
+Build will be verified before I hand it back.
