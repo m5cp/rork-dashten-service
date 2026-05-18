@@ -9,6 +9,7 @@ struct ProfileView: View {
     @Environment(PaywallCenter.self) private var paywall
     @State private var showRedeemCode: Bool = false
     @State private var showTransparency: Bool = false
+    @State private var showSources: Bool = false
     @State private var showNotificationsTune: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPrivacy: Bool = false
@@ -339,6 +340,13 @@ struct ProfileView: View {
                     }
 
                     Button {
+                        showSources = true
+                    } label: {
+                        Label("Sources & References", systemImage: "books.vertical")
+                            .font(.body.weight(.semibold))
+                    }
+
+                    Button {
                         showNotificationsTune = true
                     } label: {
                         Label("Tune notifications", systemImage: "bell.badge")
@@ -430,6 +438,9 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showTransparency) {
                 SourceTransparencyView()
+            }
+            .sheet(isPresented: $showSources) {
+                SourcesReferencesView()
             }
             .sheet(isPresented: $showTerms) {
                 TermsOfUseView()
@@ -648,6 +659,90 @@ struct AboutView: View {
                 }
             }
         }
+    }
+}
+
+struct SourcesReferencesView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("The stats and figures shown in DashTen come from the following public sources. Always verify with the originating agency before making decisions.")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.bottom, 4)
+
+                    sourceRow("U.S. Department of Veterans Affairs — VetPop", "VetPop2023 transition projection — approximately 200,000 service members separate or retire each year", "va.gov/vetdata")
+
+                    sourceRow("Ipsos / KnowledgePanel Veterans Survey", "October 2024 nationally representative survey of 516 veterans — VA financial counseling and career services awareness gaps", "ipsos.com/en-us/knowledge/society/what-veterans-know-about-their-benefits-and-services")
+
+                    sourceRow("Veterans Education Success", "Analysis of Post-9/11 GI Bill usage — approximately 40% of veterans never use their GI Bill benefit", "vetsedsuccess.org")
+
+                    sourceRow("U.S. Department of Veterans Affairs — VR&E Research", "National Survey of Veterans — only 14.8% of disability applicants used Vocational Rehabilitation & Employment services", "va.gov/careers-employment/vocational-rehabilitation")
+
+                    sourceRow("U.S. Department of Veterans Affairs — VBA", "FY 2024 Annual Benefits Report — 36% of disability claims denied; 2.4 million claims processed", "benefits.va.gov/reports")
+
+                    sourceRow("U.S. Government Accountability Office", "GAO reports on the National Personnel Records Center backlog — hundreds of thousands of pending requests for DD-214s and service records", "gao.gov")
+
+                    sourceRow("U.S. Department of Labor — VETS", "Bureau of Labor Statistics monthly veteran employment reports", "dol.gov/agencies/vets/latest-numbers")
+
+                    sourceRow("American Institutes for Research", "Post-9/11 GI Bill outcomes assessment with the Census Bureau and the VA's National Center for Veterans Analysis & Statistics", "air.org")
+
+                    sourceRow("Syracuse IVMF — D'Aniello Institute", "Veterans and Military Families employment and reintegration research", "ivmf.syracuse.edu")
+
+                    sourceRow("FINRA Foundation", "Military Financial Readiness Project — moving fund and TSP rollover decision guides", "finra.org/military")
+
+                    sourceRow("VA Home Loan Guaranty", "VA Buyers Guide and funding fee schedule", "va.gov/housing-assistance")
+
+                    sourceRow("U.S. Department of Veterans Affairs — Caregiver Support", "VA Caregiver Support Program eligibility and family benefits including Chapter 35/DEA", "caregiver.va.gov")
+
+                    NonAffiliationBanner()
+                        .padding(.top, 8)
+                }
+                .padding(20)
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Sources & References")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .font(.body.weight(.bold))
+                }
+            }
+        }
+    }
+
+    private func sourceRow(_ title: String, _ detail: String, _ urlString: String) -> some View {
+        let url = URL(string: urlString.hasPrefix("http") ? urlString : "https://\(urlString)")
+        return VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(detail)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            if let url {
+                Link(destination: url) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "link")
+                            .font(.caption2.weight(.bold))
+                        Text(urlString)
+                            .font(.caption2.weight(.bold))
+                    }
+                    .foregroundStyle(AppTheme.forestGreen)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 12))
     }
 }
 
