@@ -1,14 +1,17 @@
-# Add quick Documents access from the Transition Readiness card
+# Wire the "Why DashTen" stats screen into onboarding
 
-**Why**
-Documents count toward the Readiness % but there's no obvious way to jump straight to them from the Home screen's readiness card. Today they're buried inside Tools → Planning.
+**The issue**
 
-**What will change**
+The new stats screen ("Why this matters") was added to the onboarding file but never inserted into the actual page sequence, so it never appeared during onboarding.
 
-- On the **Transition Readiness card** on Home, add a small "Documents" shortcut button (folder icon + label) next to the chevron. Tapping the card itself still opens the full Readiness Dashboard; tapping the shortcut jumps directly into the Documents vault.
-- On the **Readiness Dashboard** screen, add a prominent "Open Documents Vault" quick-action row right under the overall score ring, so it's the first thing visible after the percentage.
-- Inside the **By Category** breakdown, the Admin / Finance / Health rows already open a category sheet — that sheet will gain an "Open Documents" button at the top when the category has related documents.
-- The Tools → Planning → Documents card stays where it is; this is purely additive so users can reach Documents from the readiness flow in one or two taps.
+**The fix**
+
+- Slot the "Why DashTen" stats screen into the onboarding flow as the second-to-last page, right before the Disclaimer.
+- New order: Welcome → Branch → Timeline → Concerns → **Why DashTen (stats)** → Disclaimer (6 pages total).
+- Update the progress bar and page counter so it reflects the new total.
+- Make sure the Skip button, Next/Continue button, and bottom bar logic all still work correctly on the new page.
+- Verify the entrance animations on each stat card fire when the page first appears (not just on first app load).
 
 **Result**
-From Home, Documents is now one tap away via the readiness card shortcut, or two taps via Readiness Dashboard → Open Documents Vault. Everything stays in sync with the existing Documents screen.
+
+During onboarding, after answering the concerns step, users will see the stats screen with the five real-world numbers (200K+ separating, 63% unaware of VA financial counseling, 40% never use GI Bill, 36% claims denied, 100K+ records backlog) before reaching the final disclaimer.

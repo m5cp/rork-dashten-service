@@ -16,7 +16,7 @@ struct OnboardingView: View {
     @State private var appeared: Bool = false
     @State private var showSkipConfirm: Bool = false
 
-    private let totalPages = 5
+    private let totalPages = 6
 
     // MARK: - Body
 
@@ -37,7 +37,8 @@ struct OnboardingView: View {
                     branchScreen.tag(1)
                     timelineScreen.tag(2)
                     painPointsScreen.tag(3)
-                    disclaimerScreen.tag(4)
+                    whyDashTenScreen.tag(4)
+                    disclaimerScreen.tag(5)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.spring(response: 0.45, dampingFraction: 0.85), value: currentPage)
@@ -218,7 +219,8 @@ struct OnboardingView: View {
         case 1: return selectedBranch != nil
         case 2: return selectedTimeline != nil && (selectedTimeline != .separated || selectedPostServiceStatus != nil)
         case 3: return true
-        case 4: return disclaimerAccepted
+        case 4: return true
+        case 5: return disclaimerAccepted
         default: return false
         }
     }
