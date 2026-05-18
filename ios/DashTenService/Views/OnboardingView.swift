@@ -728,6 +728,129 @@ struct OnboardingView: View {
         }
     }
 
+    // MARK: - Why DashTen Screen
+
+    private var whyDashTenScreen: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Why this matters.")
+                        .font(.system(size: 32, weight: .heavy))
+                        .foregroundStyle(.white)
+                    Text("Most veterans walk out without using everything they earned. DashTen exists to change that.")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.top, 8)
+
+                VStack(spacing: 12) {
+                    ForEach(Array(realStats.enumerated()), id: \.0) { i, stat in
+                        statCard(stat: stat, delay: Double(i) * 0.1)
+                    }
+                }
+
+                // Closing line
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("You earned what's coming next.")
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(AppTheme.gold)
+                    Text("DashTen helps you take it.")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                }
+                .padding(.top, 8)
+
+                HStack(spacing: 8) {
+                    Image(systemName: "info.circle.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.6))
+                    Text("Sources available in your profile under Sources & References.")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 24)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
+        }
+    }
+
+    private func statCard(stat: AppStat, delay: Double) -> some View {
+        HStack(spacing: 14) {
+            VStack(spacing: 0) {
+                Text(stat.number)
+                    .font(.system(size: 28, weight: .heavy))
+                    .foregroundStyle(AppTheme.gold)
+                    .minimumScaleFactor(0.6)
+                    .lineLimit(1)
+                if let unit = stat.unit {
+                    Text(unit)
+                        .font(.system(size: 9, weight: .heavy))
+                        .foregroundStyle(AppTheme.gold.opacity(0.7))
+                        .tracking(0.5)
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .frame(width: 88)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(stat.headline)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(stat.detail)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer()
+        }
+        .padding(14)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 14))
+        .opacity(appeared ? 1 : 0)
+        .offset(y: appeared ? 0 : 16)
+        .animation(.spring(response: 0.5).delay(delay), value: appeared)
+    }
+
+    private let realStats: [AppStat] = [
+        AppStat(
+            number: "200K+",
+            unit: "PER YEAR",
+            headline: "Service members separate or retire each year",
+            detail: "Every one of them navigates the same maze of paperwork, benefits, and decisions \u{2014} usually without a clear plan."
+        ),
+        AppStat(
+            number: "63%",
+            unit: nil,
+            headline: "Know nothing about VA financial counseling",
+            detail: "Most veterans are unaware that VA offers free financial counseling, fiduciary services, and money management support."
+        ),
+        AppStat(
+            number: "40%",
+            unit: nil,
+            headline: "Never use their GI Bill \u{2014} and only 15% use VR&E",
+            detail: "Education benefits worth tens of thousands of dollars sit unclaimed. Vocational Rehabilitation & Employment goes even more overlooked."
+        ),
+        AppStat(
+            number: "36%",
+            unit: nil,
+            headline: "Of VA disability claims were denied in FY 2024",
+            detail: "Often due to missing records, improperly submitted evidence, or veterans not knowing they qualified for more."
+        ),
+        AppStat(
+            number: "100K+",
+            unit: "BACKLOG",
+            headline: "Veterans wait months for service records",
+            detail: "DD-214s, medical records, and award documents are often delayed when veterans need them most for jobs, claims, and benefits."
+        ),
+    ]
+
     // MARK: - Complete Onboarding
 
     private func finishOnboarding() {
@@ -742,4 +865,12 @@ struct OnboardingView: View {
         // Show paywall first; onboarding view dismisses after paywall closes.
         showPaywall = true
     }
+}
+
+struct AppStat: Identifiable {
+    let id = UUID()
+    let number: String
+    let unit: String?
+    let headline: String
+    let detail: String
 }
